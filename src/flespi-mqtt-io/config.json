@@ -1,0 +1,93 @@
+{
+  "messages": {
+    "base": "flespi/message/",
+    "children": {
+      "channels": {
+        "methods": [
+          {
+            "name": "subscribe",
+            "pattern": "gw/channels/{channel_id}/{ident}",
+            "params": ["channel_id", "ident"]
+          },
+          {
+            "name": "unsubscribe",
+            "pattern": "gw/channels/{channel_id}/{ident}",
+            "params": ["channel_id", "ident"]
+          }
+        ]
+      },
+      "devices": {
+        "methods": [
+          {
+            "name": "subscribe",
+            "pattern": "registry/devices/{device_id}",
+            "params": ["device_id"]
+          },
+          {
+            "name": "unsubscribe",
+            "pattern": "registry/devices/{device_id}",
+            "params": ["device_id"]
+          }
+        ]
+      },
+      "containers": {
+        "methods": [
+          {
+            "name": "subscribe",
+            "pattern": "storage/containers/{container_id}/{name}",
+            "params": ["container_id", "name"]
+          },
+          {
+            "name": "unsubscribe",
+            "pattern": "storage/containers/{container_id}/{name}",
+            "params": ["container_id", "name"]
+          }
+        ]
+      },
+      "abques": {
+        "methods": [
+          {
+            "name": "subscribe",
+            "pattern": "storage/abques/{abque_id}/{name}",
+            "params": ["abque_id", "name"]
+          },
+          {
+            "name": "unsubscribe",
+            "pattern": "storage/abques/{abque_id}/{name}",
+            "params": ["abque_id", "name"]
+          }
+        ]
+      }
+    }
+  },
+  "sms": {
+    "base": "flespi/sms/gw/modems/",
+    "methods": [
+      {
+        "name": "subscribe",
+        "pattern": "{modem_id}/{phone}",
+        "params": ["modem_id", "phone"]
+      },
+      {
+        "name": "unsubscribe",
+        "pattern": "{modem_id}/{phone}",
+        "params": ["modem_id", "phone"]
+      }
+    ]
+  },
+  "logs": {
+    "base": "flespi/log/",
+    "methods": [
+      {
+        "name": "subscribe",
+        "pattern": "{api}/{origin}/{event_type}",
+        "params": ["api", "origin", "event_type"]
+      },
+      {
+        "name": "unsubscribe",
+        "pattern": "{api}/{origin}/{event_type}",
+        "params": ["api", "origin", "event_type"]
+      }
+    ]
+  }
+}
