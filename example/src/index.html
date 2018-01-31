@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Example</title>
+
+    <meta name="theme-color" content="#333333">
+
+    <% for (var chunk of webpack.chunks) {
+    for (var file of chunk.files) {
+    if (file.match(/\.(js|css)$/)) { %>
+    <link rel="<%= chunk.initial?'preload':'prefetch' %>" href="<%= htmlWebpackPlugin.files.publicPath + file %>" as="<%= file.match(/\.css$/)?'style':'script' %>"><% }}} %>
+
+</head>
+<body>
+    <noscript>
+        This is your fallback content in case JavaScript fails to load.
+    </noscript>
+    <div>
+        <input id="token" type="text" placeholder="Enter the token" />
+        <button id="submit">Submit</button>
+    </div>
+    <div style="width: 50%; float: left;">
+        <div>Messages from all topics</div>
+        <div id="mqtt"></div>
+    </div>
+    <div style="width: 50%; float: right">
+        <button id="getChannels">get channels</button>
+        <pre id="http"></pre>
+    </div>
+</body>
+</html>

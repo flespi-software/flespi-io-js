@@ -112,7 +112,7 @@ function mqttConnector (topics) {
     else {
         /* If type is Object - set to _topics and set index */
         let id = uniqueId()
-        _topics[id] = topic
+        _topics[id] = topics
         indexes = id
     }
     createClient()
@@ -120,10 +120,11 @@ function mqttConnector (topics) {
     return indexes
 }
 
-mqttConnector.init = function init(token, config) {
+mqttConnector.init = async function init(token, config) {
     if (!Object.keys(_config).length) {
         _config = Object.assign(config, {token: token})
     }
+    if (!_client) { await createClient() }
 }
 
 /* Updating function of the mqtt connection. Thats update private params of the connection and rebuild client */
@@ -135,11 +136,13 @@ mqttConnector.update = async function update(type, payload) {
                 if (payload) { await createClient() }/* if token isn`t empty - recreate client */
                 else { await mqttConnector.close(true) }/* else close it */
             }
+            else { await createClient() }
             break
         }
         case 'config': {
             _config = Object.assign(_config, payload)
             if (_client) { await createClient() }
+            else { await createClient() }
             break
         }
     }

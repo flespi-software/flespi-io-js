@@ -1,0 +1,43 @@
+### class Connection
+Connection make global connector by passed config
+The arguments are:
+* `config` is a global config for all connections you have
+    * `token` is a token for connections
+    * `httpConfig` config for http connections
+        * `server` server for http connections
+        * `port (optional)` port for http connections
+    * `mqttConfig` config for mqtt connections
+        * `server` server for mqtt connections
+        * `port (optional)` port for mqtt connections
+ 
+        
+### getters and setters
+
+```js
+let connector = new Connection({
+  token: 'FlespiToken xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+  httpConfig: { server: 'https://server.io', port: 8080 },
+  mqttConfig: { server: `ws://server.io` }
+})
+```
+
+* Token
+
+```js
+let token = connector.token
+connector.token = 'FlespiToken XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+```
+
+* httpConfig
+
+```js
+let httpConfig = connector.httpConfig
+connector.httpConfig = { server: 'http://server.io', port: 80 }
+```
+
+* mqttConfig
+
+```js
+let mqttConfig = connector.mqttConfig
+connector.mqttConfig = { server: 'ws://mqtt.server.io' }
+```
