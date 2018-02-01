@@ -5,6 +5,7 @@ let _http = undefined,
 
 /* generate sugar for http
 * @param ext {Function} extensible function object
+* @param config {Object} settings of sugar
 * */
 function generate(ext, config) {
     /* setting http function object */

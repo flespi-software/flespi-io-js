@@ -1,6 +1,6 @@
 import Connection from 'flespi-io-js'
 
-let connector = new Connection({})
+let connector = new Connection({mqttConfig: {clientId: 'ThisIsMe!'}})
 
 let inputToken = document.querySelector('#token'),
     submitToken = document.querySelector('#submit'),

@@ -1,0 +1,48 @@
+{
+  "devices": {
+    "api": "registry",
+    "origin": "devices/+"
+  },
+  "streams": {
+    "api": "registry",
+    "origin": "streams/+",
+    "children": {
+      "subscriptions": {
+        "api": "registry",
+        "origin": "streams/+/subscriptions/+"
+      }
+    }
+  },
+  "channels": {
+    "api": "gw",
+    "origin": "channels/+"
+  },
+  "containers": {
+    "api": "storage",
+    "origin": "containers/+"
+  },
+  "abques": {
+    "api": "storage",
+    "origin": "abques/+"
+  },
+  "modems": {
+    "api": "gw",
+    "origin": "modems/+"
+  },
+  "customer": {
+    "children": {
+      "tokens": {
+        "api": "platform",
+        "origin": "customer/tokens/+"
+      }
+    }
+  },
+  "mqtt": {
+    "children": {
+      "sessions": {
+        "api": "mqtt",
+        "origin": "sessions/+"
+      }
+    }
+  }
+}

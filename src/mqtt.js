@@ -20,7 +20,7 @@ async function createClient () {
         baseURL += `:${_config.port}`
     }
     /*mqtt connection creating by baseURL and token*/
-    _client = mqtt.connect(baseURL, {username: _config.token})
+    _client = mqtt.connect(baseURL, {username: _config.token, clientId: _config.clientId || `flespi-io-js_${Math.random().toString(16).substr(2, 8)}`})
 
     /* make subscribe to all topics on client after connecting */
     _client.on('connect', () => {

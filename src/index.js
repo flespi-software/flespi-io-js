@@ -2,12 +2,15 @@ import http from './http'
 import mqtt from './mqtt'
 import httpExtender from './flespi-http-io/camelCase'
 import mqttExtender from './flespi-mqtt-io/camelCase'
+import poolExtender from './flespi-pool-io/index'
+import poolCamelCaseExtender from './flespi-pool-io/camelCase'
+import merge from 'lodash/merge'
 
 /* Class of the connection. It contains of configs and methods of the connection by all protocols. Config contain of settings of current protocol. */
 class Connection {
     constructor (config) {
         let defaultConfig = {httpConfig: { server: 'https://flespi.io' }, mqttConfig: { server: 'wss://mqtt.flespi.io' }, token: ''}
-        this.config = Object.assign(defaultConfig, config) /* config contains {httpConfig, mqttConfig, token} */
+        this.config = merge(defaultConfig, config) /* config contains {httpConfig, mqttConfig, token} */
         this.mqtt = mqtt/* setting up mqtt to proto */
         this.http = http/* setting up http to proto */
         this.http.init(this.token, this.httpConfig)/* init HTTP */
@@ -16,6 +19,8 @@ class Connection {
         Object.assign(this, httpExtender(this.http))
         /* extending mqtt by sugar */
         Object.assign(this, mqttExtender(this.mqtt))
+        this.pool = poolExtender(this.http, this.mqtt)
+        Object.assign(this, poolCamelCaseExtender(this.http, this.mqtt))
     }
     get token () { return this.config.token }
     set token (token) {

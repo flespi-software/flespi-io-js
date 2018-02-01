@@ -67,6 +67,7 @@ connector.mqtt.logs.subscribe(api, origin, event_type, handler)
 // or
 connector.subscribeLogs(api, origin, event_type, handler)
 ```
+ Return promise with resolved index of subscription. 
   
 | Method  | Alias  | Params  | Description  |
 |---|---|---|---| 

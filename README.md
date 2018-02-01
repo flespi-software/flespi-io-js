@@ -25,6 +25,7 @@ npm install git+https://github.com/flespi-software/flespi-io-js.git --save
 * [Registry API](docs/registryAPI.md)
 * [MQTT Broker API](docs/MQTTBrokerAPI.md)
 * [MQTT](docs/MQTT.md)
+* [Pooling methods](docs/pool.md)
 
 ### [Examples of use as main, module, and vue-plugin](docs/examples.md)
 

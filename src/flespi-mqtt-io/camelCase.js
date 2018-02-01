@@ -5,7 +5,8 @@ let _mqtt = undefined,
     _partNameOFMethod = ''
 
 /* generate sugar for mqtt
-* @param ext {Function} extensible function object
+* @param mqtt {Function} extensible function object
+* @param config {Object} settings of sugar
 * */
 function generate(mqtt, config) {
     /* setting mqtt function object */

@@ -9,6 +9,7 @@ The arguments are:
     * `mqttConfig` config for mqtt connections
         * `server` server for mqtt connections
         * `port (optional)` port for mqtt connections
+        * `clientId (optional)` client id for mqtt connections
  
         
 ### getters and setters
