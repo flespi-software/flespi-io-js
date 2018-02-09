@@ -10,19 +10,19 @@ Params:
 ### Example of use
 
 ```js
-connector.http.customer.get(query)
+connector.http.platform.customer.get(query)
 // or
-connector.getCustomerAccounts(query)
+connector.platform.getCustomerAccounts(query)
 ```
 
 | Method  | Alias  | Params  | Description  |
 |---|---|---|---|
-| http.customer.get  | getCustomer  |  query |  View your registration data: name, email, ACL and ID. |
-|  http.customer.accounts.get | getCustomerAccounts  | accountSelector, query  | Get accounts through which it is possible to authorize customer on the platform.  |
-|  http.customer.accounts.delete | deleteCustomerAccounts  | accountSelector  |  Detach selected accounts from flespi customer |
-| http.customer.logs.get  | getCustomerLogs  | query  |  Get logs for whole platform. The request without parameters will return all logs records. |
-|  http.customer.statistics.get | getCustomerStatistics  | query  |  Platform storing items statistics counters into special container available within this method. You may optionally filter them by "origin" or activate generalization algorithm to aggregate counters. |
-| http.customer.tokens.get  | getCustomerTokens  |  tokenSelector, query | List existing tokens with specified fields.  |
-|  http.customer.tokens.post | postCustomerTokens  | query, body  |  Create new token with defined lifetime and rights. Either 'expire' or 'ttl' should be specified for correct token expiration time detection. |
-|  http.customer.tokens.delete |  deleteCustomerTokens | tokenSelector  |  Delete uneeded tokens with specified ID or matching filtering parameters. |
-| http.customer.tokens.put  | putCustomerTokens  | tokenSelector, query, body  |  Modify some token properies. |
+| http.platform.customer.get  | platform.getCustomer  |  query |  View your registration data: name, email, ACL and ID. |
+|  http.platform.customer.accounts.get | platform.getCustomerAccounts  | accountSelector, query  | Get accounts through which it is possible to authorize customer on the platform.  |
+|  http.platform.customer.accounts.delete | platform.deleteCustomerAccounts  | accountSelector  |  Detach selected accounts from flespi customer |
+| http.platform.customer.logs.get  | platform.getCustomerLogs  | query  |  Get logs for whole platform. The request without parameters will return all logs records. |
+|  http.platform.customer.statistics.get | platform.getCustomerStatistics  | query  |  Platform storing items statistics counters into special container available within this method. You may optionally filter them by "origin" or activate generalization algorithm to aggregate counters. |
+| http.platform.customer.tokens.get  | platform.getCustomerTokens  |  tokenSelector, query | List existing tokens with specified fields.  |
+|  http.platform.customer.tokens.post | platform.postCustomerTokens  | query, body  |  Create new token with defined lifetime and rights. Either 'expire' or 'ttl' should be specified for correct token expiration time detection. |
+|  http.platform.customer.tokens.delete |  platform.deleteCustomerTokens | tokenSelector  |  Delete uneeded tokens with specified ID or matching filtering parameters. |
+| http.platform.customer.tokens.put  | platform.putCustomerTokens  | tokenSelector, query, body  |  Modify some token properies. |

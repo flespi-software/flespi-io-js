@@ -1,5 +1,37 @@
 ### Examples of use as main, module, and vue-plugin
-Use as main or module build:
+Use as main build:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="~/flespi-io-js/dist/main.js"></script>
+    <script>
+        /*create connector with config*/
+        var connector = new flespiIO.default({
+            token: 'FlespiToken XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+            httpConfig: { server: 'https://flespi.io' },
+            socketConfig: { server: `ws://mqtt.flespi.io` }
+        })
+        /*create connection via mqtt with subscriptions to some topics*/
+        connector.socket([
+          {name: 'flespi/logs', handler: (data) => { console.log(data) }},
+          {name: 'flespi/message/registry/devices/269/+', handler: (data) => { console.log(data) }}
+        ])
+        /* create request via http */
+        connector.http({url: '/platform/customer'})
+          .then(resp => console.log(resp))
+    </script>
+</head>
+<body>
+
+</body>
+</html>
+```
+
+Use as module build:
 
 ```js
 import Connection from 'flespi-io-js'
@@ -7,10 +39,10 @@ import Connection from 'flespi-io-js'
 let connector = new Connection({
   token: 'FlespiToken XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
   httpConfig: { server: 'https://flespi.io' },
-  mqttConfig: { server: `ws://mqtt.flespi.io` }
+  socketConfig: { server: `ws://mqtt.flespi.io` }
 })
 /*create connection via mqtt with subscriptions to some topics*/
-connector.mqtt([
+connector.socket([
   {name: 'flespi/logs', handler: (data) => { console.log(data) }},
   {name: 'flespi/message/registry/devices/269/+', handler: (data) => { console.log(data) }}
 ])
@@ -28,7 +60,7 @@ import Connection from 'flespi-io-js/dist/vue-plugin'
 Vue.use(ConnectionPlugin, {
   token: 'FlespiToken XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx',
   httpConfig: { server: 'https://localhost', port: 9005 },
-  mqttConfig: { server: `ws://localhost:9016` }
+  socketConfig: { server: `ws://localhost:9016` }
 })
 ```
 
@@ -36,9 +68,9 @@ Vue.use(ConnectionPlugin, {
 
 ```js
 /* Subscribe to event */
-Vue.connector.mqtt.on('connect', () => { console.log('Working!!!!') })
+Vue.connector.socket.on('connect', () => { console.log('Working!!!!') })
 /* Subscribe to topics */
-Vue.connector.mqtt([
+Vue.connector.socket([
   {name: '#', handler: (data) => { console.log(data.toString()) }},
   {name: 'flespi/logs', handler: (data) => { console.log(data) }},
   {name: 'flespi/message/registry/devices/269/+', handler: (data) => { console.log(data) }}
@@ -52,9 +84,9 @@ Vue.connector.http({url: '/platform/customer'})
 
 ```js
 /* Subscribe to event */
-this.$connector.mqtt.on('connect', () => { console.log('Working!!!!') })
+this.$connector.socket.on('connect', () => { console.log('Working!!!!') })
 /* Subscribe to topics */
-this.$connector.mqtt([
+this.$connector.socket([
   {name: '#', handler: (data) => { console.log(data.toString()) }},
   {name: 'flespi/logs', handler: (data) => { console.log(data) }},
   {name: 'flespi/message/registry/devices/269/+', handler: (data) => { console.log(data) }}

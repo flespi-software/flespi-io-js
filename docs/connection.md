@@ -6,7 +6,7 @@ The arguments are:
     * `httpConfig` config for http connections
         * `server` server for http connections
         * `port (optional)` port for http connections
-    * `mqttConfig` config for mqtt connections
+    * `socketConfig` config for mqtt connections by socket
         * `server` server for mqtt connections
         * `port (optional)` port for mqtt connections
         * `clientId (optional)` client id for mqtt connections
@@ -18,7 +18,7 @@ The arguments are:
 let connector = new Connection({
   token: 'FlespiToken xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
   httpConfig: { server: 'https://server.io', port: 8080 },
-  mqttConfig: { server: `ws://server.io` }
+  socketConfig: { server: `ws://server.io` }
 })
 ```
 
@@ -39,6 +39,6 @@ connector.httpConfig = { server: 'http://server.io', port: 80 }
 * mqttConfig
 
 ```js
-let mqttConfig = connector.mqttConfig
-connector.mqttConfig = { server: 'ws://mqtt.server.io' }
+let socketConfig = connector.socketConfig
+connector.socketConfig = { server: 'ws://mqtt.server.io' }
 ```

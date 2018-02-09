@@ -1,6 +1,5 @@
 import axios from 'axios'
 import merge from 'lodash/merge'
-import extender from './flespi-http-io/index'
 
 let _config = {}, /* config of http connection {server, port(optional), token} */
     _methods = ['get', 'post', 'put', 'delete'] /* methods http request */
@@ -63,4 +62,5 @@ _methods.forEach((method) => {
 
 })
 
-export default extender(http)
+// export default extender(http)
+export default http

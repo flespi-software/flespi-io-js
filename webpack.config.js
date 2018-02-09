@@ -11,7 +11,7 @@ function generateConfig(name) {
         output: {
             path: path.resolve(__dirname, './dist'),
             filename: name + '.js',
-            library: ['flespi-io'],
+            library: ['flespiIO'],
             libraryTarget: 'umd'
         },
         devtool: "source-map",

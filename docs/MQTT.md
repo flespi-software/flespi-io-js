@@ -9,7 +9,7 @@ Method for making mqtt subscriptions. It`s using  mqtt.js as dependency.
         ```
         
     ```js
-      connector.mqtt.subscribe({name: 'custom/info', handler: (data) => { console.log(`subscribed: ${data}`) }})
+      connector.socket.subscribe({name: 'custom/info', handler: (data) => { console.log(`subscribed: ${data}`) }})
     ```
     
 * `unsubscribe(topicName, [index])`: unsubscribe from topic. Return promise.
@@ -17,13 +17,13 @@ Method for making mqtt subscriptions. It`s using  mqtt.js as dependency.
     * `index`: index of current subscription by topic
     
     ```js
-       connector.mqtt.unsubscribe('custom/logs')
+       connector.socket.unsubscribe('custom/logs')
     ```
     
 * `unsubscribeAll()`: unsubscribe from all topics
 
     ```js
-       connector.mqtt.unsubscribeAll()
+       connector.socket.unsubscribeAll()
     ```    
     
 * `publish(topic, message, [options])`: publish a message to a topic. Return promise.
@@ -35,7 +35,7 @@ Method for making mqtt subscriptions. It`s using  mqtt.js as dependency.
       * `dup` mark as duplicate flag, `Boolean`, default `false`
       
     ```js
-      connector.mqtt.publish('custom/info', JSON.stringify({name: 'device#269'}))
+      connector.socket.publish('custom/info', JSON.stringify({name: 'device#269'}))
     ```
     
 * `on(event, handler)`: subscribe connector to event
@@ -43,7 +43,7 @@ Method for making mqtt subscriptions. It`s using  mqtt.js as dependency.
     * `handler` is the handler for current event type to subscribe
     
     ```js
-      Vue.connector.mqtt.on('connect', () => { console.log('Working!') })
+      Vue.connector.socket.on('connect', () => { console.log('Working!') })
     ```
     
 * `off(event, [handler])`: unsubscribe connector from event
@@ -51,7 +51,7 @@ Method for making mqtt subscriptions. It`s using  mqtt.js as dependency.
     * `handler` is the handler for current event type need to unsubscribe
     
     ```js
-        Vue.connector.mqtt.off('connect', () => { console.log('Working!') })
+        Vue.connector.socket.off('connect', () => { console.log('Working!') })
     ```
 Methods to easily subscribe and unsubscribe via Flespi MQTT Broker.
 Param handler is a function to process new messages from mqtt. Example:
@@ -63,7 +63,7 @@ Other params described at [Flespi MQTT Topics](https://flespi.com/mqtt-api)
 ### Example of use
 
 ```js
-connector.mqtt.logs.subscribe(api, origin, event_type, handler)
+connector.socket.logs.subscribe(api, origin, event_type, handler)
 // or
 connector.subscribeLogs(api, origin, event_type, handler)
 ```
@@ -71,18 +71,18 @@ connector.subscribeLogs(api, origin, event_type, handler)
   
 | Method  | Alias  | Params  | Description  |
 |---|---|---|---| 
-| mqtt.logs.subscribe | subscribeLogs | api, origin, event_type, handler | Subscribe to logs. {event_type} has occurred in {origin}, see platform logs for more information |
-| mqtt.logs.unsubscribe | unsubscribeLogs | api, origin, event_type, handler | Unsubscribe from logs. {event_type} has occurred in {origin}, see platform logs for more information |
-| mqtt.messages.abques.subscribe | subscribeMessagesAbques | abque_id, name, handler | Subscribe to new message posted to abque |
-| mqtt.messages.abques.unsubscribe | unsubscribeMessagesAbques | abque_id, name, handler | Unsubscribe from new message posted to abque |
-| mqtt.messages.channels.subscribe | subscribeMessagesChannels | channel_id, ident, handler | Subscribe to new message received by channel |
-| mqtt.messages.channels.unsubscribe | unsubscribeMessagesChannels | channel_id, ident, handler | Unsubscribe from new message received by channel |
-| mqtt.messages.containers.subscribe | subscribeMessagesContainers | container_id, name, handler | Subscribe to new message posted to container |
-| mqtt.messages.containers.unsubscribe | unsubscribeMessagesContainers | container_id, name, handler | Unsubscribe from new message posted to container |
-| mqtt.messages.devices.subscribe | subscribeMessagesDevices | device_id, handler | Subscribe to new message received by device |
-| mqtt.messages.devices.unsubscribe | unsubscribeMessagesDevices | device_id, handler | Unsubscribe from new message received by device |
-| mqtt.sms.subscribe | subscribeSms | modem_id, phone, handler | Subscribe to SMS message received by modem |
-| mqtt.sms.unsubscribe | unsubscribeSms | modem_id, phone, handler | Unsubscribe from SMS message received by modem |
+| socket.logs.subscribe | subscribeLogs | api, origin, event_type, handler | Subscribe to logs. {event_type} has occurred in {origin}, see platform logs for more information |
+| socket.logs.unsubscribe | unsubscribeLogs | api, origin, event_type, handler | Unsubscribe from logs. {event_type} has occurred in {origin}, see platform logs for more information |
+| socket.messages.abques.subscribe | subscribeMessagesAbques | abque_id, name, handler | Subscribe to new message posted to abque |
+| socket.messages.abques.unsubscribe | unsubscribeMessagesAbques | abque_id, name, handler | Unsubscribe from new message posted to abque |
+| socket.messages.channels.subscribe | subscribeMessagesChannels | channel_id, ident, handler | Subscribe to new message received by channel |
+| socket.messages.channels.unsubscribe | unsubscribeMessagesChannels | channel_id, ident, handler | Unsubscribe from new message received by channel |
+| socket.messages.containers.subscribe | subscribeMessagesContainers | container_id, name, handler | Subscribe to new message posted to container |
+| socket.messages.containers.unsubscribe | unsubscribeMessagesContainers | container_id, name, handler | Unsubscribe from new message posted to container |
+| socket.messages.devices.subscribe | subscribeMessagesDevices | device_id, handler | Subscribe to new message received by device |
+| socket.messages.devices.unsubscribe | unsubscribeMessagesDevices | device_id, handler | Unsubscribe from new message received by device |
+| socket.sms.subscribe | subscribeSms | modem_id, phone, handler | Subscribe to SMS message received by modem |
+| socket.sms.unsubscribe | unsubscribeSms | modem_id, phone, handler | Unsubscribe from SMS message received by modem |
     
 #### MQTT events
 
