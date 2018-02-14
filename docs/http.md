@@ -8,5 +8,6 @@ Method for making http requests. It`s using axios as a dependency. So API of HTT
     * `url` is the server URL that will be used for the request
     * `data` is the data to be sent as the request body
     * `options` are another options by axios API
+* `Connector#http.external(oprions)`: to make requests to somewhere. Get full api of axios.
 
 Methods for easy access to flespi.io API. More info: [FlespiDocs](https://flespi.io/docs)

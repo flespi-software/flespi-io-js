@@ -61,6 +61,8 @@ _methods.forEach((method) => {
     }
 
 })
+/* availability make request to another resourses */
+http.external = axios
 
 // export default extender(http)
 export default http

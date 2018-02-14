@@ -1,10 +1,24 @@
 var path = require('path');
 var webpack = require('webpack');
+var axios = require('axios');
 
 var config = []
 
+process.env.NODE_ENV = 'production';
+
+/* getting configs from server */
+function getConfigs() {
+    return Promise.all([
+        axios.get('https://flespi.io/platform/api.json').then(resp => resp.data),
+        axios.get('https://flespi.io/gw/api.json').then(resp => resp.data),
+        axios.get('https://flespi.io/storage/api.json').then(resp => resp.data),
+        axios.get('https://flespi.io/registry/api.json').then(resp => resp.data),
+        axios.get('https://flespi.io/mqtt/api.json').then(resp => resp.data)
+    ])
+}
+
 /* generate config method */
-function generateConfig(name) {
+function generateConfig(name, configs) {
     var config = {
         context: path.resolve(__dirname, "src"),
         entry: ['./index.js'],
@@ -14,8 +28,10 @@ function generateConfig(name) {
             library: ['flespiIO'],
             libraryTarget: 'umd'
         },
-        devtool: "source-map",
         plugins: [
+            new webpack.DefinePlugin({
+                'CONFIGS': JSON.stringify(configs)
+            }),
             new webpack.optimize.UglifyJsPlugin({
                 compress: {
                     warnings: false
@@ -51,8 +67,9 @@ function generateConfig(name) {
 }
 
 /* make build by name */
-['main', 'module', 'vue-plugin'].forEach(function (name) {
-    config.push(generateConfig(name))
+getConfigs().then((configs) => {
+    ['main', 'module', 'vue-plugin'].forEach(function (name) {
+        config.push(generateConfig(name, configs))
+    })
+    webpack(config, (err, stats) => { console.log(stats) })
 })
-
-module.exports = config

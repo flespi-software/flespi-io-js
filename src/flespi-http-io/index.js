@@ -1,17 +1,3 @@
-//import dotCaseGenerator from './dotCase'
-//import camelCaseGenerator from './camelCase'
-
-/* getting configs from server */
-function getConfigs() {
-    return Promise.all([
-        fetch('https://flespi.io/platform/api.json').then(resp => resp.json()),
-        fetch('https://flespi.io/gw/api.json').then(resp => resp.json()),
-        fetch('https://flespi.io/storage/api.json').then(resp => resp.json()),
-        fetch('https://flespi.io/registry/api.json').then(resp => resp.json()),
-        fetch('https://flespi.io/mqtt/api.json').then(resp => resp.json())
-    ])
-}
-
 /* sugar generator */
 function generate (http, config) {
     let base = config.basePath,
@@ -145,9 +131,9 @@ function generate (http, config) {
     }, {})
 }
 
-export default async (http) => {
-    let configs = await getConfigs()
-    return configs.reduce((result, config) => {
+export default (http) => {
+    /* using global variable from webpack by CONFIGS */
+    return CONFIGS.reduce((result, config) => {
         result[config.basePath.slice(1)] = generate(http, config)
         return result
     }, {})

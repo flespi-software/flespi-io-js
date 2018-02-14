@@ -16,7 +16,8 @@ class Connection {
         this.http.init(this.token, this.httpConfig)/* init HTTP */
         this.socket.init(this.token, this.socketConfig)/* init MQTT */
         /* extending http by sugar */
-        httpExtender(this.http).then((sugar) => { Object.assign(this, sugar) })
+        let httpSugar = httpExtender(this.http)
+        Object.assign(this, httpSugar)
         /* extending mqtt by sugar */
         Object.assign(this, socketExtender(this.socket))
         this.pool = poolExtender(this.http, this.socket)

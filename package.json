@@ -1,11 +1,11 @@
 {
   "name": "flespi-io-js",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "flespi http/mqtt connection library",
   "main": "./dist/main.js",
   "module": "./dist/module.js",
   "scripts": {
-    "build": "webpack --progress --hide-modules"
+    "build": "node ./build.js"
   },
   "repository": {
     "type": "git",
