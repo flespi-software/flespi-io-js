@@ -1,4 +1,4 @@
-import Connection from 'flespi-io-js/src/index'
+import Connection from 'flespi-io-js'
 
 let connector = new Connection({socketConfig: {clientId: 'ThisIsMe!'}})
 
