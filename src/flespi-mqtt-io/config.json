@@ -20,12 +20,12 @@
         "methods": [
           {
             "name": "subscribe",
-            "pattern": "registry/devices/{device_id}",
+            "pattern": "gw/devices/{device_id}",
             "params": ["device_id"]
           },
           {
             "name": "unsubscribe",
-            "pattern": "registry/devices/{device_id}",
+            "pattern": "gw/devices/{device_id}",
             "params": ["device_id"]
           }
         ]

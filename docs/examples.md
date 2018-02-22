@@ -18,7 +18,7 @@ Use as main build:
         /*create connection via mqtt with subscriptions to some topics*/
         connector.socket([
           {name: 'flespi/logs', handler: (data) => { console.log(data) }},
-          {name: 'flespi/message/registry/devices/269/+', handler: (data) => { console.log(data) }}
+          {name: 'flespi/message/gw/devices/269/+', handler: (data) => { console.log(data) }}
         ])
         /* create request via http */
         connector.http({url: '/platform/customer'})
@@ -44,7 +44,7 @@ let connector = new Connection({
 /*create connection via mqtt with subscriptions to some topics*/
 connector.socket([
   {name: 'flespi/logs', handler: (data) => { console.log(data) }},
-  {name: 'flespi/message/registry/devices/269/+', handler: (data) => { console.log(data) }}
+  {name: 'flespi/message/gw/devices/269/+', handler: (data) => { console.log(data) }}
 ])
 /* create request via http */
 connector.http({url: '/platform/customer'})
@@ -73,7 +73,7 @@ Vue.connector.socket.on('connect', () => { console.log('Working!!!!') })
 Vue.connector.socket([
   {name: '#', handler: (data) => { console.log(data.toString()) }},
   {name: 'flespi/logs', handler: (data) => { console.log(data) }},
-  {name: 'flespi/message/registry/devices/269/+', handler: (data) => { console.log(data) }}
+  {name: 'flespi/message/gw/devices/269/+', handler: (data) => { console.log(data) }}
 ])
 /* Make HTTP request */
 Vue.connector.http({url: '/platform/customer'})
@@ -89,7 +89,7 @@ this.$connector.socket.on('connect', () => { console.log('Working!!!!') })
 this.$connector.socket([
   {name: '#', handler: (data) => { console.log(data.toString()) }},
   {name: 'flespi/logs', handler: (data) => { console.log(data) }},
-  {name: 'flespi/message/registry/devices/269/+', handler: (data) => { console.log(data) }}
+  {name: 'flespi/message/gw/devices/269/+', handler: (data) => { console.log(data) }}
 ])
 /* Make HTTP request */
 this.$connector.http({url: '/platform/customer'})

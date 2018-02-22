@@ -22,7 +22,6 @@ npm install git+https://github.com/flespi-software/flespi-io-js.git --save
 * [Platform API](docs/platformAPI.md)
 * [Gateway API](docs/gatewayAPI.md)
 * [Storage API](docs/storageAPI.md)
-* [Registry API](docs/registryAPI.md)
 * [MQTT Broker API](docs/MQTTBrokerAPI.md)
 * [MQTT](docs/MQTT.md)
 * [Pooling methods](docs/pool.md)

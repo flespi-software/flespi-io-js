@@ -210,7 +210,7 @@ mqttConnector.unsubscribe = async function unsubscribe (name) {
     /* remove thats topics */
     removableTopicsIndexes.forEach((index) => { delete _topics[index] })
     /* if has client and he is connected */
-    if (removableTopicsIndexes.length) { return await _client.unsubscribe(name) }
+    if (removableTopicsIndexes.length && !_client._client.disconnecting) { return await _client.unsubscribe(name) }
     else { return false }
 }
 /* Unsubscription method for client of mqtt from all topics */

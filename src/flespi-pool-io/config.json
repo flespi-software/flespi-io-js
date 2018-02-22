@@ -1,14 +1,14 @@
 {
   "devices": {
-    "api": "registry",
+    "api": "gw",
     "origin": "devices/+"
   },
   "streams": {
-    "api": "registry",
+    "api": "gw",
     "origin": "streams/+",
     "children": {
       "subscriptions": {
-        "api": "registry",
+        "api": "gw",
         "origin": "streams/+/subscriptions/+"
       }
     }

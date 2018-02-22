@@ -39,3 +39,24 @@ connector.gw.getProtocols(protocolSelector, query)
 | http.gw.modems.put | gw.putModems | modemSelector, query, body |Change parameters of selected modem. |
 | http.gw.modems.delete | gw.deleteModems | modemSelector | Delete selected modems.|
 | http.gw.messageParameters.get | gw.getMessageParameters | messageParameterSelector | Get list of all available message parameters |
+| http.gw.devices.get | gw.getDevices | devSelector, query | Get collection of devices matching filter parameters. Use special keyword "all" to retreieve all devices. |
+| http.gw.devices.logs.get | gw.getDevicesLogs | devSelector, query | Get logs for specified device. The request without parameters will return all logs records. |
+| http.gw.devices.messages.get | gw.getDevicesMessages | devSelector, query | Get specified device messages |
+| http.gw.devices.settings.get | gw.getDevicesSettings | devSelector, settSelector, query | Get collection of settings matching filter parameters. |
+| http.gw.devices.post | gw.postDevices | query, body | Create new device. |
+| http.gw.devices.messages.post | gw.postDevicesMessages | devSelector, body | Post new messages into specified device and associated streams. |
+| http.gw.devices.settings.post | gw.postDevicesSettings | devSelector, settSelector, query, body | |
+| http.gw.devices.put | gw.putDevices | devSelector, query, body | Change properties of existing devices matching filter parameters. |
+| http.gw.devices.settings.put | gw.putDevicesSettings | devSelector, settSelector, query, body | Set new setting value by pushing setting set command to device commands queue. |
+| http.gw.devices.delete | gw.deleteDevices | devSelector | Delete all devices matching filtering parameters |
+| http.gw.devices.messages.delete | gw.deleteDevicesMessages | devSelector, query | Delete specified messages from the device container. |
+| http.gw.device.settings.delete | gw.deleteDevicesSettings | devSelector, settSelector, query | Reset setting value or cancel pending operations |
+| http.gw.streams.get | gw.getStreams | streamSelector, query | Get collection of streams matching filter parameters |
+| http.gw.streams.logs.get | gw.getStreamsLogs | streamSelector, query | Get logs for specified stream. |
+| http.gw.streams.subscriptions.get | gw.getStreamsSubscriptions | streamSelector, subscriptionSelector, query | Get collection of subscriptions matching filter parameters. |
+| http.gw.streams.post | gw.postStreams | query, body | Create new stream that is capable for transferring devices and channel messages to external platforms. |
+| http.gw.streams.subscriptions.post | gw.postStreamsSubscriptions | streamSelector, query, body | There are two available messages sources for now - channel and device. |
+| http.gw.streams.put | gw.putStreams | streamSelector, query, body | Change properties of existing streams matching filter parameters. |
+| http.gw.streams.subscriptions.put | gw.putStreamsSubscriptions | streamSelector, subscriptionSelector, query, body | Change properties of existing stream subscriptions matching filter parameters. | 
+| http.gw.streams.delete | gw.deleteStreams | streamSelector | Delete all streams matching filtering parameters |
+| http.gw.streams.subscriptions.delete | gw.deleteStreamsSubscriptions | streamSelector, subscriptionSelector | Delete all subscriptions matching filtering parameters. |

@@ -12,7 +12,6 @@ function getConfigs() {
         axios.get('https://flespi.io/platform/api.json').then(resp => resp.data),
         axios.get('https://flespi.io/gw/api.json').then(resp => resp.data),
         axios.get('https://flespi.io/storage/api.json').then(resp => resp.data),
-        axios.get('https://flespi.io/registry/api.json').then(resp => resp.data),
         axios.get('https://flespi.io/mqtt/api.json').then(resp => resp.data)
     ])
 }
