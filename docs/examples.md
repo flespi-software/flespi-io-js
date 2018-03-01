@@ -10,10 +10,10 @@ Use as main build:
     <script src="~/flespi-io-js/dist/main.js"></script>
     <script>
         /*create connector with config*/
-        var connector = new flespiIO.default({
+        var connector = new flespiIO({
             token: 'FlespiToken XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
             httpConfig: { server: 'https://flespi.io' },
-            socketConfig: { server: `ws://mqtt.flespi.io` }
+            socketConfig: { server: `wss://mqtt.flespi.io` }
         })
         /*create connection via mqtt with subscriptions to some topics*/
         connector.socket([

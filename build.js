@@ -96,6 +96,9 @@ function generateConfig(name, configs) {
             ]
         }
     }
+    if (name === 'main') {
+        config.output.libraryExport = 'default'
+    }
     /* for to make vue plugin rewrite entry */
     if (name === "vue-plugin") {
         config.entry = ['./vue-plugin.js']
