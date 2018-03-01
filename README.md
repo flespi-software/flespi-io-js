@@ -1,6 +1,6 @@
 # flespi-io-js
 
-> flespi-io-js is a library for connecting to [flespi.io](https://flespi.io) via http and mqtt protocols.
+> flespi-io-js is a isomorphic library for connecting to [flespi.io](https://flespi.io) via http and mqtt protocols.
 
 ## Features
 * http connection

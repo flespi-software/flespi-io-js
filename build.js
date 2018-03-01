@@ -100,13 +100,23 @@ function generateConfig(name, configs) {
     if (name === "vue-plugin") {
         config.entry = ['./vue-plugin.js']
     }
-    if (name === "module" || name === "vue-plugin") {
+    if (name === "module" || name === "vue-plugin" || name === "node") {
         config.externals = {
             axios: 'axios',
             'lodash/merge': 'lodash/merge',
             'lodash/uniqueId': 'lodash/uniqueId',
             'async-mqtt': 'async-mqtt'
         }
+    }
+    if (name === 'node') {
+        config.target = 'node'
+        config.output.libraryExport = 'default'
+        config.module.loaders.unshift(
+            {
+                test: /\.js$/,
+                loader: 'shebang-loader'
+            }
+        )
     }
     return config
 }
@@ -117,7 +127,7 @@ getConfigs()
         return configs.map(config => generate(config))
     })
     .then((configs) => {
-    ['main', 'module', 'vue-plugin'].forEach(function (name) {
+    ['main', 'module', 'vue-plugin', 'node'].forEach(function (name) {
         config.push(generateConfig(name, configs))
     })
     webpack(config, (err, stats) => { console.log(stats) })

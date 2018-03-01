@@ -6,10 +6,11 @@ import poolExtender from './flespi-pool-io/index'
 import poolCamelCaseExtender from './flespi-pool-io/camelCase'
 import merge from 'lodash/merge'
 
+let isBrowser=new Function("try {return this===window;}catch(e){ return false;}")
 /* Class of the connection. It contains of configs and methods of the connection by all protocols. Config contain of settings of current protocol. */
-class Connection {
+export default class Connection {
     constructor (config) {
-        let defaultConfig = {httpConfig: { server: 'https://flespi.io' }, socketConfig: { server: 'wss://mqtt.flespi.io' }, token: ''}
+        let defaultConfig = {httpConfig: { server: 'https://flespi.io' }, socketConfig: { server: isBrowser ? 'wss://mqtt.flespi.io' : 'mqtt://mqtt.flespi.io:8883' }, token: ''}
         this.config = merge(defaultConfig, config) /* config contains {httpConfig, socketConfig, token} */
         this.socket = socket/* setting up mqtt to proto */
         this.http = http/* setting up http to proto */
@@ -43,5 +44,3 @@ class Connection {
         this.socket.update('config', config)
     }
 }
-
-export default Connection

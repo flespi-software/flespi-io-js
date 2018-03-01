@@ -95,3 +95,18 @@ this.$connector.socket([
 this.$connector.http({url: '/platform/customer'})
   .then(resp => console.log(resp))
 ```
+
+Use as module in NodeJS:
+```js
+let Connection = require('flespi-io-js/dist/node.js')
+
+let connector = new Connection({
+    token: 'FlespiToken xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+})
+
+connector.gw.getChannels('all', {}).then((resp) => { console.log(resp.data) })
+
+connector.socket.subscribe({name: '#', handler: (message) => { console.log(message) }})
+
+connector.poolDevices((data) => { console.log(`data: ${JSON.stringify(data.data.result)}`) }, (type, data) => { console.log(`mqtt ${type}: ${JSON.stringify(data)}`) })
+```
