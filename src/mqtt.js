@@ -20,7 +20,13 @@ async function createClient () {
         baseURL += `:${_config.port}`
     }
     /*mqtt connection creating by baseURL and token*/
-    _client = mqtt.connect(baseURL, {username: _config.token, clientId: _config.clientId || `flespi-io-js_${Math.random().toString(16).substr(2, 8)}`})
+    _client = mqtt.connect(baseURL, {
+        username: _config.token,
+        clientId: _config.clientId || `flespi-io-js_${Math.random().toString(16).substr(2, 8)}`,
+        reschedulePings: true,
+        keepalive: 10,
+        resubscribe: false
+    })
 
     /* make subscribe to all topics on client after connecting */
     _client.on('connect', () => {
@@ -95,6 +101,20 @@ async function createClient () {
             })
         /* calling each callbacks with payload as message by subscribed topic. */
         activeTopicsId.forEach((topicId) => { _topics[topicId].handler(message) })
+    })
+
+    /* handling reconnect */
+    _client.on('reconnect', () => {
+        if (_events['reconnect']) {
+            _events['reconnect'].forEach((handler) => { handler() })
+        }
+    })
+
+    /* handling offline */
+    _client.on('offline', () => {
+        if (_events['offline']) {
+            _events['offline'].forEach((handler) => { handler() })
+        }
     })
 }
 /* Main function of mqtt connection. It setting up private variables and creating of client. Topics must be an Object or Array */
@@ -269,7 +289,9 @@ mqttConnector.off = function off(name) {
     }
     /* if need clear all handlers by event */
     else {
-        _events[name] = undefined
+        if (_events[name]) {
+            _events[name] = undefined
+        }
     }
 }
 

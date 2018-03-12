@@ -107,5 +107,11 @@ Event `error`: Emitted when the client cannot connect
     * `code: 3`: connection refused, server unavailable
     * `code: 5`: connection refused, not authorized
     
-Event `close`: Emitted after disconnect 
+Event `close`: Emitted after disconnect
+    `function () {}`
+    
+Event `reconnect`: Emitted after reconnect start
+    `function () {}`
+    
+Event `offline`: Emitted when the client goes offline
     `function () {}`
