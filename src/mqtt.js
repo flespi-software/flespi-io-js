@@ -24,8 +24,10 @@ async function createClient () {
         username: _config.token,
         clientId: _config.clientId || `flespi-io-js_${Math.random().toString(16).substr(2, 8)}`,
         reschedulePings: true,
-        keepalive: 10,
-        resubscribe: false
+        keepalive: 3600,
+        resubscribe: false,
+        reconnectPeriod: 5000,
+        connectTimeout: 3600000
     })
 
     /* make subscribe to all topics on client after connecting */
@@ -57,7 +59,6 @@ async function createClient () {
                 break
             }
             case 5: {
-                mqttConnector.close(true)
                 message = 'connection refused, not authorized'
                 break
             }
