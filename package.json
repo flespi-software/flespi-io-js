@@ -1,6 +1,6 @@
 {
   "name": "flespi-io-js",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "flespi http/mqtt connection library",
   "main": "./dist/main.js",
   "module": "./dist/module.js",
@@ -26,9 +26,6 @@
   "dependencies": {
     "async-mqtt": "^1.0.1",
     "axios": "^0.17.1",
-    "lodash": "^4.17.4",
-    "mqtt": "2.15.2",
-    "mqtt-packet": "5.4.0",
-    "process-nextick-args": "1.0.7"
+    "lodash": "^4.17.4"
   }
 }
