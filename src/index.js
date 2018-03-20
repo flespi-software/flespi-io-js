@@ -12,6 +12,9 @@ export default class Connection {
     constructor (config) {
         let defaultConfig = {httpConfig: { server: 'https://flespi.io' }, socketConfig: { server: isBrowser ? 'wss://mqtt.flespi.io' : 'mqtt://mqtt.flespi.io:8883' }, token: ''}
         this.config = merge(defaultConfig, config) /* config contains {httpConfig, socketConfig, token} */
+        if (this.config.token.indexOf('FlespiToken') === -1) {
+            this.config.token = `FlespiToken ${this.config.token}`
+        }
         this.socket = socket/* setting up mqtt to proto */
         this.http = http/* setting up http to proto */
         this.http.init(this.token, this.httpConfig)/* init HTTP */
@@ -26,7 +29,8 @@ export default class Connection {
     }
     get token () { return this.config.token }
     set token (token) {
-        this.config.token = token
+        if (token.indexOf('FlespiToken') === -1) { this.config.token = `FlespiToken ${token}` }
+        else { this.config.token = token }
         this.socket.update('token', this.token)
         this.http.update('token', this.token)
     }
