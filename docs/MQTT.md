@@ -77,8 +77,6 @@ connector.subscribeLogs(api, origin, event_type, handler)
 | socket.messages.abques.unsubscribe | unsubscribeMessagesAbques | abque_id, name, handler | Unsubscribe from new message posted to abque |
 | socket.messages.channels.subscribe | subscribeMessagesChannels | channel_id, ident, handler | Subscribe to new message received by channel |
 | socket.messages.channels.unsubscribe | unsubscribeMessagesChannels | channel_id, ident, handler | Unsubscribe from new message received by channel |
-| socket.messages.containers.subscribe | subscribeMessagesContainers | container_id, name, handler | Subscribe to new message posted to container |
-| socket.messages.containers.unsubscribe | unsubscribeMessagesContainers | container_id, name, handler | Unsubscribe from new message posted to container |
 | socket.messages.devices.subscribe | subscribeMessagesDevices | device_id, handler | Subscribe to new message received by device |
 | socket.messages.devices.unsubscribe | unsubscribeMessagesDevices | device_id, handler | Unsubscribe from new message received by device |
 | socket.sms.subscribe | subscribeSms | modem_id, phone, handler | Subscribe to SMS message received by modem |

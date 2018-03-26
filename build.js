@@ -108,7 +108,8 @@ function generateConfig(name, configs) {
             axios: 'axios',
             'lodash/merge': 'lodash/merge',
             'lodash/uniqueId': 'lodash/uniqueId',
-            'async-mqtt': 'async-mqtt'
+            'async-mqtt': 'async-mqtt',
+            'form-data': 'form-data'
         }
     }
     if (name === 'node') {

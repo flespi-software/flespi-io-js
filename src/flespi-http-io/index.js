@@ -1,4 +1,5 @@
 /* sugar generator */
+let FData = typeof FormData !== 'undefined' ? FormData : require('form-data')
 function generate (http, config) {
     let base = config.basePath,
         baseName = base.slice(1)
@@ -68,6 +69,13 @@ function generate (http, config) {
 
                         if (Object.values(paramsByMethod).includes('query')) { localParams.push('query') }
                         if (Object.values(paramsByMethod).includes('body')) { localParams.push('body') }
+                        /* process params with multipart data */
+                        if (Object.values(paramsByMethod).includes('formData')) {
+                            let formDataParams = Object.keys(paramsByMethod).filter((name) => paramsByMethod[name] === 'formData')
+                            formDataParams.forEach((name) => {
+                                localParams.push(`formData_${name}`)
+                            })
+                        }
 
                         /* path params to url request */
                         localParams.forEach((param, index) => {
@@ -81,6 +89,18 @@ function generate (http, config) {
                             /* if param is body - setting body to data of options */
                             if (param === 'body' && arguments[index]) {
                                 options.data = arguments[index]
+                            }
+                            /* if param is body - setting body to data of options */
+                            if (param.indexOf('formData_') === 0 && arguments[index]) {
+                                if (!options.data) {
+                                    options.data = new FData()
+                                }
+                                let name = param.split('_')[1]
+                                options.data.append(name, arguments[index])
+                                if (name === 'file') {
+                                    if (!options.headers) { options.headers = {} }
+                                    options.headers['Content-Type'] = `multipart/form-data; boundary=${options.data._boundary}`
+                                }
                             }
                         })
                         /* last argument take like options */
@@ -104,6 +124,13 @@ function generate (http, config) {
 
                 if (Object.values(paramsByMethod).includes('query')) { localParams.push('query') }
                 if (Object.values(paramsByMethod).includes('body')) { localParams.push('body') }
+                /* process params with multipart data */
+                if (Object.values(paramsByMethod).includes('formData')) {
+                    let formDataParams = Object.keys(paramsByMethod).filter((name) => paramsByMethod[name] === 'formData')
+                    formDataParams.forEach((name) => {
+                        localParams.push(`formData_${name}`)
+                    })
+                }
 
                 /* path params to url request */
                 localParams.forEach((param, index) => {
@@ -117,6 +144,18 @@ function generate (http, config) {
                     /* if param is body - setting body to data of options */
                     if (param === 'body' && arguments[index]) {
                         options.data = arguments[index]
+                    }
+                    /* if param is body - setting body to data of options */
+                    if (param.indexOf('formData_') === 0 && arguments[index]) {
+                        if (!options.data) {
+                            options.data = new FData()
+                        }
+                        let name = param.split('_')[1]
+                        options.data.append(name, arguments[index])
+                        if (name === 'file') {
+                            if (!options.headers) { options.headers = {} }
+                            options.headers['Content-Type'] = `multipart/form-data; boundary=${options.data._boundary}`
+                        }
                     }
                 })
                 /* last argument take like options */

@@ -17,10 +17,6 @@
     "api": "gw",
     "origin": "channels/+"
   },
-  "containers": {
-    "api": "storage",
-    "origin": "containers/+"
-  },
   "abques": {
     "api": "storage",
     "origin": "abques/+"

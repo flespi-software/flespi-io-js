@@ -32,3 +32,11 @@ connector.storage.getAbques(abqueSelector, query)
 | http.storage.containers.put | storage.putContainers | containerSelector, body | Update all existing containers matching filtering parameters. |
 | http.storage.containers.delete | storage.deleteContainers | containerSelector | Remove all existing containers matching filtering parameters. |
 | http.storage.containers.messages.delete | storage.deleteContainersMessages | containerSelector, query | Delete specified messages from the container.  |
+| http.storage.cdns.get | storage.getCdns | cdnsSelector, query | Get collection of cdns matching filter parameters. Use special keyword "all" to retreieve all cdns. |
+| http.storage.cdns.logs.get | storage.getCdnsLogs | cdnsSelector, query | Get logs for specified cdn. The request without parameters will return all logs records. |
+| http.storage.cdns.files.get | storage.getCdnsFiles | cdnsSelector, query | Fetch meta information about uploaded files, according to selected criteria. Request without parameters will return all files on selected cdn.  |
+| http.storage.cdns.post | storage.postCdns | query, body | Create new cdn for storing files, identified by unique key. |
+| http.storage.cdns.files.post | storage.postCdnsFiles | cdnsSelector, files, aditional_fields | Upload files to CDN. |
+| http.storage.cdns.put | storage.putCdns | cdnsSelector, query, body | Update all existing cdns matching filtering parameters. |
+| http.storage.cdns.delete | storage.deleteCdns | cdnsSelector | Remove all existing cdns matching filtering parameters. |
+| http.storage.cdns.files.delete | storage.deleteCdnsFiles | cdnsSelector, body | Delete specified file from the cdn.  |

@@ -30,20 +30,6 @@
           }
         ]
       },
-      "containers": {
-        "methods": [
-          {
-            "name": "subscribe",
-            "pattern": "storage/containers/{container_id}/{name}",
-            "params": ["container_id", "name"]
-          },
-          {
-            "name": "unsubscribe",
-            "pattern": "storage/containers/{container_id}/{name}",
-            "params": ["container_id", "name"]
-          }
-        ]
-      },
       "abques": {
         "methods": [
           {

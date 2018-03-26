@@ -4,7 +4,8 @@ let connector = new Connection({socketConfig: {clientId: 'ThisIsMe!'}})
 
 let inputToken = document.querySelector('#token'),
     submitToken = document.querySelector('#submit'),
-    getChannelsButton = document.querySelector('#getChannels')
+    getChannelsButton = document.querySelector('#getChannels'),
+    fileButton = document.querySelector('#fileData')
 
 submitToken.addEventListener('click', async () => {
     connector.token = inputToken.value
@@ -23,3 +24,8 @@ function render (data) {
     element.innerHTML = JSON.stringify(JSON.parse(data.toString()), null, 1)
     parent.appendChild(element)
 }
+
+fileButton.addEventListener('change', async function (e) {
+    // for nodejs: connector.storage.postCdnsFiles(ID, fs.createReadStream('./file'), JSON.stringify({'auto_ttl': 11234}))
+    let id = await connector.http.storage.cdns.files.post(7, fileButton.files[0], JSON.stringify({'auto_ttl': 11234}))
+})
