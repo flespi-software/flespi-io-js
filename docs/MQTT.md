@@ -5,11 +5,11 @@ Method for making mqtt subscriptions. It`s using  mqtt.js as dependency.
     * `topic/topics array` is the topic or topics to need subscribe
     
         ```js
-            topic = { name: 'a/b/c', handler: (message) => { console.log(message) } }
+            topic = { name: 'a/b/c', handler: (message, topic) => { console.log(message) } }
         ```
         
     ```js
-      connector.socket.subscribe({name: 'custom/info', handler: (data) => { console.log(`subscribed: ${data}`) }})
+      connector.socket.subscribe({name: 'custom/info', handler: (data, topic) => { console.log(`subscribed: ${data}`) }})
     ```
     
 * `unsubscribe(topicName, [index])`: unsubscribe from topic. Return promise.

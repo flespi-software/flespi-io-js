@@ -101,7 +101,7 @@ async function createClient () {
                 }
             })
         /* calling each callbacks with payload as message by subscribed topic. */
-        activeTopicsId.forEach((topicId) => { _topics[topicId].handler(message) })
+        activeTopicsId.forEach((topicId) => { _topics[topicId].handler(message, topic) })
     })
 
     /* handling reconnect */
