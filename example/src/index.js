@@ -18,10 +18,10 @@ getChannelsButton.addEventListener('click', async () => {
     document.querySelector('#http').innerHTML = JSON.stringify(channelsData.data.result, null, 1)
 })
 
-function render (data) {
+function render (data, topic) {
     let element = document.createElement('pre'),
         parent = document.querySelector('#mqtt')
-    element.innerHTML = JSON.stringify(JSON.parse(data.toString()), null, 1)
+    element.innerHTML = topic + JSON.stringify(JSON.parse(data.toString()), null, 1)
     parent.appendChild(element)
 }
 
