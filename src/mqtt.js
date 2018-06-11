@@ -19,16 +19,18 @@ async function createClient () {
     if (_config.port) {
         baseURL += `:${_config.port}`
     }
-    /*mqtt connection creating by baseURL and token*/
-    _client = mqtt.connect(baseURL, {
-        username: _config.token,
-        clientId: _config.clientId || `flespi-io-js_${Math.random().toString(16).substr(2, 8)}`,
+    let defaultMqttConfig = {
         reschedulePings: true,
         keepalive: 3600,
         resubscribe: false,
         reconnectPeriod: 5000,
         connectTimeout: 3600000
-    })
+    },
+        mqttConfig = Object.assign(defaultMqttConfig, _config.mqttSettings)
+    mqttConfig.username = _config.token
+    mqttConfig.clientId = _config.clientId || `flespi-io-js_${Math.random().toString(16).substr(2, 8)}`
+    /*mqtt connection creating by baseURL and token*/
+    _client = mqtt.connect(baseURL, mqttConfig)
 
     /* make subscribe to all topics on client after connecting */
     _client.on('connect', () => {
@@ -182,7 +184,7 @@ mqttConnector.subscribe = async function subscribe(topic) {
             /* if has client and he is connected */
             if (_client) {
                 /* check if error */
-                let {err, granted} = await _client.subscribe(topic.name)
+                let {err, granted} = await _client.subscribe(topic.name, topic.options)
                 if (err) {
                     result.push(false)
                 }
@@ -200,7 +202,7 @@ mqttConnector.subscribe = async function subscribe(topic) {
         /* if has client and he is connected */
         if (_client) {
             /* check if error */
-            let {err, granted} = await _client.subscribe(topic.name)
+            let {err, granted} = await _client.subscribe(topic.name, topic.options)
             if (err) {
                 console.log(err)
                 return false

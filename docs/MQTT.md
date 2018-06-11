@@ -5,7 +5,7 @@ Method for making mqtt subscriptions. It`s using  mqtt.js as dependency.
     * `topic/topics array` is the topic or topics to need subscribe
     
         ```js
-            topic = { name: 'a/b/c', handler: (message, topic) => { console.log(message) } }
+            topic = { name: 'a/b/c', options: {qos: 2}, handler: (message, topic) => { console.log(message) } }
         ```
         
     ```js

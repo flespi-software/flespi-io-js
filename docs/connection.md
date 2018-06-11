@@ -10,6 +10,7 @@ The arguments are:
         * `server` server for mqtt connections
         * `port (optional)` port for mqtt connections
         * `clientId (optional)` client id for mqtt connections
+        * `mqttSettings` mqtt settings by MQTT.js API
  
         
 ### getters and setters
