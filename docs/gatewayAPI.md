@@ -50,7 +50,8 @@ connector.gw.getProtocols(protocolSelector, query)
 | http.gw.devices.settings.put | gw.putDevicesSettings | devSelector, settSelector, query, body | Set new setting value by pushing setting set command to device commands queue. |
 | http.gw.devices.delete | gw.deleteDevices | devSelector | Delete all devices matching filtering parameters |
 | http.gw.devices.messages.delete | gw.deleteDevicesMessages | devSelector, query | Delete specified messages from the device container. |
-| http.gw.device.settings.delete | gw.deleteDevicesSettings | devSelector, settSelector, query | Reset setting value or cancel pending operations |
+| http.gw.devices.settings.delete | gw.deleteDevicesSettings | devSelector, settSelector, query | Reset setting value or cancel pending operations |
+| http.gw.devices.telemetry.get | gw.getDevicesTelemetry | devSelector | Get specified device telemetry - e.g. latest values of parameters from registered messages. |
 | http.gw.streams.get | gw.getStreams | streamSelector, query | Get collection of streams matching filter parameters |
 | http.gw.streams.logs.get | gw.getStreamsLogs | streamSelector, query | Get logs for specified stream. |
 | http.gw.streams.subscriptions.get | gw.getStreamsSubscriptions | streamSelector, subscriptionSelector, query | Get collection of subscriptions matching filter parameters. |
