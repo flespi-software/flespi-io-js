@@ -37,6 +37,13 @@ Method for making mqtt subscriptions. It`s using  mqtt.js as dependency.
     ```js
       connector.socket.publish('custom/info', JSON.stringify({name: 'device#269'}))
     ```
+ 
+ * `close([force])`: close connection
+    * `force` is flag force closing of connection
+     ```js
+        connector.socket.close()
+     ```    
+
     
 * `on(event, handler)`: subscribe connector to event
     * `event` is the event type to subscribe
