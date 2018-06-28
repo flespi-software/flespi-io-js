@@ -193,6 +193,7 @@ mqttConnector.subscribe = async function subscribe(topic) {
             else {
                 result[id] = Promise.reject(new Error('Client don`t created'))
             }
+            return result
         }, {})
     }
     else if (typeof topic === 'object') {
