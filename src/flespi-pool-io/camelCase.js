@@ -33,8 +33,12 @@ function generate(http, mqtt, config) {
                 /* make subscription to REST changes in entities and return ids of subscriptions */
                 let ids = []
                 for (let event_type of event_types) {
-                    let id = await mqtt.logs.subscribe(localConfig.api, localConfig.origin, event_type, (message) => { updateHandler(event_type, JSON.parse(message).item_data) })
-                    if (id) { ids.push(id) }
+                    try {
+                        let grants = await mqtt.logs.subscribe(localConfig.api, localConfig.origin, event_type, (message) => { updateHandler(event_type, JSON.parse(message).item_data) })
+                        if (grants) { ids.push(Object.keys(grants)[0]) }
+                    } catch (e) {
+                        console.log(e)
+                    }
                 }
                 return ids
             }

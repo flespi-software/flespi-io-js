@@ -9,7 +9,12 @@ let inputToken = document.querySelector('#token'),
 
 submitToken.addEventListener('click', async () => {
     connector.token = inputToken.value
-    let id = await connector.socket.subscribe({name: '#', handler: render})
+    try {
+        let grants = await connector.socket.subscribe({name: '#', handler: render})
+        console.log(JSON.stringify(grants))
+    } catch (e) {
+        console.log(e)
+    }
 })
 
 getChannelsButton.addEventListener('click', async () => {

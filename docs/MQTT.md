@@ -1,7 +1,7 @@
 ### MQTT
 Method for making mqtt subscriptions. It`s using  mqtt.js as dependency.
 #### MQTT methods
-* `subscribe(topic/topics array)`: subscribe to new topic(s). Return promise with resolved index of subscription.
+* `subscribe(topic/topics array)`: subscribe to new topic(s). Return promise with resolved object of subscription.
     * `topic/topics array` is the topic or topics to need subscribe
     
         ```js
@@ -10,7 +10,13 @@ Method for making mqtt subscriptions. It`s using  mqtt.js as dependency.
         
     ```js
       connector.socket.subscribe({name: 'custom/info', handler: (data, topic) => { console.log(`subscribed: ${data}`) }})
+            .then(function (grants) { console.log(grants) }).catch(function(e) { console.log(e) })
     ```
+    
+    grants structure:
+    ```js
+      {[id of subscription]: [grants by subscription]}
+   ```
     
 * `unsubscribe(topicName, [index])`: unsubscribe from topic. Return promise.
     * `topicName`: is the topic name

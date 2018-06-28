@@ -183,36 +183,34 @@ mqttConnector.subscribe = async function subscribe(topic) {
             _topics[id] = topic
             /* if has client and he is connected */
             if (_client) {
-                /* check if error */
-                let {err, granted} = await _client.subscribe(topic.name, topic.options)
-                if (err) {
-                    result.push(false)
+                try {
+                    let granted = await _client.subscribe(topic.name, topic.options)
+                    result[id] = Promise.resolve(granted)
+                } catch (e) {
+                    result[id] = Promise.reject(e)
                 }
-                /* return index of new subscription */
-                result.push(id)
             }
             else {
-                result.push(false)
+                result[id] = Promise.reject(new Error('Client don`t created'))
             }
-        }, [])
+        }, {})
     }
     else if (typeof topic === 'object') {
         let id = uniqueId()
         _topics[id] = topic
         /* if has client and he is connected */
         if (_client) {
-            /* check if error */
-            let {err, granted} = await _client.subscribe(topic.name, topic.options)
-            if (err) {
-                console.log(err)
-                return false
+            try {
+                let granted = await _client.subscribe(topic.name, topic.options)
+                /* return granted by index of new subscription */
+                return Promise.resolve({[id]: granted})
+            } catch (e) {
+                return Promise.reject(e)
             }
-            /* return index of new subscription */
-            return id
         }
-        else { return false }
+        else { return Promise.reject(new Error('Client don`t created')) }
     }
-    else { return false }
+    else { return Promise.reject(new Error('Not valid type of topic/topics')) }
 }
 /* Unsubscription method for client of mqtt by topic name or topic names. */
 mqttConnector.unsubscribe = async function unsubscribe (name) {
