@@ -80,7 +80,7 @@ async function createClient () {
     })
 
     /* calling each callbacks by subscribed topic after getting new message. */
-    _client.on('message', (topic, message) => {
+    _client.on('message', (topic, message, packet) => {
         let topicPath = topic.split('/'), /* getting full topic path */
             /* searching for all the signed topics that criteria for the current current topic, comparing their path trees */
             activeTopicsId = Object.keys(_topics).filter((checkedTopicId) => {
@@ -103,7 +103,7 @@ async function createClient () {
                 }
             })
         /* calling each callbacks with payload as message by subscribed topic. */
-        activeTopicsId.forEach((topicId) => { _topics[topicId].handler(message, topic) })
+        activeTopicsId.forEach((topicId) => { _topics[topicId].handler(message, topic, packet) })
     })
 
     /* handling reconnect */
