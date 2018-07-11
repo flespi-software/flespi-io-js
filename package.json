@@ -1,6 +1,6 @@
 {
   "name": "flespi-io-js",
-  "version": "0.2.10",
+  "version": "0.3.0",
   "description": "flespi http/mqtt connection library",
   "main": "./dist/main.js",
   "module": "./dist/module.js",
@@ -24,9 +24,10 @@
   "author": "sebu",
   "license": "MIT",
   "dependencies": {
-    "async-mqtt": "^1.0.1",
     "axios": "^0.17.1",
     "form-data": "^2.3.2",
-    "lodash": "^4.17.10"
+    "in-array": "^0.1.2",
+    "lodash": "^4.17.10",
+    "mqtt": "git+https://github.com/flespi-software/MQTT.js.git#feature-mqtt-5"
   }
 }

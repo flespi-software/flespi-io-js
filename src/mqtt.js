@@ -1,4 +1,4 @@
-import mqtt from 'async-mqtt'
+import mqtt from './flespi-mqtt-io/async'
 import extender from './flespi-mqtt-io/index'
 import uniqueId from 'lodash/uniqueId'
 
