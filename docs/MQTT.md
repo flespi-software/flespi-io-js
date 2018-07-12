@@ -50,6 +50,10 @@ Method for making mqtt subscriptions. It`s using  mqtt.js as dependency.
         connector.socket.close()
      ```    
 
+ * `connected()`: return status of connection
+     ```js
+        connector.socket.connected()
+     ```    
     
 * `on(event, handler)`: subscribe connector to event
     * `event` is the event type to subscribe

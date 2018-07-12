@@ -174,6 +174,9 @@ mqttConnector.update = async function update(type, payload) {
 /* Check has client */
 mqttConnector.hasClient = () => !!_client
 
+/* Check connection status */
+mqttConnector.connected = () => !!_client && _client._client.connected
+
 /* Subscription method for client of mqtt */
 mqttConnector.subscribe = async function subscribe(topic) {
     if (topic instanceof Array) {
@@ -260,6 +263,8 @@ mqttConnector.close = async function close() {
             })
     }
 }
+
+mqttConnector.end = mqttConnector.close
 
 /* method attach event to mqtt client
 * @param {String} name   name of event

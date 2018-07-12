@@ -15940,7 +15940,7 @@ var createClient = function () {
                             }
                         });
 
-                        _client.on('message', function (topic, message) {
+                        _client.on('message', function (topic, message, packet) {
                             var topicPath = topic.split('/'),
                                 activeTopicsId = (0, _keys2.default)(_topics).filter(function (checkedTopicId) {
                                 var currentTopicPath = _topics[checkedTopicId].name.split('/');
@@ -15958,7 +15958,7 @@ var createClient = function () {
                             });
 
                             activeTopicsId.forEach(function (topicId) {
-                                _topics[topicId].handler(message, topic);
+                                _topics[topicId].handler(message, topic, packet);
                             });
                         });
 
@@ -16144,6 +16144,10 @@ mqttConnector.update = function () {
 
 mqttConnector.hasClient = function () {
     return !!_client;
+};
+
+mqttConnector.connected = function () {
+    return !!_client && _client._client.connected;
 };
 
 mqttConnector.subscribe = function () {
@@ -16433,6 +16437,8 @@ mqttConnector.close = function () {
 
     return close;
 }();
+
+mqttConnector.end = mqttConnector.close;
 
 mqttConnector.on = function on(name, handler) {
     if (!_events[name]) {
