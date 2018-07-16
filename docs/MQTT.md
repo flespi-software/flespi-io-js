@@ -96,8 +96,8 @@ connector.subscribeLogs(api, origin, event_type, handler)
 | socket.messages.channels.unsubscribe | unsubscribeMessagesChannels | channel_id, ident, handler | Unsubscribe from new message received by channel |
 | socket.messages.devices.subscribe | subscribeMessagesDevices | device_id, handler | Subscribe to new message received by device |
 | socket.messages.devices.unsubscribe | unsubscribeMessagesDevices | device_id, handler | Unsubscribe from new message received by device |
-| socket.sms.subscribe | subscribeSms | modem_id, phone, handler | Subscribe to SMS message received by modem |
-| socket.sms.unsubscribe | unsubscribeSms | modem_id, phone, handler | Unsubscribe from SMS message received by modem |
+| socket.messages.sms.subscribe | subscribeSms | modem_id, phone, handler | Subscribe to SMS message received by modem |
+| socket.messages.sms.unsubscribe | unsubscribeSms | modem_id, phone, handler | Unsubscribe from SMS message received by modem |
     
 #### MQTT events
 

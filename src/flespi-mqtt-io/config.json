@@ -43,23 +43,22 @@
             "params": ["abque_id", "name"]
           }
         ]
+      },
+      "sms": {
+        "methods": [
+          {
+            "name": "subscribe",
+            "pattern": "gw/modems/{modem_id}/{phone}",
+            "params": ["modem_id", "phone"]
+          },
+          {
+            "name": "unsubscribe",
+            "pattern": "gw/modems/{modem_id}/{phone}",
+            "params": ["modem_id", "phone"]
+          }
+        ]
       }
     }
-  },
-  "sms": {
-    "base": "flespi/sms/gw/modems/",
-    "methods": [
-      {
-        "name": "subscribe",
-        "pattern": "{modem_id}/{phone}",
-        "params": ["modem_id", "phone"]
-      },
-      {
-        "name": "unsubscribe",
-        "pattern": "{modem_id}/{phone}",
-        "params": ["modem_id", "phone"]
-      }
-    ]
   },
   "logs": {
     "base": "flespi/log/",
