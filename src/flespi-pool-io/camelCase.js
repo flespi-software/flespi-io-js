@@ -28,7 +28,7 @@ function generate(http, mqtt, config) {
             /* generate methods for all entities by config current entity */
             result[`pool${_partNameOFMethod}${entity[0].toUpperCase()+entity.slice(1)}`] = async function (getHandler, updateHandler) {
                 /* get entities */
-                let entities = await http.get(`${localConfig.api}/${localConfig.origin.replace(/\+/g, 'all')}`, {})
+                let entities = await http.get(`${localConfig.api}/${localConfig.origin.replace(/[+#]/g, 'all')}`, {})
                 getHandler(entities)/* receive entities to handler */
                 /* make subscription to REST changes in entities and return ids of subscriptions */
                 let ids = []
