@@ -15372,7 +15372,7 @@ function isNumber (x) {
 /* 130 */
 /***/ (function(module, exports) {
 
-module.exports = {"messages":{"base":"flespi/message/","children":{"channels":{"methods":[{"name":"subscribe","pattern":"gw/channels/{channel_id}/{ident}","params":["channel_id","ident"]},{"name":"unsubscribe","pattern":"gw/channels/{channel_id}/{ident}","params":["channel_id","ident"]}]},"devices":{"methods":[{"name":"subscribe","pattern":"gw/devices/{device_id}","params":["device_id"]},{"name":"unsubscribe","pattern":"gw/devices/{device_id}","params":["device_id"]}]},"abques":{"methods":[{"name":"subscribe","pattern":"storage/abques/{abque_id}/{name}","params":["abque_id","name"]},{"name":"unsubscribe","pattern":"storage/abques/{abque_id}/{name}","params":["abque_id","name"]}]},"sms":{"methods":[{"name":"subscribe","pattern":"gw/modems/{modem_id}/{phone}","params":["modem_id","phone"]},{"name":"unsubscribe","pattern":"gw/modems/{modem_id}/{phone}","params":["modem_id","phone"]}]}}},"logs":{"base":"flespi/log/","methods":[{"name":"subscribe","pattern":"{api}/{origin}/{event_type}","params":["api","origin","event_type"]},{"name":"unsubscribe","pattern":"{api}/{origin}/{event_type}","params":["api","origin","event_type"]}]}}
+module.exports = {"messages":{"base":"flespi/message/","children":{"channels":{"methods":[{"name":"subscribe","pattern":"gw/channels/{channel_id}/{ident}","params":["channel_id","ident"]},{"name":"unsubscribe","pattern":"gw/channels/{channel_id}/{ident}","params":["channel_id","ident"]}]},"devices":{"methods":[{"name":"subscribe","pattern":"gw/devices/{device_id}/#","params":["device_id"]},{"name":"unsubscribe","pattern":"gw/devices/{device_id}/#","params":["device_id"]}]},"abques":{"methods":[{"name":"subscribe","pattern":"storage/abques/{abque_id}/{name}","params":["abque_id","name"]},{"name":"unsubscribe","pattern":"storage/abques/{abque_id}/{name}","params":["abque_id","name"]}]},"sms":{"methods":[{"name":"subscribe","pattern":"gw/modems/{modem_id}/{phone}","params":["modem_id","phone"]},{"name":"unsubscribe","pattern":"gw/modems/{modem_id}/{phone}","params":["modem_id","phone"]}]}}},"logs":{"base":"flespi/log/","methods":[{"name":"subscribe","pattern":"{api}/{origin}/{event_type}","params":["api","origin","event_type"]},{"name":"unsubscribe","pattern":"{api}/{origin}/{event_type}","params":["api","origin","event_type"]}]}}
 
 /***/ }),
 /* 131 */
@@ -15384,7 +15384,7 @@ module.exports = { "default": __webpack_require__(268), __esModule: true };
 /* 132 */
 /***/ (function(module, exports) {
 
-module.exports = {"devices":{"api":"gw","origin":"devices/+"},"streams":{"api":"gw","origin":"streams/+","children":{"subscriptions":{"api":"gw","origin":"streams/+/subscriptions/+"}}},"channels":{"api":"gw","origin":"channels/+"},"abques":{"api":"storage","origin":"abques/+"},"modems":{"api":"gw","origin":"modems/+"},"customer":{"children":{"tokens":{"api":"platform","origin":"customer/tokens/+"}}},"mqtt":{"children":{"sessions":{"api":"mqtt","origin":"sessions/+"}}}}
+module.exports = {"devices":{"api":"gw","origin":"devices/+/+"},"streams":{"api":"gw","origin":"streams/+","children":{"subscriptions":{"api":"gw","origin":"streams/+/subscriptions/+"}}},"channels":{"api":"gw","origin":"channels/+"},"abques":{"api":"storage","origin":"abques/+"},"modems":{"api":"gw","origin":"modems/+"},"customer":{"children":{"tokens":{"api":"platform","origin":"customer/tokens/+"}}},"mqtt":{"children":{"sessions":{"api":"mqtt","origin":"sessions/+"}}}}
 
 /***/ }),
 /* 133 */
@@ -25362,7 +25362,7 @@ function generate(http, config) {
         }, {}) : {};
 
         var parsedPath = path.split('/').reduce(function (result, part) {
-            if (part.match(/{(.*)}/g)) {
+            if (part.match(/{([\w-]+)}/g)) {
                 result.params.push(part);
             } else if (part) {
                 result.parts.push(part.replace(/-\w/g, function (match) {

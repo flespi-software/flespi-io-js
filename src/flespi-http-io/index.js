@@ -31,7 +31,7 @@ function generate (http, config) {
                 : {}
         /* get params and parts of path from path */
         let parsedPath = path.split('/').reduce((result, part) => {
-            if (part.match(/{(.*)}/g)) {
+            if (part.match(/{([\w-]+)}/g)) {
                 result.params.push(part)
             }
             else if (part) {
