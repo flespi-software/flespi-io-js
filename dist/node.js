@@ -15384,7 +15384,7 @@ module.exports = { "default": __webpack_require__(268), __esModule: true };
 /* 132 */
 /***/ (function(module, exports) {
 
-module.exports = {"devices":{"api":"gw","origin":"devices/#"},"streams":{"api":"gw","origin":"streams/+","children":{"subscriptions":{"api":"gw","origin":"streams/+/subscriptions/+"}}},"channels":{"api":"gw","origin":"channels/+"},"abques":{"api":"storage","origin":"abques/+"},"modems":{"api":"gw","origin":"modems/+"},"customer":{"children":{"tokens":{"api":"platform","origin":"customer/tokens/+"}}},"mqtt":{"children":{"sessions":{"api":"mqtt","origin":"sessions/+"}}}}
+module.exports = {"devices":{"api":"gw","origin":"devices/+"},"streams":{"api":"gw","origin":"streams/+","children":{"subscriptions":{"api":"gw","origin":"streams/+/subscriptions/+"}}},"channels":{"api":"gw","origin":"channels/+"},"abques":{"api":"storage","origin":"abques/+"},"modems":{"api":"gw","origin":"modems/+"},"customer":{"children":{"tokens":{"api":"platform","origin":"customer/tokens/+"}}},"mqtt":{"children":{"sessions":{"api":"mqtt","origin":"sessions/+"}}}}
 
 /***/ }),
 /* 133 */
@@ -26056,7 +26056,7 @@ function generate(http, mqtt, config) {
                             switch (_context2.prev = _context2.next) {
                                 case 0:
                                     _context2.next = 2;
-                                    return http.get(localConfig.api + '/' + localConfig.origin.replace(/[+#]/g, 'all'), {});
+                                    return http.get(localConfig.api + '/' + localConfig.origin.replace(/\+/g, 'all'), {});
 
                                 case 2:
                                     entities = _context2.sent;

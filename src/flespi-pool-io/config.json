@@ -1,7 +1,7 @@
 {
   "devices": {
     "api": "gw",
-    "origin": "devices/#"
+    "origin": "devices/+"
   },
   "streams": {
     "api": "gw",
