@@ -130,3 +130,6 @@ Event `reconnect`: Emitted after reconnect start
 
 Event `offline`: Emitted when the client goes offline
     `function () {}`
+
+Event `end`: Emitted when the client goes end
+    `function () {}`

@@ -119,6 +119,13 @@ async function createClient () {
             _events['offline'].forEach((handler) => { handler() })
         }
     })
+
+    /* handling end */
+    _client.on('end', () => {
+        if (_events['end']) {
+            _events['end'].forEach((handler) => { handler() })
+        }
+    })
 }
 /* Main function of mqtt connection. It setting up private variables and creating of client. Topics must be an Object or Array */
 function mqttConnector (topics) {
