@@ -88,16 +88,16 @@ connector.subscribeLogs(api, origin, event_type, handler)
 
 | Method  | Alias  | Params  | Description  |
 |---|---|---|---|
-| socket.logs.subscribe | subscribeLogs | api, origin, event_type, handler | Subscribe to logs. {event_type} has occurred in {origin}, see platform logs for more information |
-| socket.logs.unsubscribe | unsubscribeLogs | api, origin, event_type, handler | Unsubscribe from logs. {event_type} has occurred in {origin}, see platform logs for more information |
-| socket.messages.abques.subscribe | subscribeMessagesAbques | abque_id, name, handler | Subscribe to new message posted to abque |
-| socket.messages.abques.unsubscribe | unsubscribeMessagesAbques | abque_id, name, handler | Unsubscribe from new message posted to abque |
-| socket.messages.channels.subscribe | subscribeMessagesChannels | channel_id, ident, handler | Subscribe to new message received by channel |
-| socket.messages.channels.unsubscribe | unsubscribeMessagesChannels | channel_id, ident, handler | Unsubscribe from new message received by channel |
-| socket.messages.devices.subscribe | subscribeMessagesDevices | device_id, handler | Subscribe to new message received by device |
-| socket.messages.devices.unsubscribe | unsubscribeMessagesDevices | device_id, handler | Unsubscribe from new message received by device |
-| socket.messages.sms.subscribe | subscribeSms | modem_id, phone, handler | Subscribe to SMS message received by modem |
-| socket.messages.sms.unsubscribe | unsubscribeSms | modem_id, phone, handler | Unsubscribe from SMS message received by modem |
+| socket.logs.subscribe | subscribeLogs | api, origin, event_type, handler, options | Subscribe to logs. {event_type} has occurred in {origin}, see platform logs for more information |
+| socket.logs.unsubscribe | unsubscribeLogs | api, origin, event_type, [indexOfSubscription] | Unsubscribe from logs. {event_type} has occurred in {origin}, see platform logs for more information |
+| socket.messages.abques.subscribe | subscribeMessagesAbques | abque_id, name, handler, [options] | Subscribe to new message posted to abque |
+| socket.messages.abques.unsubscribe | unsubscribeMessagesAbques | abque_id, name, [indexOfSubscription] | Unsubscribe from new message posted to abque |
+| socket.messages.channels.subscribe | subscribeMessagesChannels | channel_id, ident, handler, [options] | Subscribe to new message received by channel |
+| socket.messages.channels.unsubscribe | unsubscribeMessagesChannels | channel_id, ident, [indexOfSubscription] | Unsubscribe from new message received by channel |
+| socket.messages.devices.subscribe | subscribeMessagesDevices | device_id, handler, [options] | Subscribe to new message received by device |
+| socket.messages.devices.unsubscribe | unsubscribeMessagesDevices | device_id, [indexOfSubscription] | Unsubscribe from new message received by device |
+| socket.messages.sms.subscribe | subscribeSms | modem_id, phone, handler, [options] | Subscribe to SMS message received by modem |
+| socket.messages.sms.unsubscribe | unsubscribeSms | modem_id, phone, [indexOfSubscription] | Unsubscribe from SMS message received by modem |
 
 #### MQTT events
 

@@ -16237,8 +16237,10 @@ mqttConnector.subscribe = function () {
             while (1) {
                 switch (_context5.prev = _context5.next) {
                     case 0:
+                        debugger;
+
                         if (!(topic instanceof Array)) {
-                            _context5.next = 4;
+                            _context5.next = 5;
                             break;
                         }
 
@@ -16298,9 +16300,9 @@ mqttConnector.subscribe = function () {
                             };
                         }(), {}));
 
-                    case 4:
+                    case 5:
                         if (!((typeof topic === 'undefined' ? 'undefined' : (0, _typeof3.default)(topic)) === 'object')) {
-                            _context5.next = 23;
+                            _context5.next = 24;
                             break;
                         }
 
@@ -16309,43 +16311,43 @@ mqttConnector.subscribe = function () {
                         _topics[id] = topic;
 
                         if (!_client) {
-                            _context5.next = 20;
+                            _context5.next = 21;
                             break;
                         }
 
-                        _context5.prev = 8;
-                        _context5.next = 11;
+                        _context5.prev = 9;
+                        _context5.next = 12;
                         return _client.subscribe(topic.name, topic.options);
 
-                    case 11:
+                    case 12:
                         granted = _context5.sent;
                         return _context5.abrupt('return', _promise2.default.resolve((0, _defineProperty3.default)({}, id, granted)));
 
-                    case 15:
-                        _context5.prev = 15;
-                        _context5.t0 = _context5['catch'](8);
+                    case 16:
+                        _context5.prev = 16;
+                        _context5.t0 = _context5['catch'](9);
                         return _context5.abrupt('return', _promise2.default.reject(_context5.t0));
 
-                    case 18:
-                        _context5.next = 21;
+                    case 19:
+                        _context5.next = 22;
                         break;
-
-                    case 20:
-                        return _context5.abrupt('return', _promise2.default.reject(new Error('Client don`t created')));
 
                     case 21:
-                        _context5.next = 24;
+                        return _context5.abrupt('return', _promise2.default.reject(new Error('Client don`t created')));
+
+                    case 22:
+                        _context5.next = 25;
                         break;
 
-                    case 23:
+                    case 24:
                         return _context5.abrupt('return', _promise2.default.reject(new Error('Not valid type of topic/topics')));
 
-                    case 24:
+                    case 25:
                     case 'end':
                         return _context5.stop();
                 }
             }
-        }, _callee5, this, [[8, 15]]);
+        }, _callee5, this, [[9, 16]]);
     }));
 
     function subscribe(_x5) {
@@ -25354,11 +25356,11 @@ function generate(ext, config) {
                     switch (method.name) {
                         case 'subscribe':
                             {
-                                return _mqtt.subscribe({ name: topicString, handler: arguments[method.params.length] });
+                                return _mqtt.subscribe({ name: topicString, handler: arguments[method.params.length], options: arguments[method.params.length + 1] });
                             }
                         case 'unsubscribe':
                             {
-                                return _mqtt.unsubscribe(topicString);
+                                return _mqtt.unsubscribe(topicString, arguments[method.params.length]);
                             }
                     }
                 };
@@ -25827,7 +25829,7 @@ function generate(mqtt, config) {
                     switch (method.name) {
                         case 'subscribe':
                             {
-                                return _mqtt.subscribe({ name: topicString, handler: arguments[method.params.length] });
+                                return _mqtt.subscribe({ name: topicString, handler: arguments[method.params.length], options: arguments[method.params.length + 1] });
                             }
                         case 'unsubscribe':
                             {
@@ -25917,7 +25919,7 @@ exports.default = function (http, mqtt) {
                                                             _context.next = 4;
                                                             return mqtt.logs.subscribe(config[name].api, config[name].origin, event_type, function (message) {
                                                                 updateHandler(event_type, JSON.parse(message).item_data);
-                                                            });
+                                                            }, { rh: 2 });
 
                                                         case 4:
                                                             grants = _context.sent;
@@ -26160,7 +26162,7 @@ function generate(http, mqtt, config) {
                                                         _context.next = 4;
                                                         return mqtt.logs.subscribe(localConfig.api, localConfig.origin, event_type, function (message) {
                                                             updateHandler(event_type, JSON.parse(message).item_data);
-                                                        });
+                                                        }, { rh: 0 });
 
                                                     case 4:
                                                         grants = _context.sent;

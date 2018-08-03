@@ -18,7 +18,7 @@ export default function (http, mqtt) {
                     let ids = []
                     for (let event_type of event_types) {
                         try {
-                            let grants = await mqtt.logs.subscribe(config[name].api, config[name].origin, event_type, (message) => { updateHandler(event_type, JSON.parse(message).item_data) })
+                            let grants = await mqtt.logs.subscribe(config[name].api, config[name].origin, event_type, (message) => { updateHandler(event_type, JSON.parse(message).item_data) }, { rh: 2 })
                             if (grants) { ids.push(Object.keys(grants)[0]) }
                         } catch (e) {
                             console.log(e.message)

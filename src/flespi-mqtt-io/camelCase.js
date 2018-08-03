@@ -43,7 +43,7 @@ function generate(mqtt, config) {
                     }
                     if (!_mqtt.hasClient()) { _mqtt([]) } /* if client is empty - try to create new client */
                     switch (method.name) {
-                        case 'subscribe': { return _mqtt.subscribe({name: topicString, handler: arguments[method.params.length]}) }
+                        case 'subscribe': { return _mqtt.subscribe({name: topicString, handler: arguments[method.params.length], options: arguments[method.params.length + 1]}) }
                         case 'unsubscribe': { return _mqtt.unsubscribe(topicString, arguments[method.params.length]) }
                     }
                 }

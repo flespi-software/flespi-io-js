@@ -186,6 +186,7 @@ mqttConnector.connected = () => !!_client && _client._client.connected
 
 /* Subscription method for client of mqtt */
 mqttConnector.subscribe = async function subscribe(topic) {
+    debugger
     if (topic instanceof Array) {
         /* return array of subscribed indexes of topics */
         return topic.reduce(async (result, topic) => {
