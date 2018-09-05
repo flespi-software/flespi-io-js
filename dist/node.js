@@ -15454,7 +15454,7 @@ module.exports = { "default": __webpack_require__(268), __esModule: true };
 /* 132 */
 /***/ (function(module, exports) {
 
-module.exports = {"devices":{"api":"gw","origin":"devices/+"},"streams":{"api":"gw","origin":"streams/+","children":{"subscriptions":{"api":"gw","origin":"streams/+/subscriptions/+"}}},"channels":{"api":"gw","origin":"channels/+"},"abques":{"api":"storage","origin":"abques/+"},"modems":{"api":"gw","origin":"modems/+"},"customer":{"children":{"tokens":{"api":"platform","origin":"customer/tokens/+"}}},"mqtt":{"children":{"sessions":{"api":"mqtt","origin":"sessions/+"}}}}
+module.exports = {"devices":{"api":"gw","origin":"devices/+"},"streams":{"api":"gw","origin":"streams/+","children":{"subscriptions":{"api":"gw","origin":"streams/+/subscriptions/+"}}},"channels":{"api":"gw","origin":"channels/+"},"abques":{"api":"storage","origin":"abques/+"},"containers":{"api":"storage","origin":"containers/+"},"cdns":{"api":"storage","origin":"cdns/+"},"modems":{"api":"gw","origin":"modems/+"},"customer":{"children":{"tokens":{"api":"platform","origin":"customer/tokens/+"}}},"mqtt":{"children":{"sessions":{"api":"mqtt","origin":"sessions/+"}}}}
 
 /***/ }),
 /* 133 */

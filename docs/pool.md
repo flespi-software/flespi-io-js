@@ -28,6 +28,10 @@ let ids = await connector.poolDevices((data) => { console.log(`data: ${JSON.stri
 |pool.channels.stop|poolChannelsStop|ids|Stop pooling channels|
 |pool.abques|poolAbques|getHandler, updateHandler|Pooling abques|
 |pool.abques.stop|poolAbquesStop|ids|Stop pooling abques|
+|pool.containers|poolContainers|getHandler, updateHandler|Pooling containers|
+|pool.containers.stop|poolContainersStop|ids|Stop pooling containers|
+|pool.cdns|poolCdns|getHandler, updateHandler|Pooling cdns|
+|pool.cdns.stop|poolCdnsStop|ids|Stop pooling cdns|
 |pool.modems|poolModems|getHandler, updateHandler|Pooling modems|
 |pool.modems.stop|poolModemsStop|ids|Stop pooling modems|
 |pool.customer.tokens|poolCustomerTokens|getHandler, updateHandler|Pooling customer tokens|

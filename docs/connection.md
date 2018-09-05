@@ -2,6 +2,7 @@
 Connection make global connector by passed config
 The arguments are:
 * `config` is a global config for all connections you have
+    * `connectorName` is a name of global variable of connector(only for initialization Vue plugin)
     * `token` is a token for connections
     * `httpConfig` config for http connections
         * `server` server for http connections

@@ -6,8 +6,13 @@ ConnectionPlugin.install = function (Vue, config) {
     /* create of main connector */
     let connector = new Connection(config)
     /* setting main connector to Vue */
-    Vue.connector = connector
-    Vue.prototype.$connector = connector
+    if (config.connectorName) {
+        Vue[config.connectorName] = connector
+        Vue[`$${config.connectorName}`] = connector
+    } else {
+        Vue.connector = connector
+        Vue.prototype.$connector = connector
+    }
 }
 
 export default ConnectionPlugin

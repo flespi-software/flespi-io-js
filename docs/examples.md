@@ -58,6 +58,7 @@ Use as Vue plugin:
 import Connection from 'flespi-io-js/dist/vue-plugin'
 /* Register plugin with config for creation of connector */
 Vue.use(ConnectionPlugin, {
+  connectorName: 'connectorLogs',
   token: 'FlespiToken XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx',
   httpConfig: { server: 'https://localhost', port: 9005 },
   socketConfig: { server: `ws://localhost:9016` }
