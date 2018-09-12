@@ -2,7 +2,8 @@ import axios from 'axios'
 import merge from 'lodash/merge'
 
 let _config = {}, /* config of http connection {server, port(optional), token} */
-    _methods = ['get', 'post', 'put', 'delete'] /* methods http request */
+    _methods = ['get', 'post', 'put', 'delete'], /* methods http request */
+    _headers = {'Authorization': _config.token} /* headers with auth credentials */
 
 /* Simple helper by getting up of baseURL parameter */
 function getBaseURl () {
@@ -18,7 +19,7 @@ function getBaseURl () {
 
 /* Main function of http connection. It setting up private variables, global headers and return promise of the request */
 function http (options) {
-    let config = { baseURL: getBaseURl() }
+    let config = { baseURL: getBaseURl(), headers: _headers }
     return axios(merge(config, options))
 }
 
@@ -27,7 +28,7 @@ http.init = function init(token, config) {
     if (!Object.keys(_config).length) {
         _config = config
         _config.token = token
-        axios.defaults.headers.common['Authorization'] = _config.token
+        _headers['Authorization'] = _config.token
     }
 }
 
@@ -36,7 +37,7 @@ http.update = function (type, payload) {
     switch (type) {
         case 'token': {
             _config.token = payload
-            axios.defaults.headers.common['Authorization'] = _config.token
+            _headers['Authorization'] = _config.token
             break
         }
         case 'config': {
