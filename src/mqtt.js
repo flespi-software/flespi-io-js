@@ -186,7 +186,6 @@ mqttConnector.connected = () => !!_client && _client._client.connected
 
 /* Subscription method for client of mqtt */
 mqttConnector.subscribe = async function subscribe(topic) {
-    debugger
     if (topic instanceof Array) {
         /* return array of subscribed indexes of topics */
         return topic.reduce(async (result, topic) => {
@@ -230,9 +229,10 @@ mqttConnector.unsubscribe = async function unsubscribe (name) {
     let removableTopicsIndexes = Object.keys(_topics).reduce((result, topicId, index) => {
         if ((typeof name === 'string' && _topics[topicId].name === name) || (name instanceof Array && name.includes(_topics[topicId].name))) {
             /* check has index in arguments */
-            if (arguments[1]) {
+            let unsubId = arguments[1]
+            if (unsubId) {
                 /* if second argument is right index */
-                if (topicId === arguments[1]) {
+                if (topicId === unsubId || (unsubId instanceof Array && unsubId.includes(topicId))) {
                     result.push(topicId)
                 }
             }

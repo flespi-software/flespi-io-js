@@ -18,9 +18,9 @@ Method for making mqtt subscriptions. It`s using  mqtt.js as dependency.
       {[id of subscription]: [grants by subscription]}
    ```
 
-* `unsubscribe(topicName, [index])`: unsubscribe from topic. Return promise.
+* `unsubscribe(topicName, [index/indexes])`: unsubscribe from topic. Return promise.
     * `topicName`: is the topic name
-    * `index`: index of current subscription by topic
+    * `index`: index or array of indexes of current subscription by topic
 
     ```js
        connector.socket.unsubscribe('custom/logs')
