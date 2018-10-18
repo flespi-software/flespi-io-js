@@ -33,7 +33,7 @@ async function createClient () {
     _client = mqtt.connect(baseURL, mqttConfig)
 
     /* make subscribe to all topics on client after connecting */
-    _client.on('connect', () => {
+    _client.on('connect', (connack) => {
         let topicsKeys = Object.keys(_topics)
         if (topicsKeys.length) {
             topicsKeys.forEach((topicId) => {
@@ -42,7 +42,7 @@ async function createClient () {
         }
         /* handling all handler by connect event */
         if (_events['connect']) {
-            _events['connect'].forEach((handler) => { handler() })
+            _events['connect'].forEach((handler) => { handler(connack) })
         }
     })
 

@@ -101,11 +101,11 @@ connector.subscribeLogs(api, origin, event_type, handler)
 
 #### MQTT events
 
-Event `connect`: Emitted on successful (re)connection
+Event `connect`: Emitted on successful (re)connection. In handler provided connack packet.
 
 ```js
 
-  function handler() {}
+  function handler(connack) {}
 
 ```
 
