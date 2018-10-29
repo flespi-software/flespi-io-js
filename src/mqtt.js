@@ -248,9 +248,9 @@ mqttConnector.unsubscribe = async function unsubscribe (name) {
 }
 /* Unsubscription method for client of mqtt from all topics */
 mqttConnector.unsubscribeAll = async function unsubscribeAll() {
-    Object.keys(_topics).forEach(async (topicId) => {
+    for (let topicId in Object.keys(_topics)) {
         await _client.unsubscribe(_topics[topicId].name)
-    })
+    }
 }
 /* Publishing method for client of mqtt. publish(topic, message, [options]). Message must be a String or Buffer */
 mqttConnector.publish = async function () {

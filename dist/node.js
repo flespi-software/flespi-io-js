@@ -4336,11 +4336,12 @@ function flush (queue) {
   }
 }
 
-function storeAndSend (client, packet, cb) {
+function storeAndSend (client, packet, cb, cbStorePut) {
   client.outgoingStore.put(packet, function storedPacket (err) {
     if (err) {
       return cb && cb(err)
     }
+    cbStorePut()
     sendPacket(client, packet, cb)
   })
 }
@@ -4413,73 +4414,14 @@ function MqttClient (streamBuilder, options) {
   // Inflight callbacks
   this.outgoing = {}
 
-  // Mark connected on connect
-  this.on('connect', function () {
-    if (this.disconnected) {
-      return
-    }
-
-    this.connected = true
-    var outStore = this.outgoingStore.createStream()
-
-    this.once('close', remove)
-    outStore.on('end', function () {
-      that.removeListener('close', remove)
-    })
-    outStore.on('error', function (err) {
-      that.removeListener('close', remove)
-      that.emit('error', err)
-    })
-
-    function remove () {
-      outStore.destroy()
-      outStore = null
-    }
-
-    function storeDeliver () {
-      // edge case, we wrapped this twice
-      if (!outStore) {
-        return
-      }
-
-      var packet = outStore.read(1)
-      var cb
-
-      if (!packet) {
-        // read when data is available in the future
-        outStore.once('readable', storeDeliver)
-        return
-      }
-
-      // Avoid unnecessary stream read operations when disconnected
-      if (!that.disconnecting && !that.reconnectTimer) {
-        cb = that.outgoing[packet.messageId]
-        that.outgoing[packet.messageId] = function (err, status) {
-          // Ensure that the original callback passed in to publish gets invoked
-          if (cb) {
-            cb(err, status)
-          }
-
-          storeDeliver()
-        }
-        that._sendPacket(packet)
-      } else if (outStore.destroy) {
-        outStore.destroy()
-      }
-    }
-
-    // start flowing
-    storeDeliver()
-  })
+  // True if connection is first time.
+  this._firstConnection = true
 
   // Mark disconnected on stream close
   this.on('close', function () {
     this.connected = false
     clearTimeout(this.connackTimer)
   })
-
-  // Setup ping timer
-  this.on('connect', this._setupPingTimer)
 
   // Send queued packets
   this.on('connect', function () {
@@ -4507,23 +4449,6 @@ function MqttClient (streamBuilder, options) {
     }
 
     deliver()
-  })
-
-  var firstConnection = true
-  // resubscribe
-  this.on('connect', function () {
-    if (!firstConnection &&
-        options.clean &&
-        Object.keys(this._resubscribeTopics).length > 0) {
-      if (options.resubscribe) {
-        this._resubscribeTopics.resubscribe = true
-        this.subscribe(this._resubscribeTopics)
-      } else {
-        this._resubscribeTopics = {}
-      }
-    }
-
-    firstConnection = false
   })
 
   // Clear ping timer
@@ -4686,6 +4611,7 @@ MqttClient.prototype._checkDisconnecting = function (callback) {
  *    {Number} qos - qos level to publish on
  *    {Boolean} retain - whether or not to retain the message
  *    {Boolean} dup - whether or not mark a message as duplicate
+ *    {Function} cbStorePut - function(){} called when message is put into `outgoingStore`
  * @param {Function} [callback] - function(err){}
  *    called when publish succeeds or fails
  * @returns {MqttClient} this - for chaining
@@ -4742,13 +4668,12 @@ MqttClient.prototype.publish = function (topic, message, opts, callback) {
   switch (opts.qos) {
     case 1:
     case 2:
-
       // Add to callbacks
       this.outgoing[packet.messageId] = callback || nop
-      this._sendPacket(packet)
+      this._sendPacket(packet, undefined, opts.cbStorePut)
       break
     default:
-      this._sendPacket(packet, callback)
+      this._sendPacket(packet, callback, opts.cbStorePut)
       break
   }
 
@@ -5181,9 +5106,12 @@ MqttClient.prototype._cleanUp = function (forced, done) {
  * @param {String} type - packet type (see `protocol`)
  * @param {Object} packet - packet options
  * @param {Function} cb - callback when the packet is sent
+ * @param {Function} cbStorePut - called when message is put into outgoingStore
  * @api private
  */
-MqttClient.prototype._sendPacket = function (packet, cb) {
+MqttClient.prototype._sendPacket = function (packet, cb, cbStorePut) {
+  cbStorePut = cbStorePut || nop
+
   if (!this.connected) {
     if (((packet.qos || 0) === 0 && this.queueQoSZero) || packet.cmd !== 'publish') {
       this.queue.push({ packet: packet, cb: cb })
@@ -5193,6 +5121,7 @@ MqttClient.prototype._sendPacket = function (packet, cb) {
         if (err) {
           return cb && cb(err)
         }
+        cbStorePut()
       })
     } else if (cb) {
       cb(new Error('No connection to broker'))
@@ -5208,7 +5137,7 @@ MqttClient.prototype._sendPacket = function (packet, cb) {
     case 'publish':
       break
     case 'pubrel':
-      storeAndSend(this, packet, cb)
+      storeAndSend(this, packet, cb, cbStorePut)
       return
     default:
       sendPacket(this, packet, cb)
@@ -5218,7 +5147,7 @@ MqttClient.prototype._sendPacket = function (packet, cb) {
   switch (packet.qos) {
     case 2:
     case 1:
-      storeAndSend(this, packet, cb)
+      storeAndSend(this, packet, cb, cbStorePut)
       break
     /**
      * no need of case here since it will be caught by default
@@ -5314,7 +5243,7 @@ MqttClient.prototype._handleConnack = function (packet) {
 
   if (rc === 0) {
     this.reconnecting = false
-    this.emit('connect', packet)
+    this._onConnect(packet)
   } else if (rc > 0) {
     var err = new Error('Connection refused: ' + errors[rc])
     err.code = rc
@@ -5353,6 +5282,7 @@ default:
 for now i just suppressed the warnings
 */
 MqttClient.prototype._handlePublish = function (packet, done) {
+  done = typeof done !== 'undefined' ? done : nop
   var topic = packet.topic.toString()
   var message = packet.payload
   var qos = packet.qos
@@ -5511,6 +5441,7 @@ MqttClient.prototype._handleAck = function (packet) {
  * @api private
  */
 MqttClient.prototype._handlePubrel = function (packet, callback) {
+  callback = typeof callback !== 'undefined' ? callback : nop
   var mid = packet.messageId
   var that = this
 
@@ -5519,12 +5450,16 @@ MqttClient.prototype._handlePubrel = function (packet, callback) {
   that.incomingStore.get(packet, function (err, pub) {
     if (!err && pub.cmd !== 'pubrel') {
       that.emit('message', pub.topic, pub.payload, pub)
-      that.incomingStore.put(packet)
-      that.handleMessage(pub, function (err) {
+      that.incomingStore.put(packet, function (err) {
         if (err) {
-          return callback && callback(err)
+          return callback(err)
         }
-        that._sendPacket(comp, callback)
+        that.handleMessage(pub, function (err) {
+          if (err) {
+            return callback(err)
+          }
+          that._sendPacket(comp, callback)
+        })
       })
     } else {
       that._sendPacket(comp, callback)
@@ -5552,6 +5487,95 @@ MqttClient.prototype._nextId = function () {
  */
 MqttClient.prototype.getLastMessageId = function () {
   return (this.nextId === 1) ? 65535 : (this.nextId - 1)
+}
+
+/**
+ * _resubscribe
+ * @api private
+ */
+MqttClient.prototype._resubscribe = function () {
+  if (!this._firstConnection &&
+      this.options.clean &&
+      Object.keys(this._resubscribeTopics).length > 0) {
+    if (this.options.resubscribe) {
+      this._resubscribeTopics.resubscribe = true
+      this.subscribe(this._resubscribeTopics)
+    } else {
+      this._resubscribeTopics = {}
+    }
+  }
+
+  this._firstConnection = false
+}
+
+/**
+ * _onConnect
+ *
+ * @api private
+ */
+MqttClient.prototype._onConnect = function (packet) {
+  if (this.disconnected) {
+    this.emit('connect', packet)
+    return
+  }
+
+  var that = this
+
+  this._setupPingTimer()
+  this._resubscribe()
+
+  this.connected = true
+  var outStore = this.outgoingStore.createStream()
+
+  this.once('close', remove)
+  outStore.on('end', function () {
+    that.removeListener('close', remove)
+    that.emit('connect', packet)
+  })
+  outStore.on('error', function (err) {
+    that.removeListener('close', remove)
+    that.emit('error', err)
+  })
+
+  function remove () {
+    outStore.destroy()
+    outStore = null
+  }
+
+  function storeDeliver () {
+    // edge case, we wrapped this twice
+    if (!outStore) {
+      return
+    }
+
+    var packet = outStore.read(1)
+    var cb
+
+    if (!packet) {
+      // read when data is available in the future
+      outStore.once('readable', storeDeliver)
+      return
+    }
+
+    // Avoid unnecessary stream read operations when disconnected
+    if (!that.disconnecting && !that.reconnectTimer) {
+      cb = that.outgoing[packet.messageId]
+      that.outgoing[packet.messageId] = function (err, status) {
+        // Ensure that the original callback passed in to publish gets invoked
+        if (cb) {
+          cb(err, status)
+        }
+
+        storeDeliver()
+      }
+      that._sendPacket(packet)
+    } else if (outStore.destroy) {
+      outStore.destroy()
+    }
+  }
+
+  // start flowing
+  storeDeliver()
 }
 
 module.exports = MqttClient
@@ -16512,7 +16536,7 @@ var createClient = function () {
 
                         _client = _async2.default.connect(baseURL, mqttConfig);
 
-                        _client.on('connect', function () {
+                        _client.on('connect', function (connack) {
                             var topicsKeys = (0, _keys2.default)(_topics);
                             if (topicsKeys.length) {
                                 topicsKeys.forEach(function (topicId) {
@@ -16522,7 +16546,7 @@ var createClient = function () {
 
                             if (_events['connect']) {
                                 _events['connect'].forEach(function (handler) {
-                                    handler();
+                                    handler(connack);
                                 });
                             }
                         });
@@ -16790,10 +16814,8 @@ mqttConnector.subscribe = function () {
             while (1) {
                 switch (_context5.prev = _context5.next) {
                     case 0:
-                        debugger;
-
                         if (!(topic instanceof Array)) {
-                            _context5.next = 5;
+                            _context5.next = 4;
                             break;
                         }
 
@@ -16853,9 +16875,9 @@ mqttConnector.subscribe = function () {
                             };
                         }(), {}));
 
-                    case 5:
+                    case 4:
                         if (!((typeof topic === 'undefined' ? 'undefined' : (0, _typeof3.default)(topic)) === 'object')) {
-                            _context5.next = 24;
+                            _context5.next = 23;
                             break;
                         }
 
@@ -16864,43 +16886,43 @@ mqttConnector.subscribe = function () {
                         _topics[id] = topic;
 
                         if (!_client) {
-                            _context5.next = 21;
+                            _context5.next = 20;
                             break;
                         }
 
-                        _context5.prev = 9;
-                        _context5.next = 12;
+                        _context5.prev = 8;
+                        _context5.next = 11;
                         return _client.subscribe(topic.name, topic.options);
 
-                    case 12:
+                    case 11:
                         granted = _context5.sent;
                         return _context5.abrupt('return', _promise2.default.resolve((0, _defineProperty3.default)({}, id, granted)));
 
-                    case 16:
-                        _context5.prev = 16;
-                        _context5.t0 = _context5['catch'](9);
+                    case 15:
+                        _context5.prev = 15;
+                        _context5.t0 = _context5['catch'](8);
                         return _context5.abrupt('return', _promise2.default.reject(_context5.t0));
 
-                    case 19:
-                        _context5.next = 22;
+                    case 18:
+                        _context5.next = 21;
                         break;
 
-                    case 21:
+                    case 20:
                         return _context5.abrupt('return', _promise2.default.reject(new Error('Client don`t created')));
 
-                    case 22:
-                        _context5.next = 25;
+                    case 21:
+                        _context5.next = 24;
                         break;
 
-                    case 24:
+                    case 23:
                         return _context5.abrupt('return', _promise2.default.reject(new Error('Not valid type of topic/topics')));
 
-                    case 25:
+                    case 24:
                     case 'end':
                         return _context5.stop();
                 }
             }
-        }, _callee5, this, [[9, 16]]);
+        }, _callee5, this, [[8, 15]]);
     }));
 
     function subscribe(_x5) {
@@ -16920,8 +16942,9 @@ mqttConnector.unsubscribe = function () {
                     case 0:
                         removableTopicsIndexes = (0, _keys2.default)(_topics).reduce(function (result, topicId, index) {
                             if (typeof name === 'string' && _topics[topicId].name === name || name instanceof Array && name.includes(_topics[topicId].name)) {
-                                if (_arguments[1]) {
-                                    if (topicId === _arguments[1]) {
+                                var unsubId = _arguments[1];
+                                if (unsubId) {
+                                    if (topicId === unsubId || unsubId instanceof Array && unsubId.includes(topicId)) {
                                         result.push(topicId);
                                     }
                                 } else {
@@ -16965,41 +16988,34 @@ mqttConnector.unsubscribe = function () {
 }();
 
 mqttConnector.unsubscribeAll = function () {
-    var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8() {
-        var _this2 = this;
-
-        return _regenerator2.default.wrap(function _callee8$(_context8) {
+    var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7() {
+        var topicId;
+        return _regenerator2.default.wrap(function _callee7$(_context7) {
             while (1) {
-                switch (_context8.prev = _context8.next) {
+                switch (_context7.prev = _context7.next) {
                     case 0:
-                        (0, _keys2.default)(_topics).forEach(function () {
-                            var _ref8 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(topicId) {
-                                return _regenerator2.default.wrap(function _callee7$(_context7) {
-                                    while (1) {
-                                        switch (_context7.prev = _context7.next) {
-                                            case 0:
-                                                _context7.next = 2;
-                                                return _client.unsubscribe(_topics[topicId].name);
-
-                                            case 2:
-                                            case 'end':
-                                                return _context7.stop();
-                                        }
-                                    }
-                                }, _callee7, _this2);
-                            }));
-
-                            return function (_x9) {
-                                return _ref8.apply(this, arguments);
-                            };
-                        }());
+                        _context7.t0 = _regenerator2.default.keys((0, _keys2.default)(_topics));
 
                     case 1:
+                        if ((_context7.t1 = _context7.t0()).done) {
+                            _context7.next = 7;
+                            break;
+                        }
+
+                        topicId = _context7.t1.value;
+                        _context7.next = 5;
+                        return _client.unsubscribe(_topics[topicId].name);
+
+                    case 5:
+                        _context7.next = 1;
+                        break;
+
+                    case 7:
                     case 'end':
-                        return _context8.stop();
+                        return _context7.stop();
                 }
             }
-        }, _callee8, this);
+        }, _callee7, this);
     }));
 
     function unsubscribeAll() {
@@ -17009,63 +17025,63 @@ mqttConnector.unsubscribeAll = function () {
     return unsubscribeAll;
 }();
 
-mqttConnector.publish = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9() {
+mqttConnector.publish = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8() {
     var _client2,
-        _args9 = arguments;
+        _args8 = arguments;
 
-    return _regenerator2.default.wrap(function _callee9$(_context9) {
+    return _regenerator2.default.wrap(function _callee8$(_context8) {
         while (1) {
-            switch (_context9.prev = _context9.next) {
+            switch (_context8.prev = _context8.next) {
                 case 0:
                     if (!_client) {
-                        _context9.next = 6;
+                        _context8.next = 6;
                         break;
                     }
 
-                    _context9.next = 3;
-                    return (_client2 = _client).publish.apply(_client2, _args9);
+                    _context8.next = 3;
+                    return (_client2 = _client).publish.apply(_client2, _args8);
 
                 case 3:
-                    return _context9.abrupt('return', _context9.sent);
+                    return _context8.abrupt('return', _context8.sent);
 
                 case 6:
                     throw new Error('Client is empty');
 
                 case 7:
                 case 'end':
-                    return _context9.stop();
+                    return _context8.stop();
             }
         }
-    }, _callee9, this);
+    }, _callee8, this);
 }));
 
 mqttConnector.close = function () {
-    var _ref10 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10() {
-        var _args10 = arguments;
-        return _regenerator2.default.wrap(function _callee10$(_context10) {
+    var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9() {
+        var _args9 = arguments;
+        return _regenerator2.default.wrap(function _callee9$(_context9) {
             while (1) {
-                switch (_context10.prev = _context10.next) {
+                switch (_context9.prev = _context9.next) {
                     case 0:
                         if (!_client) {
-                            _context10.next = 3;
+                            _context9.next = 3;
                             break;
                         }
 
                         _topics = {};
-                        return _context10.abrupt('return', _client.end(_args10[0]).then(function () {
+                        return _context9.abrupt('return', _client.end(_args9[0]).then(function () {
                             _client = null;
                         }));
 
                     case 3:
                     case 'end':
-                        return _context10.stop();
+                        return _context9.stop();
                 }
             }
-        }, _callee10, this);
+        }, _callee9, this);
     }));
 
     function close() {
-        return _ref10.apply(this, arguments);
+        return _ref9.apply(this, arguments);
     }
 
     return close;
@@ -27207,7 +27223,7 @@ if (__webpack_require__.c[__webpack_require__.s] === module) {
 /* 313 */
 /***/ (function(module, exports) {
 
-module.exports = {"_from":"git+https://github.com/flespi-software/MQTT.js.git#feature-mqtt-5","_id":"mqtt@2.18.7","_inBundle":false,"_integrity":"","_location":"/mqtt","_phantomChildren":{"core-util-is":"1.0.2","inherits":"2.0.3","isarray":"1.0.0","process-nextick-args":"2.0.0","safe-buffer":"5.1.1","util-deprecate":"1.0.2"},"_requested":{"type":"git","raw":"git+https://github.com/flespi-software/MQTT.js.git#feature-mqtt-5","rawSpec":"git+https://github.com/flespi-software/MQTT.js.git#feature-mqtt-5","saveSpec":"git+https://github.com/flespi-software/MQTT.js.git#feature-mqtt-5","fetchSpec":"https://github.com/flespi-software/MQTT.js.git","gitCommittish":"feature-mqtt-5"},"_requiredBy":["#USER","/"],"_resolved":"git+https://github.com/flespi-software/MQTT.js.git#73450f19780548399f19aca45e716cd65d73fe57","_spec":"git+https://github.com/flespi-software/MQTT.js.git#feature-mqtt-5","_where":"/home/sebu/proj/vuex-flespi-io-plugin","bin":{"mqtt_pub":"./bin/pub.js","mqtt_sub":"./bin/sub.js","mqtt":"./mqtt.js"},"browser":{"./mqtt.js":"./lib/connect/index.js","fs":false,"tls":false,"net":false},"bugs":{"url":"https://github.com/mqttjs/MQTT.js/issues"},"bundleDependencies":false,"contributors":[{"name":"Adam Rudd","email":"adamvrr@gmail.com"},{"name":"Matteo Collina","email":"matteo.collina@gmail.com","url":"https://github.com/mcollina"},{"name":"Siarhei Buntsevich","email":"scarry0506@gmail.com","url":"https://github.com/scarry1992"}],"dependencies":{"commist":"^1.0.0","concat-stream":"^1.6.2","end-of-stream":"^1.4.1","es6-map":"^0.1.5","help-me":"^1.0.1","inherits":"^2.0.3","minimist":"^1.2.0","mqtt-packet":"^6.0.0","pump":"^3.0.0","readable-stream":"^2.3.6","reinterval":"^1.1.0","split2":"^2.1.1","websocket-stream":"^5.1.2","xtend":"^4.0.1"},"deprecated":false,"description":"A library for the MQTT protocol","devDependencies":{"@types/node":"^8.10.21","browserify":"^16.2.2","codecov":"^3.0.4","global":"^4.3.2","istanbul":"^0.4.5","mkdirp":"^0.5.1","mocha":"^4.1.0","mqtt-connection":"^4.0.0","pre-commit":"^1.2.2","rimraf":"^2.6.2","safe-buffer":"^5.1.2","should":"^13.2.1","sinon":"~1.17.7","snazzy":"^7.1.1","standard":"^11.0.1","through2":"^2.0.3","tslint":"^5.11.0","tslint-config-standard":"^7.1.0","typescript":"^2.9.2","uglify-js":"^3.4.5","ws":"^3.3.3","zuul":"^3.12.0","zuul-ngrok":"^4.0.0"},"engines":{"node":">=4.0.0"},"files":["dist/","CONTRIBUTING.md","doc","lib","bin","examples","test","types","mqtt.js"],"homepage":"https://github.com/mqttjs/MQTT.js#readme","keywords":["mqtt","publish/subscribe","publish","subscribe"],"license":"MIT","main":"mqtt.js","name":"mqtt","pre-commit":["test","tslint"],"repository":{"type":"git","url":"git://github.com/mqttjs/MQTT.js.git"},"scripts":{"browser-build":"rimraf dist/ && mkdirp dist/ && browserify mqtt.js -s mqtt > dist/mqtt.js && uglifyjs < dist/mqtt.js > dist/mqtt.min.js","browser-test":"zuul --server test/browser/server.js --local --open test/browser/test.js","ci":"npm run tslint && npm run typescript-test && npm run test && codecov","prepare":"npm run browser-build","pretest":"standard | snazzy","sauce-test":"zuul --server test/browser/server.js --tunnel ngrok -- test/browser/test.js","test":"istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly --","tslint":"if [[ \"`node -v`\" != \"v4.3.2\" ]]; then tslint types/**/*.d.ts; fi","typescript-compile-execute":"node test/typescript/*.js","typescript-compile-test":"tsc -p test/typescript/tsconfig.json","typescript-test":"npm run typescript-compile-test && npm run typescript-compile-execute","weapp-test":"zuul --server test/browser/server.js --local --open test/browser/wx.js"},"standard":{"env":["mocha"]},"types":"types/index.d.ts","version":"2.18.7"}
+module.exports = {"_from":"git+https://github.com/mqttjs/MQTT.js.git","_id":"mqtt@2.18.8","_inBundle":false,"_integrity":"","_location":"/mqtt","_phantomChildren":{"core-util-is":"1.0.2","inherits":"2.0.3","isarray":"1.0.0","process-nextick-args":"2.0.0","safe-buffer":"5.1.1","util-deprecate":"1.0.2"},"_requested":{"type":"git","raw":"mqtt@git+https://github.com/mqttjs/MQTT.js.git","name":"mqtt","escapedName":"mqtt","rawSpec":"git+https://github.com/mqttjs/MQTT.js.git","saveSpec":"git+https://github.com/mqttjs/MQTT.js.git","fetchSpec":"https://github.com/mqttjs/MQTT.js.git","gitCommittish":null},"_requiredBy":["/"],"_resolved":"git+https://github.com/mqttjs/MQTT.js.git#f94cb75b09e9214e333eae32f2781ed5ca0cf2b9","_spec":"mqtt@git+https://github.com/mqttjs/MQTT.js.git","_where":"/home/sebu/proj/vuex-flespi-io-plugin","bin":{"mqtt_pub":"./bin/pub.js","mqtt_sub":"./bin/sub.js","mqtt":"./mqtt.js"},"browser":{"./mqtt.js":"./lib/connect/index.js","fs":false,"tls":false,"net":false},"bugs":{"url":"https://github.com/mqttjs/MQTT.js/issues"},"bundleDependencies":false,"contributors":[{"name":"Adam Rudd","email":"adamvrr@gmail.com"},{"name":"Matteo Collina","email":"matteo.collina@gmail.com","url":"https://github.com/mcollina"},{"name":"Siarhei Buntsevich","email":"scarry0506@gmail.com","url":"https://github.com/scarry1992"}],"dependencies":{"commist":"^1.0.0","concat-stream":"^1.6.2","end-of-stream":"^1.4.1","es6-map":"^0.1.5","help-me":"^1.0.1","inherits":"^2.0.3","minimist":"^1.2.0","mqtt-packet":"^6.0.0","pump":"^3.0.0","readable-stream":"^2.3.6","reinterval":"^1.1.0","split2":"^2.1.1","websocket-stream":"^5.1.2","xtend":"^4.0.1"},"deprecated":false,"description":"A library for the MQTT protocol","devDependencies":{"@types/node":"^8.10.21","browserify":"^16.2.2","codecov":"^3.0.4","global":"^4.3.2","istanbul":"^0.4.5","mkdirp":"^0.5.1","mocha":"^4.1.0","mqtt-connection":"^4.0.0","pre-commit":"^1.2.2","rimraf":"^2.6.2","safe-buffer":"^5.1.2","should":"^13.2.1","sinon":"~1.17.7","snazzy":"^7.1.1","standard":"^11.0.1","through2":"^2.0.3","tslint":"^5.11.0","tslint-config-standard":"^7.1.0","typescript":"^2.9.2","uglify-js":"^3.4.5","ws":"^3.3.3","zuul":"^3.12.0","zuul-ngrok":"^4.0.0"},"engines":{"node":">=4.0.0"},"files":["dist/","CONTRIBUTING.md","doc","lib","bin","examples","test","types","mqtt.js"],"homepage":"https://github.com/mqttjs/MQTT.js#readme","keywords":["mqtt","publish/subscribe","publish","subscribe"],"license":"MIT","main":"mqtt.js","name":"mqtt","pre-commit":["test","tslint"],"repository":{"type":"git","url":"git://github.com/mqttjs/MQTT.js.git"},"scripts":{"browser-build":"rimraf dist/ && mkdirp dist/ && browserify mqtt.js -s mqtt > dist/mqtt.js && uglifyjs < dist/mqtt.js > dist/mqtt.min.js","browser-test":"zuul --server test/browser/server.js --local --open test/browser/test.js","ci":"npm run tslint && npm run typescript-test && npm run test && codecov","prepare":"npm run browser-build","pretest":"standard | snazzy","sauce-test":"zuul --server test/browser/server.js --tunnel ngrok -- test/browser/test.js","test":"istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly --","tslint":"if [[ \"`node -v`\" != \"v4.3.2\" ]]; then tslint types/**/*.d.ts; fi","typescript-compile-execute":"node test/typescript/*.js","typescript-compile-test":"tsc -p test/typescript/tsconfig.json","typescript-test":"npm run typescript-compile-test && npm run typescript-compile-execute","weapp-test":"zuul --server test/browser/server.js --local --open test/browser/wx.js"},"standard":{"env":["mocha"]},"types":"types/index.d.ts","version":"2.18.8"}
 
 /***/ }),
 /* 314 */
@@ -27543,7 +27559,7 @@ function generate(http, config) {
 }
 
 exports.default = function (http) {
-    return [{"basePath":"/platform","paths":{"/customer":{"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/customer/accounts/{accounts-selector}":{"parameters":[{"name":"accounts-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]}},"/customer/chat":{"delete":{"parameters":[{"name":"data","in":"query"}]},"get":{"parameters":[{"name":"data","in":"query"}]},"post":{"parameters":[{"name":"data","in":"body"}]}},"/customer/logs":{"get":{"parameters":[{"name":"data","in":"query"}]}},"/customer/statistics":{"get":{"parameters":[{"name":"data","in":"query"}]}},"/customer/tokens":{"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/customer/tokens/{tokens-selector}":{"parameters":[{"name":"tokens-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/customer/unsubscribe":{"get":{"parameters":[{"name":"email","in":"query"},{"name":"checksum","in":"query"}]}}}},{"basePath":"/gw","paths":{"/channels":{"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/channels/{1-ch-selector}/messages":{"parameters":[{"name":"1-ch-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/channels/{ch-selector}":{"parameters":[{"name":"ch-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/channels/{ch-selector}/commands-queue":{"parameters":[{"name":"ch-selector","in":"path"}],"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/channels/{ch-selector}/commands-queue/{cmd-queue-selector}":{"parameters":[{"name":"ch-selector","in":"path"},{"name":"cmd-queue-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]}},"/channels/{ch-selector}/commands-result":{"parameters":[{"name":"ch-selector","in":"path"}],"delete":{"parameters":[{"name":"data","in":"query"}]},"get":{"parameters":[{"name":"data","in":"query"}]}},"/channels/{ch-selector}/connections/{conn-selector}":{"parameters":[{"name":"ch-selector","in":"path"},{"name":"conn-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]}},"/channels/{ch-selector}/logs":{"parameters":[{"name":"ch-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/channels/{ch-selector}/messages":{"parameters":[{"name":"ch-selector","in":"path"}],"delete":{"parameters":[{"name":"data","in":"query"}]}},"/devices":{"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/devices/{dev-selector}":{"parameters":[{"name":"dev-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/devices/{dev-selector}/logs":{"parameters":[{"name":"dev-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/devices/{dev-selector}/messages":{"parameters":[{"name":"dev-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/devices/{dev-selector}/settings/{sett-selector}":{"parameters":[{"name":"dev-selector","in":"path"},{"name":"sett-selector","in":"path"}],"delete":{"parameters":[{"name":"data","in":"query"}]},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/devices/{dev-selector}/telemetry":{"parameters":[{"name":"dev-selector","in":"path"}],"get":{}},"/message-parameters/{message-parameter.selector}":{"parameters":[{"name":"message-parameter.selector","in":"path"}],"get":{"parameters":[{"name":"fields","in":"query"}]}},"/modems":{"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/modems/{modem-selector}":{"parameters":[{"name":"modem-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/modems/{modem-selector}/logs":{"parameters":[{"name":"modem-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/protocols/{protocol-selector}":{"parameters":[{"name":"protocol-selector","in":"path"}],"get":{"parameters":[{"name":"fields","in":"query"}]}},"/protocols/{protocol-selector}/commands/{protocol-cmds-selector}":{"parameters":[{"name":"protocol-selector","in":"path"},{"name":"protocol-cmds-selector","in":"path"}],"get":{"parameters":[{"name":"fields","in":"query"}]}},"/protocols/{protocol-selector}/device-types/{devtypes-selector}":{"parameters":[{"name":"protocol-selector","in":"path"},{"name":"devtypes-selector","in":"path"}],"get":{"parameters":[{"name":"fields","in":"query"}]}},"/streams":{"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/streams/{stm-selector}":{"parameters":[{"name":"stm-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/streams/{stm-selector}/logs":{"parameters":[{"name":"stm-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/streams/{stm-selector}/subscriptions":{"parameters":[{"name":"stm-selector","in":"path"}],"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/streams/{stm-selector}/subscriptions/{subscr-selector}":{"parameters":[{"name":"subscr-selector","in":"path"},{"name":"stm-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}}}},{"basePath":"/storage","paths":{"/abques":{"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/abques/{1-abque-selector}/messages":{"parameters":[{"name":"1-abque-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/abques/{abque-selector}":{"parameters":[{"name":"abque-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/abques/{abque-selector}/logs":{"parameters":[{"name":"abque-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/abques/{abque-selector}/messages":{"parameters":[{"name":"abque-selector","in":"path"}],"delete":{"parameters":[{"name":"data","in":"query"}]},"post":{"parameters":[{"name":"data","in":"body"}]}},"/cdns":{"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/cdns/{cdn-selector}":{"parameters":[{"name":"cdn-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/cdns/{cdn-selector}/files":{"parameters":[{"name":"cdn-selector","in":"path"}],"delete":{"parameters":[{"name":"data","in":"body"}]},"get":{"parameters":[{"name":"data","in":"query"}]},"post":{"parameters":[{"name":"file","in":"formData"},{"name":"data","in":"formData"}]}},"/cdns/{cdn-selector}/logs":{"parameters":[{"name":"cdn-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/containers":{"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/containers/{container-selector}":{"parameters":[{"name":"container-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/containers/{container-selector}/logs":{"parameters":[{"name":"container-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/containers/{container-selector}/messages":{"parameters":[{"name":"container-selector","in":"path"}],"delete":{"parameters":[{"name":"data","in":"query"}]},"get":{"parameters":[{"name":"data","in":"query"}]},"post":{"parameters":[{"name":"data","in":"body"}]}}}},{"basePath":"/mqtt","paths":{"/logs":{"get":{"parameters":[{"name":"data","in":"query"}]}},"/messages":{"post":{"parameters":[{"name":"data","in":"body"}]}},"/messages/{messages-selector}":{"parameters":[{"name":"messages-selector","in":"path"}],"delete":{},"get":{}},"/sessions":{"post":{"parameters":[{"name":"data","in":"body"}]}},"/sessions/{sessions-selector}":{"parameters":[{"name":"sessions-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]}},"/sessions/{sessions-selector}/logs":{"parameters":[{"name":"sessions-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/sessions/{sessions-selector}/subscriptions":{"parameters":[{"name":"sessions-selector","in":"path"}],"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/sessions/{sessions-selector}/subscriptions/{subscriptions-selector}":{"parameters":[{"name":"sessions-selector","in":"path"},{"name":"subscriptions-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]}}}},{"basePath":"/auth","paths":{"/account/confirm":{"post":{"parameters":[{"name":"data","in":"body"}]}},"/account/register":{"post":{"parameters":[{"name":"data","in":"body"}]}},"/email/confirm":{"get":{}},"/email/revert":{"get":{}},"/email/update":{"put":{"parameters":[{"name":"data","in":"body"}]}},"/info":{"get":{}},"/login/credentials":{"post":{"parameters":[{"name":"data","in":"body"}]}},"/login/passwordless":{"get":{},"post":{"parameters":[{"name":"data","in":"body"}]}},"/oauth/providers":{"get":{}},"/oauth/providers/facebook":{"get":{}},"/oauth/providers/github":{"get":{}},"/oauth/providers/google":{"get":{}},"/oauth/providers/live":{"get":{}},"/password":{"put":{"parameters":[{"name":"data","in":"body"}]}}}}].reduce(function (result, config) {
+    return [{"basePath":"/platform","paths":{"/customer":{"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/customer/accounts/{accounts-selector}":{"parameters":[{"name":"accounts-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]}},"/customer/chat":{"delete":{"parameters":[{"name":"data","in":"query"}]},"get":{"parameters":[{"name":"data","in":"query"}]},"post":{"parameters":[{"name":"data","in":"body"}]},"put":{"parameters":[{"name":"data","in":"body"}]}},"/customer/logs":{"get":{"parameters":[{"name":"data","in":"query"}]}},"/customer/statistics":{"get":{"parameters":[{"name":"data","in":"query"}]}},"/customer/tokens":{"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/customer/tokens/{tokens-selector}":{"parameters":[{"name":"tokens-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/customer/unsubscribe":{"get":{"parameters":[{"name":"email","in":"query"},{"name":"checksum","in":"query"}]}},"/limits":{"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/limits/{limits-selector}":{"parameters":[{"name":"limits-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/subaccounts":{"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/subaccounts/{subaccounts-selector}":{"parameters":[{"name":"subaccounts-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/subaccounts/{subaccounts-selector}/tokens":{"parameters":[{"name":"subaccounts-selector","in":"path"}],"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/subaccounts/{subaccounts-selector}/tokens/{tokens-selector}":{"parameters":[{"name":"subaccounts-selector","in":"path"},{"name":"tokens-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}}}},{"basePath":"/gw","paths":{"/channels":{"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/channels/{1-ch-selector}/commands-result":{"parameters":[{"name":"1-ch-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/channels/{1-ch-selector}/messages":{"parameters":[{"name":"1-ch-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/channels/{ch-selector}":{"parameters":[{"name":"ch-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/channels/{ch-selector}/commands-queue":{"parameters":[{"name":"ch-selector","in":"path"}],"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/channels/{ch-selector}/commands-queue/{cmd-queue-selector}":{"parameters":[{"name":"ch-selector","in":"path"},{"name":"cmd-queue-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]}},"/channels/{ch-selector}/commands-result":{"parameters":[{"name":"ch-selector","in":"path"}],"delete":{"parameters":[{"name":"data","in":"query"}]}},"/channels/{ch-selector}/connections/{conn-selector}":{"parameters":[{"name":"ch-selector","in":"path"},{"name":"conn-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]}},"/channels/{ch-selector}/logs":{"parameters":[{"name":"ch-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/channels/{ch-selector}/messages":{"parameters":[{"name":"ch-selector","in":"path"}],"delete":{"parameters":[{"name":"data","in":"query"}]}},"/devices":{"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/devices/{dev-selector}":{"parameters":[{"name":"dev-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/devices/{dev-selector}/logs":{"parameters":[{"name":"dev-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/devices/{dev-selector}/messages":{"parameters":[{"name":"dev-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/devices/{dev-selector}/settings/{sett-selector}":{"parameters":[{"name":"dev-selector","in":"path"},{"name":"sett-selector","in":"path"}],"delete":{"parameters":[{"name":"data","in":"query"}]},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/devices/{dev-selector}/telemetry":{"parameters":[{"name":"dev-selector","in":"path"}],"get":{}},"/message-parameters/{message-parameter.selector}":{"parameters":[{"name":"message-parameter.selector","in":"path"}],"get":{"parameters":[{"name":"fields","in":"query"}]}},"/modems":{"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/modems/{modem-selector}":{"parameters":[{"name":"modem-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/modems/{modem-selector}/logs":{"parameters":[{"name":"modem-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/protocols/{protocol-selector}":{"parameters":[{"name":"protocol-selector","in":"path"}],"get":{"parameters":[{"name":"fields","in":"query"}]}},"/protocols/{protocol-selector}/commands/{protocol-cmds-selector}":{"parameters":[{"name":"protocol-selector","in":"path"},{"name":"protocol-cmds-selector","in":"path"}],"get":{"parameters":[{"name":"fields","in":"query"}]}},"/protocols/{protocol-selector}/device-types/{devtypes-selector}":{"parameters":[{"name":"protocol-selector","in":"path"},{"name":"devtypes-selector","in":"path"}],"get":{"parameters":[{"name":"fields","in":"query"}]}},"/streams":{"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/streams/{stm-selector}":{"parameters":[{"name":"stm-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/streams/{stm-selector}/logs":{"parameters":[{"name":"stm-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/streams/{stm-selector}/subscriptions":{"parameters":[{"name":"stm-selector","in":"path"}],"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/streams/{stm-selector}/subscriptions/{subscr-selector}":{"parameters":[{"name":"subscr-selector","in":"path"},{"name":"stm-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]}}}},{"basePath":"/storage","paths":{"/abques":{"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/abques/{1-abque-selector}/messages":{"parameters":[{"name":"1-abque-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/abques/{abque-selector}":{"parameters":[{"name":"abque-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/abques/{abque-selector}/logs":{"parameters":[{"name":"abque-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/abques/{abque-selector}/messages":{"parameters":[{"name":"abque-selector","in":"path"}],"delete":{"parameters":[{"name":"data","in":"query"}]},"post":{"parameters":[{"name":"data","in":"body"}]}},"/cdns":{"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/cdns/{cdn-selector}":{"parameters":[{"name":"cdn-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/cdns/{cdn-selector}/files":{"parameters":[{"name":"cdn-selector","in":"path"}],"delete":{"parameters":[{"name":"data","in":"body"}]},"get":{"parameters":[{"name":"data","in":"query"}]},"post":{"parameters":[{"name":"file","in":"formData"},{"name":"data","in":"formData"}]}},"/cdns/{cdn-selector}/logs":{"parameters":[{"name":"cdn-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/containers":{"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/containers/{container-selector}":{"parameters":[{"name":"container-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]},"put":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/containers/{container-selector}/logs":{"parameters":[{"name":"container-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/containers/{container-selector}/messages":{"parameters":[{"name":"container-selector","in":"path"}],"delete":{"parameters":[{"name":"data","in":"query"}]},"get":{"parameters":[{"name":"data","in":"query"}]},"post":{"parameters":[{"name":"data","in":"body"}]}}}},{"basePath":"/mqtt","paths":{"/logs":{"get":{"parameters":[{"name":"data","in":"query"}]}},"/messages":{"post":{"parameters":[{"name":"data","in":"body"}]}},"/messages/{messages-selector}":{"parameters":[{"name":"messages-selector","in":"path"}],"delete":{"parameters":[{"name":"data","in":"body"}]},"get":{"parameters":[{"name":"data","in":"query"}]}},"/sessions":{"post":{"parameters":[{"name":"data","in":"body"}]}},"/sessions/{sessions-selector}":{"parameters":[{"name":"sessions-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]}},"/sessions/{sessions-selector}/logs":{"parameters":[{"name":"sessions-selector","in":"path"}],"get":{"parameters":[{"name":"data","in":"query"}]}},"/sessions/{sessions-selector}/subscriptions":{"parameters":[{"name":"sessions-selector","in":"path"}],"post":{"parameters":[{"name":"fields","in":"query"},{"name":"data","in":"body"}]}},"/sessions/{sessions-selector}/subscriptions/{subscriptions-selector}":{"parameters":[{"name":"sessions-selector","in":"path"},{"name":"subscriptions-selector","in":"path"}],"delete":{},"get":{"parameters":[{"name":"fields","in":"query"}]}}}},{"basePath":"/auth","paths":{"/account/confirm":{"post":{"parameters":[{"name":"data","in":"body"}]}},"/account/register":{"post":{"parameters":[{"name":"data","in":"body"}]}},"/email/confirm":{"get":{}},"/email/revert":{"get":{}},"/email/update":{"put":{"parameters":[{"name":"data","in":"body"}]}},"/info":{"get":{}},"/login/credentials":{"post":{"parameters":[{"name":"data","in":"body"}]}},"/login/passwordless":{"get":{},"post":{"parameters":[{"name":"data","in":"body"}]}},"/oauth/providers":{"get":{}},"/oauth/providers/facebook":{"get":{}},"/oauth/providers/github":{"get":{}},"/oauth/providers/google":{"get":{}},"/oauth/providers/live":{"get":{}},"/password":{"put":{"parameters":[{"name":"data","in":"body"}]}}}}].reduce(function (result, config) {
         result[config.basePath.slice(1)] = generate(http, config);
         return result;
     }, {});
