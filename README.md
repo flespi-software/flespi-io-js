@@ -1,5 +1,5 @@
 # flespi-io-js
-
+![Logo](/misc/flespiiojs.png?raw=true "Flespi.io logo")
 > flespi-io-js is a isomorphic library for connecting to [flespi.io](https://flespi.io) via http and mqtt protocols.
 
 ## Features
