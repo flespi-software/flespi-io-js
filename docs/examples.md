@@ -15,11 +15,13 @@ Use as main build:
             httpConfig: { server: 'https://flespi.io' },
             socketConfig: { server: `wss://mqtt.flespi.io` }
         })
-        /*create connection via mqtt with subscriptions to some topics*/
-        connector.socket([
-          {name: 'flespi/logs', handler: (data) => { console.log(data) }},
-          {name: 'flespi/message/gw/devices/269/+', handler: (data) => { console.log(data) }}
-        ])
+        /*create connection via mqtt with subscriptions to some topics and publish*/
+        connector.socket.on('connect', async (connack) => {
+            console.log(connack)
+            let grants = await connector.socket.subscribe({name: '#', handler: render})
+            connector.socket.publish('custom/info', JSON.stringify({hello: 'world'}))
+            console.log(JSON.stringify(grants))
+        })
         /* create request via http */
         connector.http({url: '/platform/customer'})
           .then(resp => console.log(resp))
@@ -41,11 +43,13 @@ let connector = new Connection({
   httpConfig: { server: 'https://flespi.io' },
   socketConfig: { server: `ws://mqtt.flespi.io` }
 })
-/*create connection via mqtt with subscriptions to some topics*/
-connector.socket([
-  {name: 'flespi/logs', handler: (data) => { console.log(data) }},
-  {name: 'flespi/message/gw/devices/269/+', handler: (data) => { console.log(data) }}
-])
+/*create connection via mqtt with subscriptions to some topics and publish*/
+connector.socket.on('connect', async (connack) => {
+    console.log(connack)
+    let grants = await connector.socket.subscribe({name: '#', handler: render})
+    connector.socket.publish('custom/info', JSON.stringify({hello: 'world'}))
+    console.log(JSON.stringify(grants))
+})
 /* create request via http */
 connector.http({url: '/platform/customer'})
   .then(resp => console.log(resp))
@@ -70,12 +74,13 @@ Vue.use(ConnectionPlugin, {
 ```js
 /* Subscribe to event */
 Vue.connector.socket.on('connect', () => { console.log('Working!!!!') })
-/* Subscribe to topics */
-Vue.connector.socket([
-  {name: '#', handler: (data) => { console.log(data.toString()) }},
-  {name: 'flespi/logs', handler: (data) => { console.log(data) }},
-  {name: 'flespi/message/gw/devices/269/+', handler: (data) => { console.log(data) }}
-])
+/*subscribe to some topics and publish*/
+connector.socket.on('connect', async (connack) => {
+    console.log(connack)
+    let grants = await connector.socket.subscribe({name: '#', handler: render})
+    connector.socket.publish('custom/info', JSON.stringify({hello: 'world'}))
+    console.log(JSON.stringify(grants))
+})
 /* Make HTTP request */
 Vue.connector.http({url: '/platform/customer'})
   .then(resp => console.log(resp))
@@ -86,12 +91,13 @@ Vue.connector.http({url: '/platform/customer'})
 ```js
 /* Subscribe to event */
 this.$connector.socket.on('connect', () => { console.log('Working!!!!') })
-/* Subscribe to topics */
-this.$connector.socket([
-  {name: '#', handler: (data) => { console.log(data.toString()) }},
-  {name: 'flespi/logs', handler: (data) => { console.log(data) }},
-  {name: 'flespi/message/gw/devices/269/+', handler: (data) => { console.log(data) }}
-])
+/*subscribe to some topics and publish*/
+connector.socket.on('connect', async (connack) => {
+    console.log(connack)
+    let grants = await connector.socket.subscribe({name: '#', handler: render})
+    connector.socket.publish('custom/info', JSON.stringify({hello: 'world'}))
+    console.log(JSON.stringify(grants))
+})
 /* Make HTTP request */
 this.$connector.http({url: '/platform/customer'})
   .then(resp => console.log(resp))
@@ -107,7 +113,13 @@ let connector = new Connection({
 
 connector.gw.getChannels('all', {}).then((resp) => { console.log(resp.data) })
 
-connector.socket.subscribe({name: '#', handler: (message) => { console.log(message) }})
+/*subscribe to some topics and publish*/
+connector.socket.on('connect', async (connack) => {
+    console.log(connack)
+    let grants = await connector.socket.subscribe({name: '#', handler: render})
+    connector.socket.publish('custom/info', JSON.stringify({hello: 'world'}))
+    console.log(JSON.stringify(grants))
+})
 
 connector.poolDevices((data) => { console.log(`data: ${JSON.stringify(data.data.result)}`) }, (type, data) => { console.log(`mqtt ${type}: ${JSON.stringify(data)}`) })
 ```

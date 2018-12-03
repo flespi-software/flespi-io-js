@@ -1,6 +1,6 @@
 let Connection = require('../dist/node')
 
-let connector = new Connection({token: 'FlespiToken AfGbg3xxwxX3C8WVHeHuZe4thoujmcKNgeMk79FuvslVo5GT7beWd6fjkxsvy26E', socketConfig: {server: `ws://localhost:9016`, clientId: 'ThisIsMe!!!'}})
+let connector = new Connection({token: 'FlespiToken xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', socketConfig: {server: `ws://localhost:9016`, clientId: 'ThisIsMe!!!'}})
 let count = 0
 
 connector.socket.on('reconnect', () => { console.log('reconnect') })

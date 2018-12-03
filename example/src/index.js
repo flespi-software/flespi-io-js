@@ -7,14 +7,14 @@ let inputToken = document.querySelector('#token'),
     getChannelsButton = document.querySelector('#getChannels'),
     fileButton = document.querySelector('#fileData')
 
-submitToken.addEventListener('click', async () => {
+submitToken.addEventListener('click', () => {
     connector.token = inputToken.value
-    try {
+    connector.socket.on('connect', async (connack) => {
+        console.log(connack)
         let grants = await connector.socket.subscribe({name: '#', handler: render})
+        connector.socket.publish('custom/info', JSON.stringify({hello: 'world'}))
         console.log(JSON.stringify(grants))
-    } catch (e) {
-        console.log(e)
-    }
+    })
 })
 
 getChannelsButton.addEventListener('click', async () => {
@@ -24,9 +24,9 @@ getChannelsButton.addEventListener('click', async () => {
 })
 
 function render (data, topic) {
-    let element = document.createElement('pre'),
+    let element = document.createElement('div'),
         parent = document.querySelector('#mqtt')
-    element.innerHTML = topic + JSON.stringify(JSON.parse(data.toString()), null, 1)
+    element.innerHTML = `${topic}: ${data.toString()}`
     parent.appendChild(element)
 }
 
