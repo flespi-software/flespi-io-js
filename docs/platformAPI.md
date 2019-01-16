@@ -18,8 +18,8 @@ connector.platform.getCustomerAccounts(query)
 | Method  | Alias  | Params  | Description  |
 |---|---|---|---|
 | http.platform.customer.get  | platform.getCustomer  |  query |  View your registration data: name, email, ACL and ID. |
-|  http.platform.customer.accounts.get | platform.getCustomerAccounts  | accountSelector, query  | Get accounts through which it is possible to authorize customer on the platform.  |
-|  http.platform.customer.accounts.delete | platform.deleteCustomerAccounts  | accountSelector  |  Detach selected accounts from flespi customer |
+|  http.platform.customer.oauth.get | platform.getCustomerOauth  | accountSelector, query  | Get OAuth profiles through which it is possible to authorize customer on the platform  |
+|  http.platform.customer.oauth.delete | platform.deleteCustomerOauth  | accountSelector  |  Detach selected OAuth profiles from flespi customer |
 | http.platform.customer.logs.get  | platform.getCustomerLogs  | query  |  Get logs for whole platform. The request without parameters will return all logs records. |
 |  http.platform.customer.statistics.get | platform.getCustomerStatistics  | query  |  Platform storing items statistics counters into special container available within this method. You may optionally filter them by "origin" or activate generalization algorithm to aggregate counters. |
 | http.platform.customer.tokens.get  | platform.getCustomerTokens  |  tokenSelector, query | List existing tokens with specified fields.  |
@@ -34,7 +34,6 @@ connector.platform.getCustomerAccounts(query)
 | http.platform.subaccounts.delete  | platform.deleteSubaccounts | subaccountsSelector  |  Delete selected subaccounts. |
 | http.platform.subaccounts.get  | platform.getSubaccounts | subaccountsSelector, query  |  Get subaccounts. |
 | http.platform.subaccounts.put  | platform.putSubaccounts | subaccountsSelector, query, body  |  Update existing subaccounts. |
-
 | http.platform.subaccounts.tokens.post  | platform.postSubaccountsTokens | subaccountsSelector, query, body |  Generate new tokens. |
 | http.platform.subaccounts.tokens.delete  | platform.deleteSubaccountsTokens | subaccountsSelector, tokensSelector  |  Delete tokens. |
 | http.platform.subaccounts.tokens.get  | platform.getSubaccountsTokens | subaccountsSelector, tokensSelector, query  |  Get subaccount's tokens. |

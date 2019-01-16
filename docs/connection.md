@@ -20,7 +20,14 @@ The arguments are:
 let connector = new Connection({
   token: 'FlespiToken xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
   httpConfig: { server: 'https://server.io', port: 8080 },
-  socketConfig: { server: `ws://server.io` }
+  socketConfig: { server: `ws://server.io`, mqttSettings: {
+            reschedulePings: true,
+            keepalive: 3600,
+            resubscribe: false,
+            reconnectPeriod: 5000,
+            connectTimeout: 3600000
+        }
+    }
 })
 ```
 
@@ -42,5 +49,12 @@ connector.httpConfig = { server: 'http://server.io', port: 80 }
 
 ```js
 let socketConfig = connector.socketConfig
-connector.socketConfig = { server: 'ws://mqtt.server.io' }
+connector.socketConfig = { server: 'ws://mqtt.server.io', mqttSettings: {
+                reschedulePings: true,
+                keepalive: 3600,
+                resubscribe: false,
+                reconnectPeriod: 5000,
+                connectTimeout: 3600000
+            }
+        }
 ```
