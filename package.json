@@ -1,6 +1,6 @@
 {
   "name": "flespi-io-js",
-  "version": "0.3.20",
+  "version": "0.3.21",
   "description": "flespi http/mqtt connection library",
   "main": "./dist/main.js",
   "module": "./dist/module.js",
@@ -28,6 +28,7 @@
     "form-data": "^2.3.2",
     "in-array": "^0.1.2",
     "lodash": "^4.17.10",
-    "mqtt": "git+https://github.com/mqttjs/MQTT.js.git"
+    "mqtt": "git+https://github.com/mqttjs/MQTT.js.git",
+    "websocket-stream": "git+https://github.com/scarry1992/websocket-stream.git#cork-logic-browser-fix"
   }
 }
