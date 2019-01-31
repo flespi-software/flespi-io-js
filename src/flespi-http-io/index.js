@@ -1,5 +1,6 @@
 /* sugar generator */
 let FData = typeof FormData !== 'undefined' ? FormData : require('form-data')
+const CONFIGS = require('../configs.json')
 function generate (http, config) {
     let base = config.basePath,
         baseName = base.slice(1)
@@ -171,7 +172,6 @@ function generate (http, config) {
 }
 
 export default (http) => {
-    /* using global variable from webpack by CONFIGS */
     return CONFIGS.reduce((result, config) => {
         result[config.basePath.slice(1)] = generate(http, config)
         return result

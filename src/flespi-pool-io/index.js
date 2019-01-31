@@ -1,4 +1,4 @@
-import config from './config'
+import config from './config.json'
 
 export default function (http, mqtt) {
     let pool = {}, /* object with methods */

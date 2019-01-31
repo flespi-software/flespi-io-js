@@ -3,6 +3,7 @@ process.env.NODE_ENV = 'production'
 var path = require('path');
 var webpack = require('webpack');
 var axios = require('axios');
+var fs = require('fs');
 
 var config = []
 
@@ -64,7 +65,7 @@ function generate (config) {
 }
 
 /* generate config method */
-function generateConfig(name, configs) {
+function generateConfig(name) {
     var config = {
         context: path.resolve(__dirname, "src"),
         entry: ['./index.js'],
@@ -75,9 +76,6 @@ function generateConfig(name, configs) {
             libraryTarget: 'umd'
         },
         plugins: [
-            new webpack.DefinePlugin({
-                'CONFIGS': JSON.stringify(configs)
-            }),
             new webpack.optimize.UglifyJsPlugin({
                 compress: {
                     warnings: false
@@ -129,11 +127,12 @@ function generateConfig(name, configs) {
 /* make build by name */
 getConfigs()
     .then((configs) => {
-        return configs.map(config => generate(config))
+        configs = configs.map(config => generate(config))
+        fs.writeFileSync(path.resolve(__dirname, "src", "configs.json"), JSON.stringify(configs), 'utf8')
     })
-    .then((configs) => {
+    .then(() => {
     ['main', 'module', 'vue-plugin', 'node'].forEach(function (name) {
-        config.push(generateConfig(name, configs))
+        config.push(generateConfig(name))
     })
     webpack(config, (err, stats) => { console.log(stats) })
 })
