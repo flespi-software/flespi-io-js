@@ -265,7 +265,7 @@ mqttConnector.publish = async function () {
 mqttConnector.close = async function close() {
     if (_client) {
         _topics = {}
-        return _client.end(arguments[0])/* if need force end */
+        return _client.end(...arguments)/* if need force end */
             .then(() => {
                 _client = null
             })

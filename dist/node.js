@@ -17312,7 +17312,9 @@ mqttConnector.publish = (0, _asyncToGenerator3.default)(_regenerator2.default.ma
 
 mqttConnector.close = function () {
     var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9() {
-        var _args9 = arguments;
+        var _client3,
+            _args9 = arguments;
+
         return _regenerator2.default.wrap(function _callee9$(_context9) {
             while (1) {
                 switch (_context9.prev = _context9.next) {
@@ -17323,7 +17325,7 @@ mqttConnector.close = function () {
                         }
 
                         _topics = {};
-                        return _context9.abrupt('return', _client.end(_args9[0]).then(function () {
+                        return _context9.abrupt('return', (_client3 = _client).end.apply(_client3, _args9).then(function () {
                             _client = null;
                         }));
 
