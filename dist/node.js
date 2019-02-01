@@ -16768,23 +16768,8 @@ var createClient = function () {
 
                         _client.on('error', function (error) {
                             var message = '';
-                            switch (error.code) {
-                                case 2:
-                                    {
-                                        mqttConnector.close(true);
-                                        message = 'connection refused, identifier rejected';
-                                        break;
-                                    }
-                                case 3:
-                                    {
-                                        message = 'connection refused, server unavailable';
-                                        break;
-                                    }
-                                case 5:
-                                    {
-                                        message = 'connection refused, not authorized';
-                                        break;
-                                    }
+                            if (error.code === 2) {
+                                mqttConnector.close(true);
                             }
 
                             if (_events['error']) {
@@ -16806,6 +16791,10 @@ var createClient = function () {
                             var topicPath = topic.split('/'),
                                 activeTopicsId = (0, _keys2.default)(_topics).filter(function (checkedTopicId) {
                                 var currentTopicPath = _topics[checkedTopicId].name.split('/');
+
+                                if (currentTopicPath[0] === '$share') {
+                                    currentTopicPath.splice(0, 2);
+                                }
 
                                 if (currentTopicPath.length === topicPath.length || currentTopicPath[currentTopicPath.length - 1] === '#') {
                                     return currentTopicPath.reduce(function (result, currentPath, index) {

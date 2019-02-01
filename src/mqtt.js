@@ -50,21 +50,7 @@ async function createClient () {
     _client.on('error', (error) => {
         let message = '' /* error message */
         /* processing by error code */
-        switch (error.code) {
-            case 2: {
-                mqttConnector.close(true)
-                message = 'connection refused, identifier rejected'
-                break
-            }
-            case 3: {
-                message = 'connection refused, server unavailable'
-                break
-            }
-            case 5: {
-                message = 'connection refused, not authorized'
-                break
-            }
-        }
+        if (error.code === 2) { mqttConnector.close(true) }
         /* handling all handler by error event */
         if (_events['error']) {
             _events['error'].forEach((handler) => { handler(Object.assign({ message }, error)) }) /* error = {message, code} */
@@ -85,7 +71,11 @@ async function createClient () {
             /* searching for all the signed topics that criteria for the current current topic, comparing their path trees */
             activeTopicsId = Object.keys(_topics).filter((checkedTopicId) => {
                 let currentTopicPath = _topics[checkedTopicId].name.split('/')
-                    /*if the lengths are the same or the last element of the path is '#'. '#' can just be in the end of the path of the subscribed topic */
+                /* process $share subscriptions */
+                if (currentTopicPath[0] === '$share') {
+                    currentTopicPath.splice(0, 2)
+                }
+                /*if the lengths are the same or the last element of the path is '#'. '#' can just be in the end of the path of the subscribed topic */
                 if (currentTopicPath.length === topicPath.length || currentTopicPath[currentTopicPath.length - 1] === '#') {
                     return currentTopicPath.reduce((result, currentPath, index) => {
                         /*
