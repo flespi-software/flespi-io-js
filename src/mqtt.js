@@ -9,7 +9,6 @@ let _client = null, /* client of mqtt connection */
 
 /* Private method for creating, setting and subscribing for events of client of mqtt connection */
 async function createClient () {
-    debugger
     if (_client) { // if client exist, clear him
         await _client.end(true)
     }
