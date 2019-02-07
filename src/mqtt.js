@@ -21,10 +21,9 @@ async function createClient () {
     }
     let defaultMqttConfig = {
         reschedulePings: true,
-        keepalive: 3600,
-        resubscribe: false,
+        keepalive: 60,
         reconnectPeriod: 5000,
-        connectTimeout: 3600000
+        connectTimeout: 30000
     },
         mqttConfig = Object.assign(defaultMqttConfig, _config.mqttSettings)
     mqttConfig.username = _config.token
@@ -34,12 +33,6 @@ async function createClient () {
 
     /* make subscribe to all topics on client after connecting */
     _client.on('connect', (connack) => {
-        let topicsKeys = Object.keys(_topics)
-        if (topicsKeys.length) {
-            topicsKeys.forEach((topicId) => {
-                _client.subscribe(_topics[topicId].name)
-            })
-        }
         /* handling all handler by connect event */
         if (_events['connect']) {
             _events['connect'].forEach((handler) => { handler(connack) })
@@ -218,22 +211,28 @@ mqttConnector.unsubscribe = async function unsubscribe (name) {
     /* Searching for indexes removable topics from private storage */
     let removableTopicsIndexes = Object.keys(_topics).reduce((result, topicId, index) => {
         if ((typeof name === 'string' && _topics[topicId].name === name) || (name instanceof Array && name.includes(_topics[topicId].name))) {
-            /* check has index in arguments */
-            let unsubId = arguments[1]
-            if (unsubId) {
-                /* if second argument is right index */
-                if (topicId === unsubId || (unsubId instanceof Array && unsubId.includes(topicId))) {
-                    result.push(topicId)
-                }
-            }
-            else { result.push(topicId) }
+            result.push(topicId)
         }
         return result
     }, [])
+    /* check has index in arguments */
+    let unsubId = arguments[1]
+    let filteredRemovableTopicsIndexes = removableTopicsIndexes
+    if (unsubId) {
+        filteredRemovableTopicsIndexes = removableTopicsIndexes.filter(topicId => {
+            /* if second argument is right index */
+            return topicId === unsubId || (unsubId instanceof Array && unsubId.includes(topicId))
+        })
+    }
+    let needUnsubscribe = filteredRemovableTopicsIndexes.length === removableTopicsIndexes.length
     /* remove thats topics */
-    removableTopicsIndexes.forEach((index) => { delete _topics[index] })
+    filteredRemovableTopicsIndexes.forEach((index) => {
+        delete _topics[index]
+    })
     /* if has client and he is connected */
-    if (removableTopicsIndexes.length && !_client._client.disconnecting) { return await _client.unsubscribe(name) }
+    if (needUnsubscribe && !_client._client.disconnecting) {
+        return await _client.unsubscribe(name)
+    }
     else { return false }
 }
 /* Unsubscription method for client of mqtt from all topics */

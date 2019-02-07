@@ -9847,7 +9847,7 @@ function buildProxy () {
   var proxy = new Transform()
   proxy._write = function (chunk, encoding, next) {
     socketTask.send({
-      data: chunk,
+      data: chunk.buffer,
       success: function () {
         next()
       },
@@ -9913,7 +9913,7 @@ function bindEventHandler () {
   })
 
   socketTask.onError(function (res) {
-    stream.destroy(res)
+    stream.destroy(new Error(res.errMsg))
   })
 }
 
@@ -9939,6 +9939,27 @@ function buildStream (client, opts) {
 
   proxy = buildProxy()
   stream = duplexify.obj()
+  stream._destroy = function (err, cb) {
+    socketTask.close({
+      success: function () {
+        cb && cb(err)
+      }
+    })
+  }
+
+  var destroyRef = stream.destroy
+  stream.destroy = function () {
+    stream.destroy = destroyRef
+
+    var self = this
+    process.nextTick(function () {
+      socketTask.close({
+        fail: function () {
+          self._destroy(new Error())
+        }
+      })
+    })
+  }.bind(stream)
 
   bindEventHandler()
 
@@ -10008,7 +10029,7 @@ function buildProxy () {
   var proxy = new Transform()
   proxy._write = function (chunk, encoding, next) {
     my.sendSocketMessage({
-      data: chunk,
+      data: chunk.buffer,
       success: function () {
         next()
       },
@@ -12422,14 +12443,8 @@ function WebSocketStream(target, protocols, options) {
   if (socket.readyState === socket.OPEN) {
     stream = proxy
   } else {
-    if (isBrowser) {
-      stream = proxy
-      stream.cork()
-      socket.onopen = onopenBrowser
-    } else {
-      stream = duplexify.obj()
-      socket.onopen = onopen
-    }
+    stream = duplexify.obj()
+    socket.onopen = onopen
   }
 
   stream.socket = socket
@@ -12483,11 +12498,6 @@ function WebSocketStream(target, protocols, options) {
   function onopen() {
     stream.setReadable(proxy)
     stream.setWritable(proxy)
-    stream.emit('connect')
-  }
-
-  function onopenBrowser () {
-    stream.uncork()
     stream.emit('connect')
   }
 
@@ -16740,10 +16750,9 @@ var createClient = function () {
                         }
                         defaultMqttConfig = {
                             reschedulePings: true,
-                            keepalive: 3600,
-                            resubscribe: false,
+                            keepalive: 60,
                             reconnectPeriod: 5000,
-                            connectTimeout: 3600000
+                            connectTimeout: 30000
                         }, mqttConfig = (0, _assign2.default)(defaultMqttConfig, _config.mqttSettings);
 
                         mqttConfig.username = _config.token;
@@ -16752,13 +16761,6 @@ var createClient = function () {
                         _client = _async2.default.connect(baseURL, mqttConfig);
 
                         _client.on('connect', function (connack) {
-                            var topicsKeys = (0, _keys2.default)(_topics);
-                            if (topicsKeys.length) {
-                                topicsKeys.forEach(function (topicId) {
-                                    _client.subscribe(_topics[topicId].name);
-                                });
-                            }
-
                             if (_events['connect']) {
                                 _events['connect'].forEach(function (handler) {
                                     handler(connack);
@@ -17138,45 +17140,50 @@ mqttConnector.subscribe = function () {
 
 mqttConnector.unsubscribe = function () {
     var _ref6 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(name) {
-        var _arguments = arguments;
-        var removableTopicsIndexes;
+        var removableTopicsIndexes,
+            unsubId,
+            filteredRemovableTopicsIndexes,
+            needUnsubscribe,
+            _args6 = arguments;
         return _regenerator2.default.wrap(function _callee6$(_context6) {
             while (1) {
                 switch (_context6.prev = _context6.next) {
                     case 0:
                         removableTopicsIndexes = (0, _keys2.default)(_topics).reduce(function (result, topicId, index) {
                             if (typeof name === 'string' && _topics[topicId].name === name || name instanceof Array && name.includes(_topics[topicId].name)) {
-                                var unsubId = _arguments[1];
-                                if (unsubId) {
-                                    if (topicId === unsubId || unsubId instanceof Array && unsubId.includes(topicId)) {
-                                        result.push(topicId);
-                                    }
-                                } else {
-                                    result.push(topicId);
-                                }
+                                result.push(topicId);
                             }
                             return result;
                         }, []);
+                        unsubId = _args6[1];
+                        filteredRemovableTopicsIndexes = removableTopicsIndexes;
 
-                        removableTopicsIndexes.forEach(function (index) {
+                        if (unsubId) {
+                            filteredRemovableTopicsIndexes = removableTopicsIndexes.filter(function (topicId) {
+                                return topicId === unsubId || unsubId instanceof Array && unsubId.includes(topicId);
+                            });
+                        }
+                        needUnsubscribe = filteredRemovableTopicsIndexes.length === removableTopicsIndexes.length;
+
+                        filteredRemovableTopicsIndexes.forEach(function (index) {
                             delete _topics[index];
                         });
 
-                        if (!(removableTopicsIndexes.length && !_client._client.disconnecting)) {
-                            _context6.next = 8;
+                        if (!(needUnsubscribe && !_client._client.disconnecting)) {
+                            _context6.next = 12;
                             break;
                         }
 
-                        _context6.next = 5;
+                        _context6.next = 9;
                         return _client.unsubscribe(name);
 
-                    case 5:
+                    case 9:
                         return _context6.abrupt('return', _context6.sent);
 
-                    case 8:
+                    case 12:
                         return _context6.abrupt('return', false);
 
-                    case 9:
+                    case 13:
                     case 'end':
                         return _context6.stop();
                 }
@@ -27723,7 +27730,7 @@ if (__webpack_require__.c[__webpack_require__.s] === module) {
 /* 319 */
 /***/ (function(module, exports) {
 
-module.exports = {"_from":"git+https://github.com/mqttjs/MQTT.js.git","_id":"mqtt@2.18.8","_inBundle":false,"_integrity":"","_location":"/mqtt","_phantomChildren":{},"_requested":{"type":"git","raw":"git+https://github.com/mqttjs/MQTT.js.git","rawSpec":"git+https://github.com/mqttjs/MQTT.js.git","saveSpec":"git+https://github.com/mqttjs/MQTT.js.git","fetchSpec":"https://github.com/mqttjs/MQTT.js.git","gitCommittish":null},"_requiredBy":["#USER","/"],"_resolved":"git+https://github.com/mqttjs/MQTT.js.git#0379bf53a8ec803b0ac3ccbe94e22467abe57213","_spec":"git+https://github.com/mqttjs/MQTT.js.git","_where":"/home/sebu/proj/vuex-flespi-io-plugin","bin":{"mqtt_pub":"./bin/pub.js","mqtt_sub":"./bin/sub.js","mqtt":"./mqtt.js"},"browser":{"./mqtt.js":"./lib/connect/index.js","fs":false,"tls":false,"net":false},"bugs":{"url":"https://github.com/mqttjs/MQTT.js/issues"},"bundleDependencies":false,"contributors":[{"name":"Adam Rudd","email":"adamvrr@gmail.com"},{"name":"Matteo Collina","email":"matteo.collina@gmail.com","url":"https://github.com/mcollina"},{"name":"Siarhei Buntsevich","email":"scarry0506@gmail.com","url":"https://github.com/scarry1992"}],"dependencies":{"base64-js":"^1.3.0","commist":"^1.0.0","concat-stream":"^1.6.2","end-of-stream":"^1.4.1","es6-map":"^0.1.5","help-me":"^1.0.1","inherits":"^2.0.3","minimist":"^1.2.0","mqtt-packet":"^6.0.0","pump":"^3.0.0","readable-stream":"^2.3.6","reinterval":"^1.1.0","split2":"^3.1.0","websocket-stream":"^5.1.2","xtend":"^4.0.1"},"deprecated":false,"description":"A library for the MQTT protocol","devDependencies":{"@types/node":"^10.0.0","browserify":"^16.2.2","codecov":"^3.0.4","global":"^4.3.2","istanbul":"^0.4.5","mkdirp":"^0.5.1","mocha":"^4.1.0","mqtt-connection":"^4.0.0","pre-commit":"^1.2.2","rimraf":"^2.6.2","safe-buffer":"^5.1.2","should":"^13.2.1","sinon":"~1.17.7","snazzy":"^8.0.0","standard":"^11.0.1","through2":"^3.0.0","tslint":"^5.11.0","tslint-config-standard":"^8.0.1","typescript":"^3.2.2","uglify-js":"^3.4.5","ws":"^3.3.3","zuul":"^3.12.0","zuul-ngrok":"^4.0.0"},"engines":{"node":">=4.0.0"},"files":["dist/","CONTRIBUTING.md","doc","lib","bin","examples","test","types","mqtt.js"],"homepage":"https://github.com/mqttjs/MQTT.js#readme","keywords":["mqtt","publish/subscribe","publish","subscribe"],"license":"MIT","main":"mqtt.js","name":"mqtt","pre-commit":["test","tslint"],"repository":{"type":"git","url":"git://github.com/mqttjs/MQTT.js.git"},"scripts":{"browser-build":"rimraf dist/ && mkdirp dist/ && browserify mqtt.js -s mqtt > dist/mqtt.js && uglifyjs < dist/mqtt.js > dist/mqtt.min.js","browser-test":"zuul --server test/browser/server.js --local --open test/browser/test.js","ci":"npm run tslint && npm run typescript-compile-test && npm run test && codecov","prepare":"npm run browser-build","pretest":"standard | snazzy","sauce-test":"zuul --server test/browser/server.js --tunnel ngrok -- test/browser/test.js","test":"istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly --","tslint":"if [[ \"`node -v`\" != \"v4.3.2\" ]]; then tslint types/**/*.d.ts; fi","typescript-compile-execute":"node test/typescript/*.js","typescript-compile-test":"tsc -p test/typescript/tsconfig.json","typescript-test":"npm run typescript-compile-test && npm run typescript-compile-execute"},"standard":{"env":["mocha"]},"types":"types/index.d.ts","version":"2.18.8"}
+module.exports = {"_args":[["git+https://github.com/mqttjs/MQTT.js.git","/home/sebu/proj/vuex-flespi-io-plugin"]],"_from":"git+https://github.com/mqttjs/MQTT.js.git","_id":"mqtt@git+https://github.com/mqttjs/MQTT.js.git#0379bf53a8ec803b0ac3ccbe94e22467abe57213","_inBundle":false,"_integrity":"","_location":"/mqtt","_phantomChildren":{"duplexify":"3.6.1","inherits":"2.0.3","readable-stream":"2.3.6","safe-buffer":"5.1.2","ws":"3.3.3","xtend":"4.0.1"},"_requested":{"type":"git","raw":"git+https://github.com/mqttjs/MQTT.js.git","rawSpec":"git+https://github.com/mqttjs/MQTT.js.git","saveSpec":"git+https://github.com/mqttjs/MQTT.js.git","fetchSpec":"https://github.com/mqttjs/MQTT.js.git","gitCommittish":null},"_requiredBy":["/"],"_resolved":"git+https://github.com/mqttjs/MQTT.js.git#0379bf53a8ec803b0ac3ccbe94e22467abe57213","_spec":"git+https://github.com/mqttjs/MQTT.js.git","_where":"/home/sebu/proj/vuex-flespi-io-plugin","bin":{"mqtt_pub":"./bin/pub.js","mqtt_sub":"./bin/sub.js","mqtt":"./mqtt.js"},"browser":{"./mqtt.js":"./lib/connect/index.js","fs":false,"tls":false,"net":false},"bugs":{"url":"https://github.com/mqttjs/MQTT.js/issues"},"contributors":[{"name":"Adam Rudd","email":"adamvrr@gmail.com"},{"name":"Matteo Collina","email":"matteo.collina@gmail.com","url":"https://github.com/mcollina"},{"name":"Siarhei Buntsevich","email":"scarry0506@gmail.com","url":"https://github.com/scarry1992"}],"dependencies":{"base64-js":"^1.3.0","commist":"^1.0.0","concat-stream":"^1.6.2","end-of-stream":"^1.4.1","es6-map":"^0.1.5","help-me":"^1.0.1","inherits":"^2.0.3","minimist":"^1.2.0","mqtt-packet":"^6.0.0","pump":"^3.0.0","readable-stream":"^2.3.6","reinterval":"^1.1.0","split2":"^3.1.0","websocket-stream":"^5.1.2","xtend":"^4.0.1"},"description":"A library for the MQTT protocol","devDependencies":{"@types/node":"^10.0.0","browserify":"^16.2.2","codecov":"^3.0.4","global":"^4.3.2","istanbul":"^0.4.5","mkdirp":"^0.5.1","mocha":"^4.1.0","mqtt-connection":"^4.0.0","pre-commit":"^1.2.2","rimraf":"^2.6.2","safe-buffer":"^5.1.2","should":"^13.2.1","sinon":"~1.17.7","snazzy":"^8.0.0","standard":"^11.0.1","through2":"^3.0.0","tslint":"^5.11.0","tslint-config-standard":"^8.0.1","typescript":"^3.2.2","uglify-js":"^3.4.5","ws":"^3.3.3","zuul":"^3.12.0","zuul-ngrok":"^4.0.0"},"engines":{"node":">=4.0.0"},"files":["dist/","CONTRIBUTING.md","doc","lib","bin","examples","test","types","mqtt.js"],"homepage":"https://github.com/mqttjs/MQTT.js#readme","keywords":["mqtt","publish/subscribe","publish","subscribe"],"license":"MIT","main":"mqtt.js","name":"mqtt","pre-commit":["test","tslint"],"repository":{"type":"git","url":"git://github.com/mqttjs/MQTT.js.git"},"scripts":{"browser-build":"rimraf dist/ && mkdirp dist/ && browserify mqtt.js -s mqtt > dist/mqtt.js && uglifyjs < dist/mqtt.js > dist/mqtt.min.js","browser-test":"zuul --server test/browser/server.js --local --open test/browser/test.js","ci":"npm run tslint && npm run typescript-compile-test && npm run test && codecov","prepare":"npm run browser-build","pretest":"standard | snazzy","sauce-test":"zuul --server test/browser/server.js --tunnel ngrok -- test/browser/test.js","test":"istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly --","tslint":"if [[ \"`node -v`\" != \"v4.3.2\" ]]; then tslint types/**/*.d.ts; fi","typescript-compile-execute":"node test/typescript/*.js","typescript-compile-test":"tsc -p test/typescript/tsconfig.json","typescript-test":"npm run typescript-compile-test && npm run typescript-compile-execute"},"standard":{"env":["mocha"]},"types":"types/index.d.ts","version":"2.18.8"}
 
 /***/ }),
 /* 320 */

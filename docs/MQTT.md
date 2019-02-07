@@ -18,7 +18,7 @@ Method for making mqtt subscriptions. It`s using  mqtt.js as dependency.
       {[id of subscription]: [grants by subscription]}
    ```
 
-* `unsubscribe(topicName, [index/indexes])`: unsubscribe from topic. Return promise.
+* `unsubscribe(topicName, [index/indexes])`: unsubscribe from topic (remove hanlers by it ids). Return promise.
     * `topicName`: is the topic name
     * `index`: index or array of indexes of current subscription by topic
 
