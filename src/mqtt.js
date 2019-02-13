@@ -23,7 +23,8 @@ async function createClient () {
         reschedulePings: true,
         keepalive: 60,
         reconnectPeriod: 5000,
-        connectTimeout: 30000
+        connectTimeout: 30000,
+        resubscribe: true
     },
         mqttConfig = Object.assign(defaultMqttConfig, _config.mqttSettings)
     mqttConfig.username = _config.token
@@ -33,6 +34,9 @@ async function createClient () {
 
     /* make subscribe to all topics on client after connecting */
     _client.on('connect', (connack) => {
+        if (!connack.sessionPresent && !mqttConfig.resubscribe) {
+            _topics = {}
+        }
         /* handling all handler by connect event */
         if (_events['connect']) {
             _events['connect'].forEach((handler) => { handler(connack) })
