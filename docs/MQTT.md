@@ -12,21 +12,38 @@ Method for making mqtt subscriptions. It`s using  mqtt.js as dependency.
       connector.socket.subscribe({name: 'custom/info', handler: (data, topic) => { console.log(`subscribed: ${data}`) }})
             .then(function (grants) { console.log(grants) }).catch(function(e) { console.log(e) })
     ```
+    * options structure:
+        * `filterByTimestamp` flespi MQTT 5.0 feature that filters messages by user properties timestamp provided by flespi `boolean`
+        * `qos` qos subscription level, default 0
+        * `nl` No Local MQTT 5.0 flag (If the value is true, Application Messages MUST NOT be forwarded to a connection with a ClientID equal to the ClientID of the publishing connection)
+        * `rap` Retain as Published MQTT 5.0 flag (If true, Application Messages forwarded using this subscription keep the RETAIN flag they were published with. If false, Application Messages forwarded using this subscription have the RETAIN flag set to 0.)
+        * `rh` Retain Handling MQTT 5.0 (This option specifies whether retained messages are sent when the subscription is established.)
+        * `properties`: `object`
+            * `subscriptionIdentifier`:  representing the identifier of the subscription `number`,
+            * `userProperties`: The User Property is allowed to appear multiple times to represent multiple name, value pairs `object`
 
     grants structure:
     ```js
       {[id of subscription]: [grants by subscription]}
    ```
 
-* `unsubscribe(topicName, [index/indexes])`: unsubscribe from topic (remove hanlers by it ids). Return promise.
+* `unsubscribe(topicName, index/indexes, options)`: unsubscribe from topic (remove hanlers by it ids). Return promise.
     * `topicName`: is the topic name
     * `index`: index or array of indexes of current subscription by topic
-
+    * `options`: options of unsubscribe.
+        * `properties`: `object`
+            * `userProperties`: The User Property is allowed to appear multiple times to represent multiple name, value pairs `object`
     ```js
        connector.socket.unsubscribe('custom/logs')
+       connector.socket.unsubscribe('custom/logs', 1)
+       connector.socket.unsubscribe('custom/logs', [1, 2, 3])
+       connector.socket.unsubscribe('custom/logs', undefined, {properties})
     ```
 
-* `unsubscribeAll()`: unsubscribe from all topics
+* `unsubscribeAll([options])`: unsubscribe from all topics
+    * `options`: options of unsubscribe.
+        * `properties`: `object`
+            * `userProperties`: The User Property is allowed to appear multiple times to represent multiple name, value pairs `object`
 
     ```js
        connector.socket.unsubscribeAll()
@@ -39,13 +56,29 @@ Method for making mqtt subscriptions. It`s using  mqtt.js as dependency.
       * `qos` QoS level, `Number`, default `0`
       * `retain` retain flag, `Boolean`, default `false`
       * `dup` mark as duplicate flag, `Boolean`, default `false`
+      * `properties`: MQTT 5.0 properties `object`
+        * `payloadFormatIndicator`: Payload is UTF-8 Encoded Character Data or not `boolean`,
+        * `messageExpiryInterval`: the lifetime of the Application Message in seconds `number`,
+        * `topicAlias`: value that is used to identify the Topic instead of using the Topic Name `number`,
+        * `responseTopic`: String which is used as the Topic Name for a response message `string`,
+        * `correlationData`: used by the sender of the Request Message to identify which request the Response Message is for when it is received `binary`,
+        * `userProperties`: The User Property is allowed to appear multiple times to represent multiple name, value pairs `object`,
+        * `subscriptionIdentifier`: representing the identifier of the subscription `number`,
+        * `contentType`: String describing the content of the Application Message `string`
 
     ```js
       connector.socket.publish('custom/info', JSON.stringify({name: 'device#269'}))
     ```
 
- * `close([force])`: close connection
+ * `close([force], [options])`: close connection
     * `force` is flag force closing of connection
+    * `options`: options of disconnect.
+        * `reasonCode`: Disconnect Reason Code `number`
+        * `properties`: `object`
+            * `sessionExpiryInterval`: representing the Session Expiry Interval in seconds `number`,
+            * `reasonString`: representing the reason for the disconnect `string`,
+            * `userProperties`: The User Property is allowed to appear multiple times to represent multiple name, value pairs `object`,
+            * `serverReference`: String which can be used by the Client to identify another Server to use `string`
      ```js
         connector.socket.close()
      ```

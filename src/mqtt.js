@@ -5,7 +5,19 @@ import uniqueId from 'lodash/uniqueId'
 let _client = null, /* client of mqtt connection */
     _topics = {}, /* topics which subscribed by mqtt {'uniqueId': {name: String, handler: Function},...} */
     _config = {}, /* config of mqtt connection {server, port(optional), token} */
-    _events = {} /* store name of events and array of handlers by current event {name: [...handlers]} */
+    _events = {}, /* store name of events and array of handlers by current event {name: [...handlers]} */
+    _timestampsByTopic = {} /* flespi feature by filtering by timestamp */
+
+function _generateTimestampFilteringWrapper (handler) {
+    return function (message, topic, packet) {
+        let timestamp = packet.properties && packet.properties.userProperties && packet.properties.userProperties.timestamp ? parseFloat(packet.properties.userProperties.timestamp) : 0
+        if (!_timestampsByTopic[topic]) { _timestampsByTopic[topic] = 0 }
+        if (timestamp > _timestampsByTopic[topic]) {
+            handler(message, topic, packet)
+            _timestampsByTopic[topic] = timestamp
+        }
+    }
+}
 
 /* Private method for creating, setting and subscribing for events of client of mqtt connection */
 async function createClient () {
@@ -173,10 +185,14 @@ mqttConnector.connected = () => !!_client && _client._client.connected
 
 /* Subscription method for client of mqtt */
 mqttConnector.subscribe = async function subscribe(topic) {
+    let isProtocolNew = _config.mqttSettings.protocolVersion === 5
     if (topic instanceof Array) {
         /* return array of subscribed indexes of topics */
         return topic.reduce(async (result, topic) => {
             let id = uniqueId()
+            if (isProtocolNew && topic.options && topic.options.filterByTimestamp) {
+                topic.handler = _generateTimestampFilteringWrapper(topic.handler)
+            }
             _topics[id] = topic
             /* if has client and he is connected */
             if (_client) {
@@ -195,6 +211,9 @@ mqttConnector.subscribe = async function subscribe(topic) {
     }
     else if (typeof topic === 'object') {
         let id = uniqueId()
+        if (isProtocolNew && topic.options && topic.options.filterByTimestamp) {
+            topic.handler = _generateTimestampFilteringWrapper(topic.handler)
+        }
         _topics[id] = topic
         /* if has client and he is connected */
         if (_client) {
@@ -211,7 +230,7 @@ mqttConnector.subscribe = async function subscribe(topic) {
     else { return Promise.reject(new Error('Not valid type of topic/topics')) }
 }
 /* Unsubscription method for client of mqtt by topic name or topic names. */
-mqttConnector.unsubscribe = async function unsubscribe (name) {
+mqttConnector.unsubscribe = async function unsubscribe (name, unsubId, options) {
     /* Searching for indexes removable topics from private storage */
     let removableTopicsIndexes = Object.keys(_topics).reduce((result, topicId, index) => {
         if ((typeof name === 'string' && _topics[topicId].name === name) || (name instanceof Array && name.includes(_topics[topicId].name))) {
@@ -219,8 +238,6 @@ mqttConnector.unsubscribe = async function unsubscribe (name) {
         }
         return result
     }, [])
-    /* check has index in arguments */
-    let unsubId = arguments[1]
     let filteredRemovableTopicsIndexes = removableTopicsIndexes
     if (unsubId) {
         filteredRemovableTopicsIndexes = removableTopicsIndexes.filter(topicId => {
@@ -235,14 +252,14 @@ mqttConnector.unsubscribe = async function unsubscribe (name) {
     })
     /* if has client and he is connected */
     if (needUnsubscribe && !_client._client.disconnecting) {
-        return await _client.unsubscribe(name)
+        return await _client.unsubscribe(name, options)
     }
     else { return false }
 }
 /* Unsubscription method for client of mqtt from all topics */
-mqttConnector.unsubscribeAll = async function unsubscribeAll() {
+mqttConnector.unsubscribeAll = async function unsubscribeAll(options) {
     for (let topicId of Object.keys(_topics)) {
-        await _client.unsubscribe(_topics[topicId].name)
+        await _client.unsubscribe(_topics[topicId].name, options)
     }
 }
 /* Publishing method for client of mqtt. publish(topic, message, [options]). Message must be a String or Buffer */
