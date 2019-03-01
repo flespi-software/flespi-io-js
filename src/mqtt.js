@@ -12,7 +12,7 @@ function _generateTimestampFilteringWrapper (handler) {
     return function (message, topic, packet) {
         let timestamp = packet.properties && packet.properties.userProperties && packet.properties.userProperties.timestamp ? parseFloat(packet.properties.userProperties.timestamp) : 0
         if (!_timestampsByTopic[topic]) { _timestampsByTopic[topic] = 0 }
-        if (timestamp > _timestampsByTopic[topic]) {
+        if (timestamp >= _timestampsByTopic[topic]) {
             handler(message, topic, packet)
             _timestampsByTopic[topic] = timestamp
         }
