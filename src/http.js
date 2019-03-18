@@ -20,7 +20,7 @@ function getBaseURl () {
 /* Main function of http connection. It setting up private variables, global headers and return promise of the request */
 function http (options) {
     let config = { baseURL: getBaseURl(), headers: _headers }
-    return axios(merge(config, options))
+    return axios(merge({}, config, options))
 }
 
 /* init module logic */
