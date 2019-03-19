@@ -16868,13 +16868,14 @@ var _client = null,
 
 function _generateTimestampFilteringWrapper(handler) {
     return function (message, topic, packet) {
-        var timestamp = packet.properties && packet.properties.userProperties && packet.properties.userProperties.timestamp ? parseFloat(packet.properties.userProperties.timestamp) : 0;
+        var timestamp = packet.properties && packet.properties.userProperties && packet.properties.userProperties.timestamp ? parseFloat(packet.properties.userProperties.timestamp) : 0,
+            seqno = packet.properties && packet.properties.userProperties && packet.properties.userProperties.seqno ? parseFloat(packet.properties.userProperties.seqno) : 0;
         if (!_timestampsByTopic[topic]) {
-            _timestampsByTopic[topic] = 0;
+            _timestampsByTopic[topic] = { timestamp: 0, seqno: 0 };
         }
-        if (timestamp >= _timestampsByTopic[topic]) {
+        if (timestamp > _timestampsByTopic[topic].timestamp || timestamp === _timestampsByTopic[topic].timestamp && seqno > _timestampsByTopic[topic].seqno) {
             handler(message, topic, packet);
-            _timestampsByTopic[topic] = timestamp;
+            _timestampsByTopic[topic] = { timestamp: timestamp, seqno: seqno };
         }
     };
 }
