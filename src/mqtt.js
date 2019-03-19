@@ -57,12 +57,11 @@ async function createClient () {
 
     /* Handle errors of connect by mqtt */
     _client.on('error', (error) => {
-        let message = '' /* error message */
         /* processing by error code */
         if (error.code === 2) { mqttConnector.close(true) }
         /* handling all handler by error event */
         if (_events['error']) {
-            _events['error'].forEach((handler) => { handler(Object.assign({ message }, error)) }) /* error = {message, code} */
+            _events['error'].forEach((handler) => { handler(error) }) /* error = {message, code} */
         }
     })
 

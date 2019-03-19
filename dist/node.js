@@ -16764,14 +16764,13 @@ var createClient = function () {
                         });
 
                         _client.on('error', function (error) {
-                            var message = '';
                             if (error.code === 2) {
                                 mqttConnector.close(true);
                             }
 
                             if (_events['error']) {
                                 _events['error'].forEach(function (handler) {
-                                    handler((0, _assign2.default)({ message: message }, error));
+                                    handler(error);
                                 });
                             }
                         });
