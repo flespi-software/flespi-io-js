@@ -102,7 +102,13 @@ async function createClient () {
                 }
             })
         /* calling each callbacks with payload as message by subscribed topic. */
-        activeTopicsId.forEach((topicId) => { _topics[topicId].handler(message, topic, packet) })
+        activeTopicsId.forEach((topicId) => {
+            try {
+                _topics[topicId].handler(message, topic, packet)
+            } catch (e) {
+                console.log(new Error('Can`t run handler. Do you installed it?'))
+            }
+        })
     })
 
     /* handling reconnect */
@@ -185,7 +191,7 @@ mqttConnector.connected = () => !!_client && _client._client.connected
 
 /* Subscription method for client of mqtt */
 mqttConnector.subscribe = async function subscribe(topic) {
-    let isProtocolNew = _config.mqttSettings.protocolVersion === 5
+    let isProtocolNew = _config.mqttSettings && _config.mqttSettings.protocolVersion === 5
     if (topic instanceof Array) {
         /* return array of subscribed indexes of topics */
         return topic.reduce(async (result, topic) => {

@@ -16233,7 +16233,7 @@ function done(stream, er, data) {
 /* 150 */
 /***/ (function(module, exports) {
 
-module.exports = {"messages":{"base":"flespi/message/","children":{"channels":{"methods":[{"name":"subscribe","pattern":"gw/channels/{channel_id}/{ident}","params":["channel_id","ident"]},{"name":"unsubscribe","pattern":"gw/channels/{channel_id}/{ident}","params":["channel_id","ident"]}]},"devices":{"methods":[{"name":"subscribe","pattern":"gw/devices/{device_id}/#","params":["device_id"]},{"name":"unsubscribe","pattern":"gw/devices/{device_id}/#","params":["device_id"]}]},"abques":{"methods":[{"name":"subscribe","pattern":"storage/abques/{abque_id}/{name}","params":["abque_id","name"]},{"name":"unsubscribe","pattern":"storage/abques/{abque_id}/{name}","params":["abque_id","name"]}]},"sms":{"methods":[{"name":"subscribe","pattern":"gw/modems/{modem_id}/{phone}","params":["modem_id","phone"]},{"name":"unsubscribe","pattern":"gw/modems/{modem_id}/{phone}","params":["modem_id","phone"]}]}}},"logs":{"base":"flespi/log/","methods":[{"name":"subscribe","pattern":"{api}/{origin}/{event_type}","params":["api","origin","event_type"]},{"name":"unsubscribe","pattern":"{api}/{origin}/{event_type}","params":["api","origin","event_type"]}]}}
+module.exports = {"messages":{"base":"flespi/message/","children":{"channels":{"methods":[{"name":"subscribe","pattern":"gw/channels/{channel_id}/{ident}","params":["channel_id","ident"]},{"name":"unsubscribe","pattern":"gw/channels/{channel_id}/{ident}","params":["channel_id","ident"]}]},"devices":{"methods":[{"name":"subscribe","pattern":"gw/devices/{device_id}/#","params":["device_id"]},{"name":"unsubscribe","pattern":"gw/devices/{device_id}/#","params":["device_id"]}]},"abques":{"methods":[{"name":"subscribe","pattern":"storage/abques/{abque_id}/{name}","params":["abque_id","name"]},{"name":"unsubscribe","pattern":"storage/abques/{abque_id}/{name}","params":["abque_id","name"]}]},"sms":{"methods":[{"name":"subscribe","pattern":"gw/modems/{modem_id}/{phone}","params":["modem_id","phone"]},{"name":"unsubscribe","pattern":"gw/modems/{modem_id}/{phone}","params":["modem_id","phone"]}]}}},"logs":{"base":"flespi/log/","methods":[{"name":"subscribe","pattern":"{api}/{origin}/{event_type}","params":["api","origin","event_type"]},{"name":"unsubscribe","pattern":"{api}/{origin}/{event_type}","params":["api","origin","event_type"]}]},"state":{"base":"flespi/state/","methods":[{"name":"subscribe","pattern":"{api}/{origin}/{id}","params":["api","origin","id"]},{"name":"unsubscribe","pattern":"{api}/{origin}/{id}","params":["api","origin","id"]}],"children":{"properties":{"methods":[{"name":"subscribe","pattern":"{api}/{origin}/{id}/{property}","params":["api","origin","id","property"]},{"name":"unsubscribe","pattern":"{api}/{origin}/{id}/{property}","params":["api","origin","id","property"]}]},"devices":{"children":{"telemetry":{"methods":[{"name":"subscribe","pattern":"gw/devices/{id}/telemetry/{parameter}","params":["id","parameter"]},{"name":"unsubscribe","pattern":"gw/devices/{id}/telemetry/{parameter}","params":["id","parameter"]}]},"settings":{"methods":[{"name":"subscribe","pattern":"gw/devices/{id}/settings/{name}","params":["id","name"]},{"name":"unsubscribe","pattern":"gw/devices/{id}/settings/{name}","params":["id","name"]}]}}}}}}
 
 /***/ }),
 /* 151 */
@@ -16805,7 +16805,11 @@ var createClient = function () {
                             });
 
                             activeTopicsId.forEach(function (topicId) {
-                                _topics[topicId].handler(message, topic, packet);
+                                try {
+                                    _topics[topicId].handler(message, topic, packet);
+                                } catch (e) {
+                                    console.log(new Error('Can`t run handler. Do you installed it?'));
+                                }
                             });
                         });
 
@@ -17030,7 +17034,7 @@ mqttConnector.subscribe = function () {
             while (1) {
                 switch (_context5.prev = _context5.next) {
                     case 0:
-                        isProtocolNew = _config.mqttSettings.protocolVersion === 5;
+                        isProtocolNew = _config.mqttSettings && _config.mqttSettings.protocolVersion === 5;
 
                         if (!(topic instanceof Array)) {
                             _context5.next = 5;

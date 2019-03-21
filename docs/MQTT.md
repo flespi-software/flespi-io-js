@@ -131,6 +131,14 @@ connector.subscribeLogs(api, origin, event_type, handler)
 | socket.messages.devices.unsubscribe | unsubscribeMessagesDevices | device_id, [indexOfSubscription] | Unsubscribe from new message received by device |
 | socket.messages.sms.subscribe | subscribeSms | modem_id, phone, handler, [options] | Subscribe to SMS message received by modem |
 | socket.messages.sms.unsubscribe | unsubscribeSms | modem_id, phone, [indexOfSubscription] | Unsubscribe from SMS message received by modem |
+| socket.state.subscribe | subscribeState | api, origin, id, handler, [options] | Subscribe to entities object with default properties |
+| socket.state.unsubscribe | unsubscribeState | api, origin, id, [indexOfSubscription] | Unsubscribe from entities object with default properties |
+| socket.state.properties.subscribe | subscribeStateProperties | api, origin, id, property, handler, [options] | Subscribe to entities properties |
+| socket.state.properties.unsubscribe | unsubscribeStateProperties | api, origin, id, property, [indexOfSubscription] | Unsubscribe from entities properties |
+| socket.state.devices.telemetry.subscribe | subscribeStateDevicesTelemetry | id, parameter, handler, [options] | Subscribe to telemetry of devices |
+| socket.state.devices.telemetry.unsubscribe | unsubscribeStateDevicesTelemetry | id, parameter, [indexOfSubscription] | Unsubscribe from telemetry of devices |
+| socket.state.devices.settings.subscribe | subscribeStateDevicesSettings | id, name, handler, [options] | Subscribe to telemetry of devices |
+| socket.state.devices.settings.unsubscribe | unsubscribeStateDevicesSettings | id, name, [indexOfSubscription] | Unsubscribe from telemetry of devices |
 
 #### MQTT events
 

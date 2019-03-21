@@ -74,5 +74,68 @@
         "params": ["api", "origin", "event_type"]
       }
     ]
+  },
+  "state": {
+    "base": "flespi/state/",
+    "methods": [
+      {
+        "name": "subscribe",
+        "pattern": "{api}/{origin}/{id}",
+        "params": ["api", "origin", "id"]
+      },
+      {
+        "name": "unsubscribe",
+        "pattern": "{api}/{origin}/{id}",
+        "params": ["api", "origin", "id"]
+      }
+    ],
+    "children": {
+      "properties": {
+        "methods": [
+          {
+            "name": "subscribe",
+            "pattern": "{api}/{origin}/{id}/{property}",
+            "params": ["api", "origin", "id", "property"]
+          },
+          {
+            "name": "unsubscribe",
+            "pattern": "{api}/{origin}/{id}/{property}",
+            "params": ["api", "origin", "id", "property"]
+          }
+        ]
+      },
+      "devices": {
+        "children": {
+          "telemetry": {
+            "methods": [
+              {
+                "name": "subscribe",
+                "pattern": "gw/devices/{id}/telemetry/{parameter}",
+                "params": ["id", "parameter"]
+              },
+              {
+                "name": "unsubscribe",
+                "pattern": "gw/devices/{id}/telemetry/{parameter}",
+                "params": ["id", "parameter"]
+              }
+            ]
+          },
+          "settings": {
+            "methods": [
+              {
+                "name": "subscribe",
+                "pattern": "gw/devices/{id}/settings/{name}",
+                "params": ["id", "name"]
+              },
+              {
+                "name": "unsubscribe",
+                "pattern": "gw/devices/{id}/settings/{name}",
+                "params": ["id", "name"]
+              }
+            ]
+          }
+        }
+      }
+    }
   }
 }
