@@ -90,7 +90,7 @@ try {
 /* 1 */
 /***/ (function(module, exports) {
 
-var core = module.exports = { version: '2.5.7' };
+var core = module.exports = { version: '2.6.4' };
 if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
 
@@ -2572,7 +2572,7 @@ var store = global[SHARED] || (global[SHARED] = {});
 })('versions', []).push({
   version: core.version,
   mode: __webpack_require__(34) ? 'pure' : 'global',
-  copyright: '© 2018 Denis Pushkarev (zloirock.ru)'
+  copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
 });
 
 
@@ -12422,14 +12422,8 @@ function WebSocketStream(target, protocols, options) {
   if (socket.readyState === socket.OPEN) {
     stream = proxy
   } else {
-    if (isBrowser) {
-      stream = proxy
-      stream.cork()
-      socket.onopen = onopenBrowser
-    } else {
-      stream = duplexify.obj()
-      socket.onopen = onopen
-    }
+    stream = duplexify.obj()
+    socket.onopen = onopen
   }
 
   stream.socket = socket
@@ -12483,11 +12477,6 @@ function WebSocketStream(target, protocols, options) {
   function onopen() {
     stream.setReadable(proxy)
     stream.setWritable(proxy)
-    stream.emit('connect')
-  }
-
-  function onopenBrowser () {
-    stream.uncork()
     stream.emit('connect')
   }
 
@@ -20661,7 +20650,7 @@ var iteratorSymbol = __webpack_require__(16).iterator
   , desc           = { configurable: true, enumerable: true, writable: true, value: null }
   , defineProperty = Object.defineProperty;
 
-// eslint-disable-next-line complexity
+// eslint-disable-next-line complexity, max-lines-per-function
 module.exports = function (arrayLike /*, mapFn, thisArg*/) {
 	var mapFn = arguments[1]
 	  , thisArg = arguments[2]
