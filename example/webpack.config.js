@@ -27,19 +27,15 @@ module.exports = {
         rules: [
             {
                 test: /\.js$/,
-                loader: 'babel-loader',
+                use: {
+                    loader: 'babel-loader',
+                },
                 exclude: /node_modules/
             },
             {
                 test: /\.json$/,
-                loader: 'json-loader'
-            },
-            {
-                test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
-                loader: 'url-loader',
-                options: {
-                    limit: 10000,
-                    name: 'img/[name].[hash:7].[ext]'
+                use: {
+                    loader: 'json-loader'
                 }
             }
         ]
