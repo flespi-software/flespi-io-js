@@ -74,6 +74,14 @@ async function createClient () {
         }
     })
 
+    /* Handle disconnect by broker */
+    _client.on('disconnect', (packet) => {
+        /* handling all handler by close event */
+        if (_events['disconnect']) {
+            _events['disconnect'].forEach((handler) => { handler(packet) })
+        }
+    })
+
     /* calling each callbacks by subscribed topic after getting new message. */
     _client.on('message', (topic, message, packet) => {
         let topicPath = topic.split('/'), /* getting full topic path */

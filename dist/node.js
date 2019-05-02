@@ -4374,27 +4374,30 @@ module.exports.win32 = win32;
 
 var ERR_STREAM_PREMATURE_CLOSE = __webpack_require__(29).codes.ERR_STREAM_PREMATURE_CLOSE;
 
+function once(callback) {
+  var called = false;
+  return function () {
+    if (called) return;
+    called = true;
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    callback.apply(this, args);
+  };
+}
+
 function noop() {}
 
 function isRequest(stream) {
   return stream.setHeader && typeof stream.abort === 'function';
 }
 
-function once(callback) {
-  var called = false;
-  return function (err) {
-    if (called) return;
-    called = true;
-    callback.call(this, err);
-  };
-}
-
 function eos(stream, opts, callback) {
   if (typeof opts === 'function') return eos(stream, null, opts);
   if (!opts) opts = {};
   callback = once(callback || noop);
-  var ws = stream._writableState;
-  var rs = stream._readableState;
   var readable = opts.readable || opts.readable !== false && stream.readable;
   var writable = opts.writable || opts.writable !== false && stream.writable;
 
@@ -4402,13 +4405,19 @@ function eos(stream, opts, callback) {
     if (!stream.writable) onfinish();
   };
 
+  var writableEnded = stream._writableState && stream._writableState.finished;
+
   var onfinish = function onfinish() {
     writable = false;
+    writableEnded = true;
     if (!readable) callback.call(stream);
   };
 
+  var readableEnded = stream._readableState && stream._readableState.endEmitted;
+
   var onend = function onend() {
     readable = false;
+    readableEnded = true;
     if (!writable) callback.call(stream);
   };
 
@@ -4417,12 +4426,16 @@ function eos(stream, opts, callback) {
   };
 
   var onclose = function onclose() {
-    if (readable && !(rs && rs.ended)) {
-      return callback.call(stream, new ERR_STREAM_PREMATURE_CLOSE());
+    var err;
+
+    if (readable && !readableEnded) {
+      if (!stream._readableState || !stream._readableState.ended) err = new ERR_STREAM_PREMATURE_CLOSE();
+      return callback.call(stream, err);
     }
 
-    if (writable && !(ws && ws.ended)) {
-      return callback.call(stream, new ERR_STREAM_PREMATURE_CLOSE());
+    if (writable && !writableEnded) {
+      if (!stream._writableState || !stream._writableState.ended) err = new ERR_STREAM_PREMATURE_CLOSE();
+      return callback.call(stream, err);
     }
   };
 
@@ -4434,7 +4447,7 @@ function eos(stream, opts, callback) {
     stream.on('complete', onfinish);
     stream.on('abort', onclose);
     if (stream.req) onrequest();else stream.on('request', onrequest);
-  } else if (writable && !ws) {
+  } else if (writable && !stream._writableState) {
     // legacy streams
     stream.on('end', onlegacyfinish);
     stream.on('close', onlegacyfinish);
@@ -5161,18 +5174,24 @@ MqttClient.prototype._setupStream = function () {
   })
 
   function nextTickWork () {
-    process.nextTick(work)
+    if (packets.length) {
+      process.nextTick(work)
+    } else {
+      var done = completeParse
+      completeParse = null
+      done()
+    }
   }
 
   function work () {
     var packet = packets.shift()
-    var done = completeParse
 
     if (packet) {
       that._handlePacket(packet, nextTickWork)
     } else {
+      var done = completeParse
       completeParse = null
-      done()
+      if (done) done()
     }
   }
 
@@ -5254,6 +5273,10 @@ MqttClient.prototype._handlePacket = function (packet, done) {
       break
     case 'pingresp':
       this._handlePingresp(packet)
+      done()
+      break
+    case 'disconnect':
+      this._handleDisconnect(packet)
       done()
       break
     default:
@@ -6163,6 +6186,16 @@ MqttClient.prototype._handlePubrel = function (packet, callback) {
 }
 
 /**
+ * _handleDisconnect
+ *
+ * @param {Object} packet
+ * @api private
+ */
+MqttClient.prototype._handleDisconnect = function (packet) {
+  this.emit('disconnect', packet)
+}
+
+/**
  * _nextId
  * @return unsigned int
  */
@@ -6188,9 +6221,9 @@ MqttClient.prototype.getLastMessageId = function () {
  * _resubscribe
  * @api private
  */
-MqttClient.prototype._resubscribe = function () {
+MqttClient.prototype._resubscribe = function (connack) {
   if (!this._firstConnection &&
-      this.options.clean &&
+      (this.options.clean || (this.options.protocolVersion === 5 && !connack.sessionPresent)) &&
       Object.keys(this._resubscribeTopics).length > 0) {
     if (this.options.resubscribe) {
       this._resubscribeTopics.resubscribe = true
@@ -6217,7 +6250,7 @@ MqttClient.prototype._onConnect = function (packet) {
   var that = this
 
   this._setupPingTimer()
-  this._resubscribe()
+  this._resubscribe(packet)
 
   this.connected = true
 
@@ -8678,7 +8711,7 @@ protocol.propertiesTypes = {
   wildcardSubscriptionAvailable: 'byte',
   subscriptionIdentifiersAvailable: 'byte',
   sharedSubscriptionAvailable: 'byte',
-  serverKeepAlive: 'int32',
+  serverKeepAlive: 'int16',
   responseInformation: 'string',
   serverReference: 'string',
   topicAlias: 'int16',
@@ -8916,24 +8949,24 @@ function connect (packet, stream, opts) {
     }
 
     // Payload
+    length += 2 // payload length
     if (will.payload) {
       if (will.payload.length >= 0) {
         if (typeof will.payload === 'string') {
-          length += Buffer.byteLength(will.payload) + 2
+          length += Buffer.byteLength(will.payload)
         } else {
-          length += will.payload.length + 2
+          length += will.payload.length
         }
       } else {
         stream.emit('error', new Error('Invalid will payload'))
         return false
       }
-
-      // will properties
-      var willProperties = {}
-      if (protocolVersion === 5) {
-        willProperties = getProperties(stream, will.properties)
-        length += willProperties.length
-      }
+    }
+    // will properties
+    var willProperties = {}
+    if (protocolVersion === 5) {
+      willProperties = getProperties(stream, will.properties)
+      length += willProperties.length
     }
   }
 
@@ -9682,7 +9715,15 @@ function getProperties (stream, properties) {
           return false
         }
         length += Object.getOwnPropertyNames(value).reduce(function (result, name) {
-          result += 1 + 2 + Buffer.byteLength(name.toString()) + 2 + Buffer.byteLength(value[name].toString())
+          var currentValue = value[name]
+          if (Array.isArray(currentValue)) {
+            result += currentValue.reduce(function (currentLength, value) {
+              currentLength += 1 + 2 + Buffer.byteLength(name.toString()) + 2 + Buffer.byteLength(value.toString())
+              return currentLength
+            }, 0)
+          } else {
+            result += 1 + 2 + Buffer.byteLength(name.toString()) + 2 + Buffer.byteLength(value[name].toString())
+          }
           return result
         }, 0)
         break
@@ -9775,8 +9816,16 @@ function writeProperties (stream, properties, propertiesLength) {
         }
         case 'pair': {
           Object.getOwnPropertyNames(value).forEach(function (name) {
-            stream.write(Buffer.from([protocol.properties[propName]]))
-            writeStringPair(stream, name.toString(), value[name].toString())
+            var currentValue = value[name]
+            if (Array.isArray(currentValue)) {
+              currentValue.forEach(function (value) {
+                stream.write(Buffer.from([protocol.properties[propName]]))
+                writeStringPair(stream, name.toString(), value.toString())
+              })
+            } else {
+              stream.write(Buffer.from([protocol.properties[propName]]))
+              writeStringPair(stream, name.toString(), currentValue.toString())
+            }
           })
           break
         }
@@ -9847,7 +9896,7 @@ function buildProxy () {
   var proxy = new Transform()
   proxy._write = function (chunk, encoding, next) {
     socketTask.send({
-      data: chunk,
+      data: chunk.buffer,
       success: function () {
         next()
       },
@@ -9913,7 +9962,7 @@ function bindEventHandler () {
   })
 
   socketTask.onError(function (res) {
-    stream.destroy(res)
+    stream.destroy(new Error(res.errMsg))
   })
 }
 
@@ -9939,6 +9988,27 @@ function buildStream (client, opts) {
 
   proxy = buildProxy()
   stream = duplexify.obj()
+  stream._destroy = function (err, cb) {
+    socketTask.close({
+      success: function () {
+        cb && cb(err)
+      }
+    })
+  }
+
+  var destroyRef = stream.destroy
+  stream.destroy = function () {
+    stream.destroy = destroyRef
+
+    var self = this
+    process.nextTick(function () {
+      socketTask.close({
+        fail: function () {
+          self._destroy(new Error())
+        }
+      })
+    })
+  }.bind(stream)
 
   bindEventHandler()
 
@@ -10008,7 +10078,7 @@ function buildProxy () {
   var proxy = new Transform()
   proxy._write = function (chunk, encoding, next) {
     my.sendSocketMessage({
-      data: chunk,
+      data: chunk.buffer,
       success: function () {
         next()
       },
@@ -12422,7 +12492,10 @@ function WebSocketStream(target, protocols, options) {
   if (socket.readyState === socket.OPEN) {
     stream = proxy
   } else {
-    stream = duplexify.obj()
+    stream = stream = duplexify(undefined, undefined, options)
+    if (!options.objectMode) {
+      stream._writev = writev
+    }
     socket.onopen = onopen
   }
 
@@ -14276,7 +14349,8 @@ function ReadableState(options, stream, isDuplex) {
   this.needReadable = false;
   this.emittedReadable = false;
   this.readableListening = false;
-  this.resumeScheduled = false; // Should close be emitted on destroy. Defaults to true.
+  this.resumeScheduled = false;
+  this.paused = true; // Should close be emitted on destroy. Defaults to true.
 
   this.emitClose = options.emitClose !== false; // has it been destroyed
 
@@ -14678,13 +14752,35 @@ function maybeReadMore(stream, state) {
 }
 
 function maybeReadMore_(stream, state) {
-  var len = state.length;
-
-  while (!state.reading && !state.ended && state.length < state.highWaterMark) {
+  // Attempt to read more data if we should.
+  //
+  // The conditions for reading more data are (one of):
+  // - Not enough data buffered (state.length < state.highWaterMark). The loop
+  //   is responsible for filling the buffer with enough data if such data
+  //   is available. If highWaterMark is 0 and we are not in the flowing mode
+  //   we should _not_ attempt to buffer any extra data. We'll get more data
+  //   when the stream consumer calls read() instead.
+  // - No data in the buffer, and the stream is in flowing mode. In this mode
+  //   the loop below is responsible for ensuring read() is called. Failing to
+  //   call read here would abort the flow and there's no other mechanism for
+  //   continuing the flow if the stream consumer has just subscribed to the
+  //   'data' event.
+  //
+  // In addition to the above conditions to keep reading data, the following
+  // conditions prevent the data from being read:
+  // - The stream has ended (state.ended).
+  // - There is already a pending 'read' operation (state.reading). This is a
+  //   case where the the stream has called the implementation defined _read()
+  //   method, but they are processing the call asynchronously and have _not_
+  //   called push() with new data. In this case we skip performing more
+  //   read()s. The execution ends in this method again after the _read() ends
+  //   up calling push() with more data.
+  while (!state.reading && !state.ended && (state.length < state.highWaterMark || state.flowing && state.length === 0)) {
+    var len = state.length;
     debug('maybeReadMore read 0');
     stream.read(0);
     if (len === state.length) // didn't get any data, stop spinning.
-      break;else len = state.length;
+      break;
   }
 
   state.readingMore = false;
@@ -14957,9 +15053,14 @@ Readable.prototype.removeAllListeners = function (ev) {
 };
 
 function updateReadableListening(self) {
-  self._readableState.readableListening = self.listenerCount('readable') > 0; // crude way to check if we should resume
+  var state = self._readableState;
+  state.readableListening = self.listenerCount('readable') > 0;
 
-  if (self.listenerCount('data') > 0) {
+  if (state.resumeScheduled && !state.paused) {
+    // flowing needs to be set to true now, otherwise
+    // the upcoming resume will not flow.
+    state.flowing = true; // crude way to check if we should resume
+  } else if (self.listenerCount('data') > 0) {
     self.resume();
   }
 }
@@ -14983,6 +15084,7 @@ Readable.prototype.resume = function () {
     resume(this, state);
   }
 
+  state.paused = false;
   return this;
 };
 
@@ -15015,6 +15117,7 @@ Readable.prototype.pause = function () {
     this.emit('pause');
   }
 
+  this._readableState.paused = true;
   return this;
 };
 
@@ -15432,8 +15535,8 @@ function WritableState(options, stream, isDuplex) {
   options = options || {}; // Duplex streams are both readable and writable, but share
   // the same options object.
   // However, some cases require setting options to different
-  // values for the readable and the writable sides of the duplex stream.
-  // These options can be provided separately as readableXXX and writableXXX.
+  // values for the readable and the writable sides of the duplex stream,
+  // e.g. options.readableObjectMode vs. options.writableObjectMode, etc.
 
   if (typeof isDuplex !== 'boolean') isDuplex = stream instanceof Duplex; // object stream flag to indicate whether or not this stream
   // contains buffers or objects.
@@ -15774,7 +15877,7 @@ function onwrite(stream, er) {
   onwriteStateUpdate(state);
   if (er) onwriteError(stream, state, sync, er, cb);else {
     // Check if we're actually ready to finish, but don't emit yet
-    var finished = needFinish(state);
+    var finished = needFinish(state) || stream.destroyed;
 
     if (!finished && !state.corked && !state.bufferProcessing && state.bufferedRequest) {
       clearBuffer(stream, state);
@@ -16772,6 +16875,14 @@ var createClient = function () {
                             }
                         });
 
+                        _client.on('disconnect', function (packet) {
+                            if (_events['disconnect']) {
+                                _events['disconnect'].forEach(function (handler) {
+                                    handler(packet);
+                                });
+                            }
+                        });
+
                         _client.on('message', function (topic, message, packet) {
                             var topicPath = topic.split('/'),
                                 activeTopicsId = (0, _keys2.default)(_topics).filter(function (checkedTopicId) {
@@ -16826,7 +16937,7 @@ var createClient = function () {
                             }
                         });
 
-                    case 18:
+                    case 19:
                     case 'end':
                         return _context.stop();
                 }
@@ -21296,6 +21407,7 @@ Parser.prototype._parseSubscribe = function () {
     // Parse topic
     topic = this._parseString()
     if (topic === null) return this._emitError(new Error('Cannot parse topic'))
+    if (this._pos >= packet.length) return this._emitError(new Error('Malformed Subscribe Payload'))
 
     options = this._parseByte()
     qos = options & constants.SUBSCRIBE_OPTIONS_QOS_MASK
@@ -21591,7 +21703,17 @@ Parser.prototype._parseProperties = function () {
         result[name] = {}
       }
       var currentUserProperty = this._parseByType(constants.propertiesTypes[name])
-      result[name][currentUserProperty.name] = currentUserProperty.value
+      if (result[name][currentUserProperty.name]) {
+        if (Array.isArray(result[name][currentUserProperty.name])) {
+          result[name][currentUserProperty.name].push(currentUserProperty.value)
+        } else {
+          var currentValue = result[name][currentUserProperty.name]
+          result[name][currentUserProperty.name] = [currentValue]
+          result[name][currentUserProperty.name].push(currentUserProperty.value)
+        }
+      } else {
+        result[name][currentUserProperty.name] = currentUserProperty.value
+      }
       continue
     }
     result[name] = this._parseByType(constants.propertiesTypes[name])
@@ -23234,32 +23356,28 @@ SOFTWARE.
 
 var leven = __webpack_require__(277)
 
-function commist() {
-
+function commist () {
   var commands = []
 
-  function lookup(array) {
-    if (typeof array === 'string')
-      array = array.split(' ')
+  function lookup (array) {
+    if (typeof array === 'string') { array = array.split(' ') }
 
-    return commands.map(function(cmd) {
+    return commands.map(function (cmd) {
       return cmd.match(array)
-    }).filter(function(match) {
+    }).filter(function (match) {
       return match.partsNotMatched === 0
-    }).sort(function(a, b) {
-      if (a.inputNotMatched > b.inputNotMatched)
-        return 1
+    }).sort(function (a, b) {
+      if (a.inputNotMatched > b.inputNotMatched) { return 1 }
 
-      if (a.inputNotMatched === b.inputNotMatched && a.totalDistance > b.totalDistance)
-        return 1
+      if (a.inputNotMatched === b.inputNotMatched && a.totalDistance > b.totalDistance) { return 1 }
 
       return -1
-    }).map(function(match) {
+    }).map(function (match) {
       return match.cmd
     })
   }
 
-  function parse(args) {
+  function parse (args) {
     var matching = lookup(args)
 
     if (matching.length > 0) {
@@ -23272,60 +23390,72 @@ function commist() {
     return args
   }
 
-  function register(command, func) {
-    var matching  = lookup(command)
+  function register (inputCommand, func) {
+    var commandOptions = {
+      command: inputCommand,
+      strict: false,
+      func: func
+    }
 
-    matching.forEach(function(match) {
-      if (match.string === command)
-        throw new Error('command already registered: ' + command)
+    if (typeof inputCommand === 'object') {
+      commandOptions = Object.assign(commandOptions, inputCommand)
+    }
+
+    var matching = lookup(commandOptions.command)
+
+    matching.forEach(function (match) {
+      if (match.string === commandOptions.command) { throw new Error('command already registered: ' + commandOptions.command) }
     })
 
-    commands.push(new Command(command, func))
+    commands.push(new Command(commandOptions))
 
     return this
   }
 
   return {
-      register: register
-    , parse: parse
-    , lookup: lookup
+    register: register,
+    parse: parse,
+    lookup: lookup
   }
 }
 
-function Command(string, func) {
-  this.string   = string
-  this.parts    = string.split(' ')
-  this.length   = this.parts.length
-  this.func     = func
+function Command (options) {
+  this.string = options.command
+  this.strict = options.strict
+  this.parts = this.string.split(' ')
+  this.length = this.parts.length
+  this.func = options.func
 
-  this.parts.forEach(function(part) {
-    if (part.length < 3)
-      throw new Error('command words must be at least 3 chars: ' + command)
+  this.parts.forEach(function (part) {
+    if (part.length < 3) { throw new Error('command words must be at least 3 chars: ' + options.command) }
   })
 }
 
-Command.prototype.call = function call(argv) {
+Command.prototype.call = function call (argv) {
   this.func(argv.slice(this.length))
 }
 
-Command.prototype.match = function match(string) {
+Command.prototype.match = function match (string) {
   return new CommandMatch(this, string)
 }
 
-function CommandMatch(cmd, array) {
+function CommandMatch (cmd, array) {
   this.cmd = cmd
-  this.distances = cmd.parts.map(function(elem, i) {
-    if (array[i] !== undefined)
-      return leven(elem, array[i])
-    else
-      return undefined
-  }).filter(function(distance, i) {
+  this.distances = cmd.parts.map(function (elem, i) {
+    if (array[i] !== undefined) {
+      if (cmd.strict) {
+        return elem === array[i] ? 0 : undefined
+      } else {
+        return leven(elem, array[i])
+      }
+    } else { return undefined }
+  }).filter(function (distance, i) {
     return distance !== undefined && distance < cmd.parts[i].length - 2
   })
 
   this.partsNotMatched = cmd.length - this.distances.length
   this.inputNotMatched = array.length - this.distances.length
-  this.totalDistance = this.distances.reduce(function(acc, i) { return acc + i }, 0)
+  this.totalDistance = this.distances.reduce(function (acc, i) { return acc + i }, 0)
 }
 
 module.exports = commist
@@ -23336,6 +23466,7 @@ module.exports = commist
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+/* eslint-disable no-nested-ternary */
 
 var arr = [];
 var charCodeCache = [];
@@ -23343,6 +23474,15 @@ var charCodeCache = [];
 module.exports = function (a, b) {
 	if (a === b) {
 		return 0;
+	}
+
+	var swap = a;
+
+	// Swapping the strings if `a` is longer than `b` so we know which one is the
+	// shortest & which one is the longest
+	if (a.length > b.length) {
+		a = b;
+		b = swap;
 	}
 
 	var aLen = a.length;
@@ -23356,6 +23496,35 @@ module.exports = function (a, b) {
 		return aLen;
 	}
 
+	// Performing suffix trimming:
+	// We can linearly drop suffix common to both strings since they
+	// don't increase distance at all
+	// Note: `~-` is the bitwise way to perform a `- 1` operation
+	while (aLen > 0 && (a.charCodeAt(~-aLen) === b.charCodeAt(~-bLen))) {
+		aLen--;
+		bLen--;
+	}
+
+	if (aLen === 0) {
+		return bLen;
+	}
+
+	// Performing prefix trimming
+	// We can linearly drop prefix common to both strings since they
+	// don't increase distance at all
+	var start = 0;
+
+	while (start < aLen && (a.charCodeAt(start) === b.charCodeAt(start))) {
+		start++;
+	}
+
+	aLen -= start;
+	bLen -= start;
+
+	if (aLen === 0) {
+		return bLen;
+	}
+
 	var bCharCode;
 	var ret;
 	var tmp;
@@ -23364,17 +23533,17 @@ module.exports = function (a, b) {
 	var j = 0;
 
 	while (i < aLen) {
-		charCodeCache[i] = a.charCodeAt(i);
+		charCodeCache[start + i] = a.charCodeAt(start + i);
 		arr[i] = ++i;
 	}
 
 	while (j < bLen) {
-		bCharCode = b.charCodeAt(j);
+		bCharCode = b.charCodeAt(start + j);
 		tmp = j++;
 		ret = j;
 
 		for (i = 0; i < aLen; i++) {
-			tmp2 = bCharCode === charCodeCache[i] ? tmp : tmp + 1;
+			tmp2 = bCharCode === charCodeCache[start + i] ? tmp : tmp + 1;
 			tmp = arr[i];
 			ret = arr[i] = tmp > ret ? tmp2 > ret ? ret + 1 : tmp2 : tmp2 > tmp ? tmp + 1 : tmp2;
 		}
@@ -26973,6 +27142,7 @@ function split (matcher, mapper, options) {
       }
   }
 
+  options = Object.assign({}, options)
   options.transform = transform
   options.flush = flush
   options.readableObjectMode = true
@@ -26999,14 +27169,9 @@ module.exports = split
 
 var Stream = __webpack_require__(45);
 if (process.env.READABLE_STREAM === 'disable' && Stream) {
-  module.exports = Stream;
-  exports = module.exports = Stream.Readable;
-  exports.Readable = Stream.Readable;
-  exports.Writable = Stream.Writable;
-  exports.Duplex = Stream.Duplex;
-  exports.Transform = Stream.Transform;
-  exports.PassThrough = Stream.PassThrough;
-  exports.Stream = Stream;
+  module.exports = Stream.Readable;
+  Object.assign(module.exports, Stream);
+  module.exports.Stream = Stream;
 } else {
   exports = module.exports = __webpack_require__(144);
   exports.Stream = Stream || exports;
@@ -27293,6 +27458,11 @@ function onReadable(iter) {
 function wrapForNext(lastPromise, iter) {
   return function (resolve, reject) {
     lastPromise.then(function () {
+      if (iter[kEnded]) {
+        resolve(createIterResult(undefined, true));
+        return;
+      }
+
       iter[kHandlePromise](resolve, reject);
     }, reject);
   };
@@ -27316,7 +27486,7 @@ var ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf((_Object$setPro
     }
 
     if (this[kEnded]) {
-      return Promise.resolve(createIterResult(null, true));
+      return Promise.resolve(createIterResult(undefined, true));
     }
 
     if (this[kStream].destroyed) {
@@ -27329,7 +27499,7 @@ var ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf((_Object$setPro
           if (_this[kError]) {
             reject(_this[kError]);
           } else {
-            resolve(createIterResult(null, true));
+            resolve(createIterResult(undefined, true));
           }
         });
       });
@@ -27374,7 +27544,7 @@ var ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf((_Object$setPro
         return;
       }
 
-      resolve(createIterResult(null, true));
+      resolve(createIterResult(undefined, true));
     });
   });
 }), _Object$setPrototypeO), AsyncIteratorPrototype);
@@ -27397,9 +27567,6 @@ var createReadableStreamAsyncIterator = function createReadableStreamAsyncIterat
   }), _defineProperty(_Object$create, kEnded, {
     value: stream._readableState.endEmitted,
     writable: true
-  }), _defineProperty(_Object$create, kLastPromise, {
-    value: null,
-    writable: true
   }), _defineProperty(_Object$create, kHandlePromise, {
     value: function value(resolve, reject) {
       var data = iterator[kStream].read();
@@ -27416,6 +27583,7 @@ var createReadableStreamAsyncIterator = function createReadableStreamAsyncIterat
     },
     writable: true
   }), _Object$create));
+  iterator[kLastPromise] = null;
   finished(stream, function (err) {
     if (err && err.code !== 'ERR_STREAM_PREMATURE_CLOSE') {
       var reject = iterator[kLastReject]; // reject if we are waiting for data in the Promise
@@ -27438,7 +27606,7 @@ var createReadableStreamAsyncIterator = function createReadableStreamAsyncIterat
       iterator[kLastPromise] = null;
       iterator[kLastResolve] = null;
       iterator[kLastReject] = null;
-      resolve(createIterResult(null, true));
+      resolve(createIterResult(undefined, true));
     }
 
     iterator[kEnded] = true;
@@ -27736,7 +27904,7 @@ if (__webpack_require__.c[__webpack_require__.s] === module) {
 /* 319 */
 /***/ (function(module, exports) {
 
-module.exports = {"_from":"git+https://github.com/mqttjs/MQTT.js.git","_id":"mqtt@2.18.8","_inBundle":false,"_integrity":"","_location":"/mqtt","_phantomChildren":{},"_requested":{"type":"git","raw":"git+https://github.com/mqttjs/MQTT.js.git","rawSpec":"git+https://github.com/mqttjs/MQTT.js.git","saveSpec":"git+https://github.com/mqttjs/MQTT.js.git","fetchSpec":"https://github.com/mqttjs/MQTT.js.git","gitCommittish":null},"_requiredBy":["#USER","/"],"_resolved":"git+https://github.com/mqttjs/MQTT.js.git#0379bf53a8ec803b0ac3ccbe94e22467abe57213","_spec":"git+https://github.com/mqttjs/MQTT.js.git","_where":"/home/sebu/proj/vuex-flespi-io-plugin","bin":{"mqtt_pub":"./bin/pub.js","mqtt_sub":"./bin/sub.js","mqtt":"./mqtt.js"},"browser":{"./mqtt.js":"./lib/connect/index.js","fs":false,"tls":false,"net":false},"bugs":{"url":"https://github.com/mqttjs/MQTT.js/issues"},"bundleDependencies":false,"contributors":[{"name":"Adam Rudd","email":"adamvrr@gmail.com"},{"name":"Matteo Collina","email":"matteo.collina@gmail.com","url":"https://github.com/mcollina"},{"name":"Siarhei Buntsevich","email":"scarry0506@gmail.com","url":"https://github.com/scarry1992"}],"dependencies":{"base64-js":"^1.3.0","commist":"^1.0.0","concat-stream":"^1.6.2","end-of-stream":"^1.4.1","es6-map":"^0.1.5","help-me":"^1.0.1","inherits":"^2.0.3","minimist":"^1.2.0","mqtt-packet":"^6.0.0","pump":"^3.0.0","readable-stream":"^2.3.6","reinterval":"^1.1.0","split2":"^3.1.0","websocket-stream":"^5.1.2","xtend":"^4.0.1"},"deprecated":false,"description":"A library for the MQTT protocol","devDependencies":{"@types/node":"^10.0.0","browserify":"^16.2.2","codecov":"^3.0.4","global":"^4.3.2","istanbul":"^0.4.5","mkdirp":"^0.5.1","mocha":"^4.1.0","mqtt-connection":"^4.0.0","pre-commit":"^1.2.2","rimraf":"^2.6.2","safe-buffer":"^5.1.2","should":"^13.2.1","sinon":"~1.17.7","snazzy":"^8.0.0","standard":"^11.0.1","through2":"^3.0.0","tslint":"^5.11.0","tslint-config-standard":"^8.0.1","typescript":"^3.2.2","uglify-js":"^3.4.5","ws":"^3.3.3","zuul":"^3.12.0","zuul-ngrok":"^4.0.0"},"engines":{"node":">=4.0.0"},"files":["dist/","CONTRIBUTING.md","doc","lib","bin","examples","test","types","mqtt.js"],"homepage":"https://github.com/mqttjs/MQTT.js#readme","keywords":["mqtt","publish/subscribe","publish","subscribe"],"license":"MIT","main":"mqtt.js","name":"mqtt","pre-commit":["test","tslint"],"repository":{"type":"git","url":"git://github.com/mqttjs/MQTT.js.git"},"scripts":{"browser-build":"rimraf dist/ && mkdirp dist/ && browserify mqtt.js -s mqtt > dist/mqtt.js && uglifyjs < dist/mqtt.js > dist/mqtt.min.js","browser-test":"zuul --server test/browser/server.js --local --open test/browser/test.js","ci":"npm run tslint && npm run typescript-compile-test && npm run test && codecov","prepare":"npm run browser-build","pretest":"standard | snazzy","sauce-test":"zuul --server test/browser/server.js --tunnel ngrok -- test/browser/test.js","test":"istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly --","tslint":"if [[ \"`node -v`\" != \"v4.3.2\" ]]; then tslint types/**/*.d.ts; fi","typescript-compile-execute":"node test/typescript/*.js","typescript-compile-test":"tsc -p test/typescript/tsconfig.json","typescript-test":"npm run typescript-compile-test && npm run typescript-compile-execute"},"standard":{"env":["mocha"]},"types":"types/index.d.ts","version":"2.18.8"}
+module.exports = {"_from":"git+https://github.com/scarry1992/MQTT.js.git#cork-fix","_id":"mqtt@2.18.8","_inBundle":false,"_integrity":"","_location":"/mqtt","_phantomChildren":{},"_requested":{"type":"git","raw":"git+https://github.com/scarry1992/MQTT.js.git#cork-fix","rawSpec":"git+https://github.com/scarry1992/MQTT.js.git#cork-fix","saveSpec":"git+https://github.com/scarry1992/MQTT.js.git#cork-fix","fetchSpec":"https://github.com/scarry1992/MQTT.js.git","gitCommittish":"cork-fix"},"_requiredBy":["#USER","/"],"_resolved":"git+https://github.com/scarry1992/MQTT.js.git#072945a692c6dbb7d213a628a4a90c1dc054505a","_spec":"git+https://github.com/scarry1992/MQTT.js.git#cork-fix","_where":"/home/sebu/proj/vuex-flespi-io-plugin","bin":{"mqtt_pub":"./bin/pub.js","mqtt_sub":"./bin/sub.js","mqtt":"./mqtt.js"},"browser":{"./mqtt.js":"./lib/connect/index.js","fs":false,"tls":false,"net":false},"bugs":{"url":"https://github.com/mqttjs/MQTT.js/issues"},"bundleDependencies":false,"contributors":[{"name":"Adam Rudd","email":"adamvrr@gmail.com"},{"name":"Matteo Collina","email":"matteo.collina@gmail.com","url":"https://github.com/mcollina"},{"name":"Siarhei Buntsevich","email":"scarry0506@gmail.com","url":"https://github.com/scarry1992"}],"dependencies":{"base64-js":"^1.3.0","commist":"^1.0.0","concat-stream":"^1.6.2","end-of-stream":"^1.4.1","es6-map":"^0.1.5","help-me":"^1.0.1","inherits":"^2.0.3","minimist":"^1.2.0","mqtt-packet":"^6.0.0","pump":"^3.0.0","readable-stream":"^2.3.6","reinterval":"^1.1.0","split2":"^3.1.0","websocket-stream":"git+https://github.com/scarry1992/websocket-stream.git#cork-logic-browser-fix","xtend":"^4.0.1"},"deprecated":false,"description":"A library for the MQTT protocol","devDependencies":{"@types/node":"^10.0.0","browserify":"^16.2.3","codecov":"^3.0.4","global":"^4.3.2","istanbul":"^0.4.5","mkdirp":"^0.5.1","mocha":"^4.1.0","mqtt-connection":"^4.0.0","pre-commit":"^1.2.2","rimraf":"^2.6.3","safe-buffer":"^5.1.2","should":"^13.2.1","sinon":"~1.17.7","snazzy":"^8.0.0","standard":"^11.0.1","through2":"^3.0.0","tslint":"^5.12.1","tslint-config-standard":"^8.0.1","typescript":"^3.2.2","uglify-js":"^3.4.5","ws":"^3.3.3","zuul":"^3.12.0","zuul-ngrok":"^4.0.0"},"engines":{"node":">=4.0.0"},"files":["dist/","CONTRIBUTING.md","doc","lib","bin","examples","test","types","mqtt.js"],"homepage":"https://github.com/mqttjs/MQTT.js#readme","keywords":["mqtt","publish/subscribe","publish","subscribe"],"license":"MIT","main":"mqtt.js","name":"mqtt","pre-commit":["test","tslint"],"repository":{"type":"git","url":"git://github.com/mqttjs/MQTT.js.git"},"scripts":{"browser-build":"rimraf dist/ && mkdirp dist/ && browserify mqtt.js -s mqtt > dist/mqtt.js && uglifyjs < dist/mqtt.js > dist/mqtt.min.js","browser-test":"zuul --server test/browser/server.js --local --open test/browser/test.js","ci":"npm run tslint && npm run typescript-compile-test && npm run test && codecov","prepare":"npm run browser-build","pretest":"standard | snazzy","sauce-test":"zuul --server test/browser/server.js --tunnel ngrok -- test/browser/test.js","test":"istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly --","tslint":"if [[ \"`node -v`\" != \"v4.3.2\" ]]; then tslint types/**/*.d.ts; fi","typescript-compile-execute":"node test/typescript/*.js","typescript-compile-test":"tsc -p test/typescript/tsconfig.json","typescript-test":"npm run typescript-compile-test && npm run typescript-compile-execute"},"standard":{"env":["mocha"]},"types":"types/index.d.ts","version":"2.18.8"}
 
 /***/ }),
 /* 320 */

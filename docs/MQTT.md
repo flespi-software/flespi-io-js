@@ -166,6 +166,9 @@ Event `error`: Emitted when the client cannot connect
 Event `close`: Emitted after disconnect
     `function () {}`
 
+Event `disconnect`: Emitted after disconnect by broker
+    `function (closePacket) {}`
+
 Event `reconnect`: Emitted after reconnect start
     `function () {}`
 
