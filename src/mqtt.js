@@ -13,7 +13,7 @@ function _generateTimestampFilteringWrapper (handler) {
         let timestamp = packet.properties && packet.properties.userProperties && packet.properties.userProperties.timestamp ? parseFloat(packet.properties.userProperties.timestamp) : 0,
             seqno = packet.properties && packet.properties.userProperties && packet.properties.userProperties.seqno ? parseFloat(packet.properties.userProperties.seqno) : 0
         if (!_timestampsByTopic[topic]) { _timestampsByTopic[topic] = {timestamp: 0, seqno: 0} }
-        if (timestamp > _timestampsByTopic[topic].timestamp || (timestamp === _timestampsByTopic[topic].timestamp && seqno > _timestampsByTopic[topic].seqno)) {
+        if (timestamp > _timestampsByTopic[topic].timestamp || (timestamp === _timestampsByTopic[topic].timestamp && seqno >= _timestampsByTopic[topic].seqno)) {
             handler(message, topic, packet)
             _timestampsByTopic[topic] = {timestamp, seqno}
         }
@@ -68,6 +68,7 @@ async function createClient () {
 
     /* Handle disconnect of connect */
     _client.on('close', () => {
+        if (!_config.mqttSettings || (_config.mqttSettings && (_config.mqttSettings.clean === undefined || _config.mqttSettings.clean === true))) { _timestampsByTopic = {} }
         /* handling all handler by close event */
         if (_events['close']) {
             _events['close'].forEach((handler) => { handler() })

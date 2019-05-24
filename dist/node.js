@@ -6225,19 +6225,18 @@ MqttClient.prototype.getLastMessageId = function () {
  * @api private
  */
 MqttClient.prototype._resubscribe = function (connack) {
-  var self = this
   var _resubscribeTopicsKeys = Object.keys(this._resubscribeTopics)
   if (!this._firstConnection &&
       (this.options.clean || (this.options.protocolVersion === 5 && !connack.sessionPresent)) &&
       _resubscribeTopicsKeys.length > 0) {
     if (this.options.resubscribe) {
       if (this.options.protocolVersion === 5) {
-        _resubscribeTopicsKeys.forEach(function (topicKey) {
+        for (var topicI = 0; topicI < _resubscribeTopicsKeys.length; topicI++) {
           var resubscribeTopic = {}
-          resubscribeTopic[topicKey] = self._resubscribeTopics[topicKey]
+          resubscribeTopic[_resubscribeTopicsKeys[topicI]] = this._resubscribeTopics[_resubscribeTopicsKeys[topicI]]
           resubscribeTopic.resubscribe = true
-          self.subscribe(resubscribeTopic, {properties: resubscribeTopic[topicKey].properties})
-        })
+          this.subscribe(resubscribeTopic, {properties: resubscribeTopic[_resubscribeTopicsKeys[topicI]].properties})
+        }
       } else {
         this._resubscribeTopics.resubscribe = true
         this.subscribe(this._resubscribeTopics)
@@ -16882,6 +16881,10 @@ var createClient = function () {
                         });
 
                         _client.on('close', function () {
+                            if (!_config.mqttSettings || _config.mqttSettings && (_config.mqttSettings.clean === undefined || _config.mqttSettings.clean === true)) {
+                                _timestampsByTopic = {};
+                            }
+
                             if (_events['close']) {
                                 _events['close'].forEach(function (handler) {
                                     handler();
@@ -16991,7 +16994,7 @@ function _generateTimestampFilteringWrapper(handler) {
         if (!_timestampsByTopic[topic]) {
             _timestampsByTopic[topic] = { timestamp: 0, seqno: 0 };
         }
-        if (timestamp > _timestampsByTopic[topic].timestamp || timestamp === _timestampsByTopic[topic].timestamp && seqno > _timestampsByTopic[topic].seqno) {
+        if (timestamp > _timestampsByTopic[topic].timestamp || timestamp === _timestampsByTopic[topic].timestamp && seqno >= _timestampsByTopic[topic].seqno) {
             handler(message, topic, packet);
             _timestampsByTopic[topic] = { timestamp: timestamp, seqno: seqno };
         }
@@ -27918,7 +27921,7 @@ if (__webpack_require__.c[__webpack_require__.s] === module) {
 /* 319 */
 /***/ (function(module, exports) {
 
-module.exports = {"_from":"git+https://github.com/scarry1992/MQTT.js.git#cork-fix","_id":"mqtt@2.18.8","_inBundle":false,"_integrity":"","_location":"/mqtt","_phantomChildren":{},"_requested":{"type":"git","raw":"git+https://github.com/scarry1992/MQTT.js.git#cork-fix","rawSpec":"git+https://github.com/scarry1992/MQTT.js.git#cork-fix","saveSpec":"git+https://github.com/scarry1992/MQTT.js.git#cork-fix","fetchSpec":"https://github.com/scarry1992/MQTT.js.git","gitCommittish":"cork-fix"},"_requiredBy":["#USER","/"],"_resolved":"git+https://github.com/scarry1992/MQTT.js.git#f4e41bd5fb29144822b19e46d73639a11db4a00b","_spec":"git+https://github.com/scarry1992/MQTT.js.git#cork-fix","_where":"/home/sebu/proj/vuex-flespi-io-plugin","bin":{"mqtt_pub":"./bin/pub.js","mqtt_sub":"./bin/sub.js","mqtt":"./mqtt.js"},"browser":{"./mqtt.js":"./lib/connect/index.js","fs":false,"tls":false,"net":false},"bugs":{"url":"https://github.com/mqttjs/MQTT.js/issues"},"bundleDependencies":false,"contributors":[{"name":"Adam Rudd","email":"adamvrr@gmail.com"},{"name":"Matteo Collina","email":"matteo.collina@gmail.com","url":"https://github.com/mcollina"},{"name":"Siarhei Buntsevich","email":"scarry0506@gmail.com","url":"https://github.com/scarry1992"}],"dependencies":{"base64-js":"^1.3.0","commist":"^1.0.0","concat-stream":"^1.6.2","end-of-stream":"^1.4.1","es6-map":"^0.1.5","help-me":"^1.0.1","inherits":"^2.0.3","minimist":"^1.2.0","mqtt-packet":"^6.0.0","pump":"^3.0.0","readable-stream":"^2.3.6","reinterval":"^1.1.0","split2":"^3.1.0","websocket-stream":"git+https://github.com/scarry1992/websocket-stream.git#cork-logic-browser-fix","xtend":"^4.0.1"},"deprecated":false,"description":"A library for the MQTT protocol","devDependencies":{"@types/node":"^10.0.0","browserify":"^16.2.3","codecov":"^3.0.4","global":"^4.3.2","istanbul":"^0.4.5","mkdirp":"^0.5.1","mocha":"^4.1.0","mqtt-connection":"^4.0.0","pre-commit":"^1.2.2","rimraf":"^2.6.3","safe-buffer":"^5.1.2","should":"^13.2.1","sinon":"~1.17.7","snazzy":"^8.0.0","standard":"^11.0.1","through2":"^3.0.0","tslint":"^5.12.1","tslint-config-standard":"^8.0.1","typescript":"^3.2.2","uglify-js":"^3.4.5","ws":"^3.3.3","zuul":"^3.12.0","zuul-ngrok":"^4.0.0"},"engines":{"node":">=4.0.0"},"files":["dist/","CONTRIBUTING.md","doc","lib","bin","examples","test","types","mqtt.js"],"homepage":"https://github.com/mqttjs/MQTT.js#readme","keywords":["mqtt","publish/subscribe","publish","subscribe"],"license":"MIT","main":"mqtt.js","name":"mqtt","pre-commit":["test","tslint"],"repository":{"type":"git","url":"git://github.com/mqttjs/MQTT.js.git"},"scripts":{"browser-build":"rimraf dist/ && mkdirp dist/ && browserify mqtt.js -s mqtt > dist/mqtt.js && uglifyjs < dist/mqtt.js > dist/mqtt.min.js","browser-test":"zuul --server test/browser/server.js --local --open test/browser/test.js","ci":"npm run tslint && npm run typescript-compile-test && npm run test && codecov","prepare":"npm run browser-build","pretest":"standard | snazzy","sauce-test":"zuul --server test/browser/server.js --tunnel ngrok -- test/browser/test.js","test":"istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly --","tslint":"if [[ \"`node -v`\" != \"v4.3.2\" ]]; then tslint types/**/*.d.ts; fi","typescript-compile-execute":"node test/typescript/*.js","typescript-compile-test":"tsc -p test/typescript/tsconfig.json","typescript-test":"npm run typescript-compile-test && npm run typescript-compile-execute"},"standard":{"env":["mocha"]},"types":"types/index.d.ts","version":"2.18.8"}
+module.exports = {"_from":"git+https://github.com/mqttjs/MQTT.js.git","_id":"mqtt@2.18.8","_inBundle":false,"_integrity":"","_location":"/mqtt","_phantomChildren":{},"_requested":{"type":"git","raw":"git+https://github.com/mqttjs/MQTT.js.git","rawSpec":"git+https://github.com/mqttjs/MQTT.js.git","saveSpec":"git+https://github.com/mqttjs/MQTT.js.git","fetchSpec":"https://github.com/mqttjs/MQTT.js.git","gitCommittish":null},"_requiredBy":["#USER","/"],"_resolved":"git+https://github.com/mqttjs/MQTT.js.git#84ca3447ecf8a265068df838567a43e58ac54761","_spec":"git+https://github.com/mqttjs/MQTT.js.git","_where":"/home/sebu/proj/vuex-flespi-io-plugin","bin":{"mqtt_pub":"./bin/pub.js","mqtt_sub":"./bin/sub.js","mqtt":"./mqtt.js"},"browser":{"./mqtt.js":"./lib/connect/index.js","fs":false,"tls":false,"net":false},"bugs":{"url":"https://github.com/mqttjs/MQTT.js/issues"},"bundleDependencies":false,"contributors":[{"name":"Adam Rudd","email":"adamvrr@gmail.com"},{"name":"Matteo Collina","email":"matteo.collina@gmail.com","url":"https://github.com/mcollina"},{"name":"Siarhei Buntsevich","email":"scarry0506@gmail.com","url":"https://github.com/scarry1992"}],"dependencies":{"base64-js":"^1.3.0","commist":"^1.0.0","concat-stream":"^1.6.2","end-of-stream":"^1.4.1","es6-map":"^0.1.5","help-me":"^1.0.1","inherits":"^2.0.3","minimist":"^1.2.0","mqtt-packet":"^6.0.0","pump":"^3.0.0","readable-stream":"^2.3.6","reinterval":"^1.1.0","split2":"^3.1.0","websocket-stream":"^5.1.2","xtend":"^4.0.1"},"deprecated":false,"description":"A library for the MQTT protocol","devDependencies":{"@types/node":"^10.0.0","browserify":"^16.2.2","codecov":"^3.0.4","global":"^4.3.2","istanbul":"^0.4.5","mkdirp":"^0.5.1","mocha":"^4.1.0","mqtt-connection":"^4.0.0","pre-commit":"^1.2.2","rimraf":"^2.6.2","safe-buffer":"^5.1.2","should":"^13.2.1","sinon":"~1.17.7","snazzy":"^8.0.0","standard":"^11.0.1","through2":"^3.0.0","tslint":"^5.11.0","tslint-config-standard":"^8.0.1","typescript":"^3.2.2","uglify-js":"^3.4.5","ws":"^3.3.3","zuul":"^3.12.0","zuul-ngrok":"^4.0.0"},"engines":{"node":">=4.0.0"},"files":["dist/","CONTRIBUTING.md","doc","lib","bin","examples","test","types","mqtt.js"],"homepage":"https://github.com/mqttjs/MQTT.js#readme","keywords":["mqtt","publish/subscribe","publish","subscribe"],"license":"MIT","main":"mqtt.js","name":"mqtt","pre-commit":["test","tslint"],"repository":{"type":"git","url":"git://github.com/mqttjs/MQTT.js.git"},"scripts":{"browser-build":"rimraf dist/ && mkdirp dist/ && browserify mqtt.js -s mqtt > dist/mqtt.js && uglifyjs < dist/mqtt.js > dist/mqtt.min.js","browser-test":"zuul --server test/browser/server.js --local --open test/browser/test.js","ci":"npm run tslint && npm run typescript-compile-test && npm run test && codecov","prepare":"npm run browser-build","pretest":"standard | snazzy","sauce-test":"zuul --server test/browser/server.js --tunnel ngrok -- test/browser/test.js","test":"istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly --","tslint":"if [[ \"`node -v`\" != \"v4.3.2\" ]]; then tslint types/**/*.d.ts; fi","typescript-compile-execute":"node test/typescript/*.js","typescript-compile-test":"tsc -p test/typescript/tsconfig.json","typescript-test":"npm run typescript-compile-test && npm run typescript-compile-execute"},"standard":{"env":["mocha"]},"types":"types/index.d.ts","version":"2.18.8"}
 
 /***/ }),
 /* 320 */
