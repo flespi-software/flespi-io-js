@@ -61,3 +61,14 @@ connector.gw.getProtocols(protocolSelector, query)
 | http.gw.streams.subscriptions.put | gw.putStreamsSubscriptions | streamSelector, subscriptionSelector, query, body | Change properties of existing stream subscriptions matching filter parameters. | 
 | http.gw.streams.delete | gw.deleteStreams | streamSelector | Delete all streams matching filtering parameters |
 | http.gw.streams.subscriptions.delete | gw.deleteStreamsSubscriptions | streamSelector, subscriptionSelector | Delete all subscriptions matching filtering parameters. |
+| http.gw.calcs.post | gw.postCalcs | query, body | Create new calculator. |
+| http.gw.calcs.delete | gw.deleteCalcs | calcSelector | Delete calculators |
+| http.gw.calcs.get | gw.getCalcs | calcSelector, query | Get specified calculators information.. |
+| http.gw.calcs.put | gw.putCalcs | calcSelector, query, body | Modify calculator parameters. |
+| http.gw.calcs.devices.post | gw.postCalcsDevices | calcSelector, query, body | Assign device to calculator. |
+| http.gw.calcs.devices.delete | gw.deleteCalcsDevices | calcSelector, deviceSelector | Unassign device from calculator and remove its calculated intervals permanently. |
+| http.gw.calcs.devices.get | gw.getCalcsDevices | calcSelector, deviceSelector, query | Fetch devices assigned to calculator. |
+| http.gw.calcs.devices.put | gw.putCalcsDevices | calcSelector, deviceSelector, query, body | Modify device assigned to caluclator. |
+| http.gw.calcs.devices.intervals.get | gw.getCalcsDevicesIntervals | calcSelector, deviceSelector, intervalSelector, query | Fetch calculated device intervals. |
+| http.gw.calcs.devices.intervals.put | gw.putCalcsDevicesIntervals | calcSelector, deviceSelector, intervalSelector, body | Attach to automatically calculated device intervals custom parameters. |
+| http.gw.calcs.logs.get | gw.putCalcsLogs | calcSelector, query | Get logs for specified calc. |
