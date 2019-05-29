@@ -32,12 +32,12 @@ function generate (http, config) {
                 : {}
         /* get params and parts of path from path */
         let parsedPath = path.split('/').reduce((result, part) => {
-            if (part.match(/{([\w-]+)}/g)) {
+            if (part.match(/{([\w\.-]+)}/g)) {
                 result.params.push(part)
             }
             else if (part) {
                 /* rebase part of path to camel case */
-                result.parts.push(part.replace(/-\w/g, (match) => { return match[1].toUpperCase() }))
+                result.parts.push(part.replace(/[\.-]\w/g, (match) => { return match[1].toUpperCase() }))
             }
             return result
         }, { params: [], parts: [] })

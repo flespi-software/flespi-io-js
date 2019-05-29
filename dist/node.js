@@ -28104,10 +28104,10 @@ function generate(http, config) {
         }, {}) : {};
 
         var parsedPath = path.split('/').reduce(function (result, part) {
-            if (part.match(/{([\w-]+)}/g)) {
+            if (part.match(/{([\w\.-]+)}/g)) {
                 result.params.push(part);
             } else if (part) {
-                result.parts.push(part.replace(/-\w/g, function (match) {
+                result.parts.push(part.replace(/[\.-]\w/g, function (match) {
                     return match[1].toUpperCase();
                 }));
             }
