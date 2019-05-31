@@ -137,5 +137,20 @@
         }
       }
     }
+  },
+  "intevals": {
+    "base": "flespi/intevals/",
+    "methods": [
+      {
+        "name": "subscribe",
+        "pattern": "gw/calcs/{calc_id}/devices/{device_id}/{event}",
+        "params": ["calc_id", "device_id", "event"]
+      },
+      {
+        "name": "unsubscribe",
+        "pattern": "gw/calcs/{calc_id}/devices/{device_id}/{event}",
+        "params": ["calc_id", "device_id", "event"]
+      }
+    ]
   }
 }

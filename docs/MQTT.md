@@ -139,6 +139,8 @@ connector.subscribeLogs(api, origin, event_type, handler)
 | socket.state.devices.telemetry.unsubscribe | unsubscribeStateDevicesTelemetry | id, parameter, [indexOfSubscription] | Unsubscribe from telemetry of devices |
 | socket.state.devices.settings.subscribe | subscribeStateDevicesSettings | id, name, handler, [options] | Subscribe to telemetry of devices |
 | socket.state.devices.settings.unsubscribe | unsubscribeStateDevicesSettings | id, name, [indexOfSubscription] | Unsubscribe from telemetry of devices |
+| socket.intervals.subscribe | subscribeIntervals | calc_id, device_id, event, handler, [options] | Subscribe to intervals events |
+| socket.intervals.unsubscribe | unsubscribeIntervals | calc_id, device_id, event, [indexOfSubscription] | Unsubscribe from intervals events |
 
 #### MQTT events
 
