@@ -139,7 +139,7 @@
     }
   },
   "intervals": {
-    "base": "flespi/intevals/",
+    "base": "flespi/interval/",
     "methods": [
       {
         "name": "subscribe",
