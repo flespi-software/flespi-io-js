@@ -8,14 +8,15 @@ let _client = null, /* client of mqtt connection */
     _events = {}, /* store name of events and array of handlers by current event {name: [...handlers]} */
     _timestampsByTopic = {} /* flespi feature by filtering by timestamp */
 
-function _generateTimestampFilteringWrapper (handler) {
+function _generateTimestampFilteringWrapper (name, handler) {
     return function (message, topic, packet) {
         let timestamp = packet.properties && packet.properties.userProperties && packet.properties.userProperties.timestamp ? parseFloat(packet.properties.userProperties.timestamp) : 0,
             seqno = packet.properties && packet.properties.userProperties && packet.properties.userProperties.seqno ? parseFloat(packet.properties.userProperties.seqno) : 0
-        if (!_timestampsByTopic[topic]) { _timestampsByTopic[topic] = {timestamp: 0, seqno: 0} }
-        if (timestamp > _timestampsByTopic[topic].timestamp || (timestamp === _timestampsByTopic[topic].timestamp && seqno >= _timestampsByTopic[topic].seqno)) {
+        if (!_timestampsByTopic[name]) { _timestampsByTopic[name] = {} }
+        if (!_timestampsByTopic[name][topic]) { _timestampsByTopic[name][topic] = {timestamp: 0, seqno: 0} }
+        if (timestamp > _timestampsByTopic[name][topic].timestamp || (timestamp === _timestampsByTopic[name][topic].timestamp && seqno >= _timestampsByTopic[name][topic].seqno)) {
             handler(message, topic, packet)
-            _timestampsByTopic[topic] = {timestamp, seqno}
+            _timestampsByTopic[name][topic] = {timestamp, seqno}
         }
     }
 }
@@ -115,6 +116,7 @@ async function createClient () {
             try {
                 _topics[topicId].handler(message, topic, packet)
             } catch (e) {
+                console.log(e)
                 console.log(new Error('Can`t run handler. Do you installed it?'))
             }
         })
@@ -206,7 +208,7 @@ mqttConnector.subscribe = async function subscribe(topic) {
         return topic.reduce(async (result, topic) => {
             let id = uniqueId()
             if (isProtocolNew && topic.options && topic.options.filterByTimestamp) {
-                topic.handler = _generateTimestampFilteringWrapper(topic.handler)
+                topic.handler = _generateTimestampFilteringWrapper(topic.name, topic.handler)
             }
             _topics[id] = topic
             /* if has client and he is connected */
@@ -227,7 +229,7 @@ mqttConnector.subscribe = async function subscribe(topic) {
     else if (typeof topic === 'object') {
         let id = uniqueId()
         if (isProtocolNew && topic.options && topic.options.filterByTimestamp) {
-            topic.handler = _generateTimestampFilteringWrapper(topic.handler)
+            topic.handler = _generateTimestampFilteringWrapper(topic.name, topic.handler)
         }
         _topics[id] = topic
         /* if has client and he is connected */
@@ -263,6 +265,10 @@ mqttConnector.unsubscribe = async function unsubscribe (name, unsubId, options) 
     let needUnsubscribe = filteredRemovableTopicsIndexes.length === removableTopicsIndexes.length
     /* remove thats topics */
     filteredRemovableTopicsIndexes.forEach((index) => {
+        let topic = _topics[index]
+        if (topic.options && topic.options.filterByTimestamp && _timestampsByTopic[topic.name]) {
+            delete _timestampsByTopic[topic.name]
+        }
         delete _topics[index]
     })
     /* if has client and he is connected */
@@ -273,6 +279,7 @@ mqttConnector.unsubscribe = async function unsubscribe (name, unsubId, options) 
 }
 /* Unsubscription method for client of mqtt from all topics */
 mqttConnector.unsubscribeAll = async function unsubscribeAll(options) {
+    _timestampsByTopic = {}
     for (let topicId of Object.keys(_topics)) {
         await _client.unsubscribe(_topics[topicId].name, options)
     }
