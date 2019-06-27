@@ -1,12 +1,14 @@
 import mqtt from './flespi-mqtt-io/async'
 import extender from './flespi-mqtt-io/index'
 import uniqueId from 'lodash/uniqueId'
+import merge from 'lodash/merge'
 
 let _client = null, /* client of mqtt connection */
     _topics = {}, /* topics which subscribed by mqtt {'uniqueId': {name: String, handler: Function},...} */
     _config = {}, /* config of mqtt connection {server, port(optional), token} */
     _events = {}, /* store name of events and array of handlers by current event {name: [...handlers]} */
-    _timestampsByTopic = {} /* flespi feature by filtering by timestamp */
+    _timestampsByTopic = {}, /* flespi feature by filtering by timestamp */
+    _currentClientVersion = 0
 
 function _generateTimestampFilteringWrapper (name, handler) {
     return function (message, topic, packet) {
@@ -51,6 +53,7 @@ async function createClient () {
         if (!connack.sessionPresent && !mqttConfig.resubscribe) {
             _topics = {}
         }
+        _currentClientVersion = _config.mqttSettings && _config.mqttSettings.protocolVersion ? _config.mqttSettings.protocolVersion : 4
         /* handling all handler by connect event */
         if (_events['connect']) {
             _events['connect'].forEach((handler) => { handler(connack) })
@@ -85,42 +88,56 @@ async function createClient () {
     })
 
     /* calling each callbacks by subscribed topic after getting new message. */
-    _client.on('message', (topic, message, packet) => {
-        let topicPath = topic.split('/'), /* getting full topic path */
-            /* searching for all the signed topics that criteria for the current current topic, comparing their path trees */
-            activeTopicsId = Object.keys(_topics).filter((checkedTopicId) => {
-                let currentTopicPath = _topics[checkedTopicId].name.split('/')
-                /* process $share subscriptions */
-                if (currentTopicPath[0] === '$share') {
-                    currentTopicPath.splice(0, 2)
-                }
-                /*if the lengths are the same or the last element of the path is '#'. '#' can just be in the end of the path of the subscribed topic */
-                if (currentTopicPath.length === topicPath.length || currentTopicPath[currentTopicPath.length - 1] === '#') {
-                    return currentTopicPath.reduce((result, currentPath, index) => {
-                        /*
-                        '+' in the path of the topic means any part of the path of the topic.
-                        '#' in the path of the topic means any part or later length of the path of the topic.
-                        */
-                        if (currentPath === '#' || currentPath === '+') {
-                            return result && true
-                        }
-                        return result && currentPath === topicPath[index]
-                    }, true)
-                }
-                else {
-                    return false
+    let fallbackMessageProcessing = (topic, message, packet) => {
+            let topicPath = topic.split('/'), /* getting full topic path */
+                /* searching for all the signed topics that criteria for the current current topic, comparing their path trees */
+                activeTopicsId = Object.keys(_topics).filter((checkedTopicId) => {
+                    let currentTopicPath = _topics[checkedTopicId].name.split('/')
+                    /* process $share subscriptions */
+                    if (currentTopicPath[0] === '$share') {
+                        currentTopicPath.splice(0, 2)
+                    }
+                    /*if the lengths are the same or the last element of the path is '#'. '#' can just be in the end of the path of the subscribed topic */
+                    if (currentTopicPath.length === topicPath.length || currentTopicPath[currentTopicPath.length - 1] === '#') {
+                        return currentTopicPath.reduce((result, currentPath, index) => {
+                            /*
+                            '+' in the path of the topic means any part of the path of the topic.
+                            '#' in the path of the topic means any part or later length of the path of the topic.
+                            */
+                            if (currentPath === '#' || currentPath === '+') {
+                                return result && true
+                            }
+                            return result && currentPath === topicPath[index]
+                        }, true)
+                    }
+                    else {
+                        return false
+                    }
+                })
+            /* calling each callbacks with payload as message by subscribed topic. */
+            activeTopicsId.forEach((topicId) => {
+                try {
+                    _topics[topicId].handler(message, topic, packet)
+                } catch (e) {
+                    console.log(e)
                 }
             })
-        /* calling each callbacks with payload as message by subscribed topic. */
-        activeTopicsId.forEach((topicId) => {
-            try {
-                _topics[topicId].handler(message, topic, packet)
-            } catch (e) {
-                console.log(e)
-                console.log(new Error('Can`t run handler. Do you installed it?'))
+        },
+        messageProcessing = (topic, message, packet) => {
+            let activeTopicsId = packet.properties && packet.properties.subscriptionIdentifier
+            if (typeof activeTopicsId === 'string') {
+                activeTopicsId = [activeTopicsId]
             }
-        })
-    })
+            /* calling each callbacks with payload as message by subscribed topic. */
+            activeTopicsId.forEach((topicId) => {
+                try {
+                    _topics[topicId].handler(message, topic, packet)
+                } catch (e) {
+                    console.log(e)
+                }
+            })
+        }
+    _client.on('message', _currentClientVersion === 5 ? messageProcessing : fallbackMessageProcessing)
 
     /* handling reconnect */
     _client.on('reconnect', () => {
@@ -203,48 +220,33 @@ mqttConnector.connected = () => !!_client && _client._client.connected
 /* Subscription method for client of mqtt */
 mqttConnector.subscribe = async function subscribe(topic) {
     let isProtocolNew = _config.mqttSettings && _config.mqttSettings.protocolVersion === 5
-    if (topic instanceof Array) {
-        /* return array of subscribed indexes of topics */
-        return topic.reduce(async (result, topic) => {
-            let id = uniqueId()
-            if (isProtocolNew && topic.options && topic.options.filterByTimestamp) {
-                topic.handler = _generateTimestampFilteringWrapper(topic.name, topic.handler)
-            }
-            _topics[id] = topic
-            /* if has client and he is connected */
-            if (_client) {
-                try {
-                    let granted = await _client.subscribe(topic.name, topic.options)
-                    result[id] = Promise.resolve(granted)
-                } catch (e) {
-                    result[id] = Promise.reject(e)
-                }
-            }
-            else {
-                result[id] = Promise.reject(new Error('Client don`t created'))
-            }
-            return result
-        }, {})
+    if (!Array.isArray(topic)) {
+        topic = [topic]
     }
-    else if (typeof topic === 'object') {
-        let id = uniqueId()
+    return topic.reduce(async (result, topic) => {
+        let id = Number(uniqueId())
         if (isProtocolNew && topic.options && topic.options.filterByTimestamp) {
             topic.handler = _generateTimestampFilteringWrapper(topic.name, topic.handler)
+        }
+        if (isProtocolNew) {
+            if (!topic.options) { topic.options = {} }
+            topic.options = merge(topic.options, { properties: { subscriptionIdentifier: id } })
         }
         _topics[id] = topic
         /* if has client and he is connected */
         if (_client) {
             try {
                 let granted = await _client.subscribe(topic.name, topic.options)
-                /* return granted by index of new subscription */
-                return Promise.resolve({[id]: granted})
+                result[id] = granted
             } catch (e) {
-                return Promise.reject(e)
+                result[id] = e
             }
         }
-        else { return Promise.reject(new Error('Client don`t created')) }
-    }
-    else { return Promise.reject(new Error('Not valid type of topic/topics')) }
+        else {
+            result[id] = new Error('Client don`t created')
+        }
+        return result
+    }, {})
 }
 /* Unsubscription method for client of mqtt by topic name or topic names. */
 mqttConnector.unsubscribe = async function unsubscribe (name, unsubId, options) {
