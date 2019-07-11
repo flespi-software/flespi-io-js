@@ -27,7 +27,7 @@
     "axios": "^0.17.1",
     "form-data": "^2.3.2",
     "in-array": "^0.1.2",
-    "lodash": "^4.17.10",
+    "lodash": "^4.17.13",
     "mqtt": "git+https://github.com/mqttjs/MQTT.js.git",
     "mqtt-packet": "git+https://github.com/mqttjs/mqtt-packet.git#multiple-properties-mqtt-5"
   }
