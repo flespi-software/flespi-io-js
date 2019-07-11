@@ -1,6 +1,6 @@
 {
   "name": "flespi-io-js",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "flespi http/mqtt connection library",
   "main": "./dist/main.js",
   "module": "./dist/module.js",
@@ -28,7 +28,6 @@
     "form-data": "^2.3.2",
     "in-array": "^0.1.2",
     "lodash": "^4.17.14",
-    "mqtt": "git+https://github.com/mqttjs/MQTT.js.git",
-    "mqtt-packet": "git+https://github.com/mqttjs/mqtt-packet.git#multiple-properties-mqtt-5"
+    "mqtt": "^3.0.0"
   }
 }
