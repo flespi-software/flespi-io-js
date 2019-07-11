@@ -88,7 +88,7 @@ Method for making mqtt subscriptions. It`s using  mqtt.js as dependency.
         connector.socket.connected()
      ```
 
-* `on(event, handler)`: subscribe connector to event
+* `on(event, handler)`: subscribe connector to event. It returns index of handler. It needed for off current handler.
     * `event` is the event type to subscribe
     * `handler` is the handler for current event type to subscribe
 
@@ -96,12 +96,12 @@ Method for making mqtt subscriptions. It`s using  mqtt.js as dependency.
       Vue.connector.socket.on('connect', () => { console.log('Working!') })
     ```
 
-* `off(event, [handler])`: unsubscribe connector from event
+* `off(event, [index])`: unsubscribe connector from event
     * `event` is the event type to unsubscribe
-    * `handler` is the handler for current event type need to unsubscribe
+    * `index` is the handler's index returned method `off` for current event type need to unsubscribe
 
     ```js
-        Vue.connector.socket.off('connect', () => { console.log('Working!') })
+        Vue.connector.socket.off('connect', 1)
     ```
 Methods to easily subscribe and unsubscribe via Flespi MQTT Broker.
 Param handler is a function to process new messages from mqtt. Example:

@@ -56,7 +56,7 @@ async function createClient () {
         _currentClientVersion = _config.mqttSettings && _config.mqttSettings.protocolVersion ? _config.mqttSettings.protocolVersion : 4
         /* handling all handler by connect event */
         if (_events['connect']) {
-            _events['connect'].forEach((handler) => { handler(connack) })
+            _events['connect'].forEach((handler) => { handler && handler(connack) })
         }
     })
 
@@ -66,7 +66,7 @@ async function createClient () {
         if (error.code === 2) { mqttConnector.close(true) }
         /* handling all handler by error event */
         if (_events['error']) {
-            _events['error'].forEach((handler) => { handler(error) }) /* error = {message, code} */
+            _events['error'].forEach((handler) => { handler && handler(error) }) /* error = {message, code} */
         }
     })
 
@@ -75,7 +75,7 @@ async function createClient () {
         if (!_config.mqttSettings || (_config.mqttSettings && (_config.mqttSettings.clean === undefined || _config.mqttSettings.clean === true))) { _timestampsByTopic = {} }
         /* handling all handler by close event */
         if (_events['close']) {
-            _events['close'].forEach((handler) => { handler() })
+            _events['close'].forEach((handler) => { handler && handler() })
         }
     })
 
@@ -83,7 +83,7 @@ async function createClient () {
     _client.on('disconnect', (packet) => {
         /* handling all handler by close event */
         if (_events['disconnect']) {
-            _events['disconnect'].forEach((handler) => { handler(packet) })
+            _events['disconnect'].forEach((handler) => { handler && handler(packet) })
         }
     })
 
@@ -125,7 +125,7 @@ async function createClient () {
         },
         messageProcessing = (topic, message, packet) => {
             let activeTopicsId = packet.properties && packet.properties.subscriptionIdentifier
-            if (typeof activeTopicsId === 'string') {
+            if (typeof activeTopicsId === 'number') {
                 activeTopicsId = [activeTopicsId]
             }
             /* calling each callbacks with payload as message by subscribed topic. */
@@ -142,21 +142,21 @@ async function createClient () {
     /* handling reconnect */
     _client.on('reconnect', () => {
         if (_events['reconnect']) {
-            _events['reconnect'].forEach((handler) => { handler() })
+            _events['reconnect'].forEach((handler) => { handler && handler() })
         }
     })
 
     /* handling offline */
     _client.on('offline', () => {
         if (_events['offline']) {
-            _events['offline'].forEach((handler) => { handler() })
+            _events['offline'].forEach((handler) => { handler && handler() })
         }
     })
 
     /* handling end */
     _client.on('end', () => {
         if (_events['end']) {
-            _events['end'].forEach((handler) => { handler() })
+            _events['end'].forEach((handler) => { handler && handler() })
         }
     })
 }
@@ -319,22 +319,19 @@ mqttConnector.on = function on(name, handler) {
     }
     /* save handler in namespace by current event */
     _events[name].push(handler)
+    return _events[name].length - 1
 }
 
 /* clear event or remove current handler from event
 * @param {String} name   name of event
+* @param {Number/Array} index   index or array of indexes of current event`s handler
 * */
-mqttConnector.off = function off(name) {
+mqttConnector.off = function off(name, index) {
     /* check has handler and process remove handlers */
-    if (arguments[1] && typeof arguments[1] === 'function') {
-        /* search for current handler entries by current event */
-        let currentHandler = arguments[1]
-        let currentHandlerIndexesInStore = _events[name].reduce((result, handler, index) => {
-            if (handler.toString() === currentHandler.toString()) { result.push(index) }
-            return result
-        }, [])
+    if (index !== undefined) {
+        let currentHandlerIndex = Array.isArray(index) ? index : [index]
         /* remove all handlers like a current handler */
-        currentHandlerIndexesInStore.forEach((index) => { _events[name].splice(index, 1) })
+        currentHandlerIndex.forEach((index) => { _events[name][index] = undefined })
     }
     /* if need clear all handlers by event */
     else {
