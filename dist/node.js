@@ -16319,11 +16319,7 @@ var Connection = function () {
         },
         set: function set(token) {
             if (typeof token === 'string') {
-                if (token.indexOf('FlespiToken') === -1) {
-                    this.config.token = 'FlespiToken ' + token;
-                } else {
-                    this.config.token = token;
-                }
+                this.config.token = token;
             } else {
                 this.config.token = '';
             }
