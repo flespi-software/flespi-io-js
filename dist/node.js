@@ -16318,12 +16318,14 @@ var Connection = function () {
             return this.config.token;
         },
         set: function set(token) {
-            if (token) {
+            if (typeof token === 'string') {
                 if (token.indexOf('FlespiToken') === -1) {
                     this.config.token = 'FlespiToken ' + token;
                 } else {
                     this.config.token = token;
                 }
+            } else {
+                this.config.token = '';
             }
             this.socket.update('token', this.token);
             this.http.update('token', this.token);
