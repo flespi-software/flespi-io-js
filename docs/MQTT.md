@@ -121,26 +121,26 @@ connector.subscribeLogs(api, origin, event_type, handler)
 
 | Method  | Alias  | Params  | Description  |
 |---|---|---|---|
-| socket.logs.subscribe | subscribeLogs | api, origin, event_type, handler, options | Subscribe to logs. {event_type} has occurred in {origin}, see platform logs for more information |
-| socket.logs.unsubscribe | unsubscribeLogs | api, origin, event_type, [indexOfSubscription] | Unsubscribe from logs. {event_type} has occurred in {origin}, see platform logs for more information |
+| socket.logs.subscribe | subscribeLogs | api, origin, event_type, handler, [options] | Subscribe to logs. {event_type} has occurred in {origin}, see platform logs for more information |
+| socket.logs.unsubscribe | unsubscribeLogs | api, origin, event_type, [indexOfSubscription], [options] | Unsubscribe from logs. {event_type} has occurred in {origin}, see platform logs for more information |
 | socket.messages.abques.subscribe | subscribeMessagesAbques | abque_id, name, handler, [options] | Subscribe to new message posted to abque |
-| socket.messages.abques.unsubscribe | unsubscribeMessagesAbques | abque_id, name, [indexOfSubscription] | Unsubscribe from new message posted to abque |
+| socket.messages.abques.unsubscribe | unsubscribeMessagesAbques | abque_id, name, [indexOfSubscription], [options] | Unsubscribe from new message posted to abque |
 | socket.messages.channels.subscribe | subscribeMessagesChannels | channel_id, ident, handler, [options] | Subscribe to new message received by channel |
-| socket.messages.channels.unsubscribe | unsubscribeMessagesChannels | channel_id, ident, [indexOfSubscription] | Unsubscribe from new message received by channel |
+| socket.messages.channels.unsubscribe | unsubscribeMessagesChannels | channel_id, ident, [indexOfSubscription], [options] | Unsubscribe from new message received by channel |
 | socket.messages.devices.subscribe | subscribeMessagesDevices | device_id, handler, [options] | Subscribe to new message received by device |
-| socket.messages.devices.unsubscribe | unsubscribeMessagesDevices | device_id, [indexOfSubscription] | Unsubscribe from new message received by device |
+| socket.messages.devices.unsubscribe | unsubscribeMessagesDevices | device_id, [indexOfSubscription], [options] | Unsubscribe from new message received by device |
 | socket.messages.sms.subscribe | subscribeSms | modem_id, phone, handler, [options] | Subscribe to SMS message received by modem |
-| socket.messages.sms.unsubscribe | unsubscribeSms | modem_id, phone, [indexOfSubscription] | Unsubscribe from SMS message received by modem |
+| socket.messages.sms.unsubscribe | unsubscribeSms | modem_id, phone, [indexOfSubscription], [options] | Unsubscribe from SMS message received by modem |
 | socket.state.subscribe | subscribeState | api, origin, id, handler, [options] | Subscribe to entities object with default properties |
-| socket.state.unsubscribe | unsubscribeState | api, origin, id, [indexOfSubscription] | Unsubscribe from entities object with default properties |
+| socket.state.unsubscribe | unsubscribeState | api, origin, id, [indexOfSubscription], [options] | Unsubscribe from entities object with default properties |
 | socket.state.properties.subscribe | subscribeStateProperties | api, origin, id, property, handler, [options] | Subscribe to entities properties |
-| socket.state.properties.unsubscribe | unsubscribeStateProperties | api, origin, id, property, [indexOfSubscription] | Unsubscribe from entities properties |
+| socket.state.properties.unsubscribe | unsubscribeStateProperties | api, origin, id, property, [indexOfSubscription], [options] | Unsubscribe from entities properties |
 | socket.state.devices.telemetry.subscribe | subscribeStateDevicesTelemetry | id, parameter, handler, [options] | Subscribe to telemetry of devices |
-| socket.state.devices.telemetry.unsubscribe | unsubscribeStateDevicesTelemetry | id, parameter, [indexOfSubscription] | Unsubscribe from telemetry of devices |
+| socket.state.devices.telemetry.unsubscribe | unsubscribeStateDevicesTelemetry | id, parameter, [indexOfSubscription], [options] | Unsubscribe from telemetry of devices |
 | socket.state.devices.settings.subscribe | subscribeStateDevicesSettings | id, name, handler, [options] | Subscribe to telemetry of devices |
-| socket.state.devices.settings.unsubscribe | unsubscribeStateDevicesSettings | id, name, [indexOfSubscription] | Unsubscribe from telemetry of devices |
+| socket.state.devices.settings.unsubscribe | unsubscribeStateDevicesSettings | id, name, [indexOfSubscription], [options] | Unsubscribe from telemetry of devices |
 | socket.intervals.subscribe | subscribeIntervals | calc_id, device_id, event, handler, [options] | Subscribe to intervals events |
-| socket.intervals.unsubscribe | unsubscribeIntervals | calc_id, device_id, event, [indexOfSubscription] | Unsubscribe from intervals events |
+| socket.intervals.unsubscribe | unsubscribeIntervals | calc_id, device_id, event, [indexOfSubscription], [options] | Unsubscribe from intervals events |
 
 #### MQTT events
 
