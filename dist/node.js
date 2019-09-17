@@ -27686,7 +27686,6 @@ function generate(http, config) {
                             }
                         });
 
-                        console.log(arguments, localParams.length);
                         arguments[localParams.length] ? options = (0, _assign2.default)(arguments[localParams.length], { url: queryString, method: method }, options) : options = (0, _assign2.default)({ url: queryString, method: method }, options);
 
                         return http(options);
@@ -27751,7 +27750,6 @@ function generate(http, config) {
                     }
                 });
 
-                console.log(arguments, localParams.length);
                 arguments[localParams.length] ? options = (0, _assign2.default)(arguments[localParams.length], { url: queryString, method: method }, options) : options = (0, _assign2.default)({ url: queryString, method: method }, options);
 
                 return http(options);

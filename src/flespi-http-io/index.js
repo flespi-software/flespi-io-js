@@ -105,7 +105,6 @@ function generate (http, config) {
                             }
                         })
                         /* last argument take like options */
-                        console.log(arguments, localParams.length)
                         arguments[localParams.length]
                             ? options = Object.assign(arguments[localParams.length], { url: queryString, method: method }, options )
                             : options = Object.assign({ url: queryString, method: method }, options )
@@ -161,7 +160,6 @@ function generate (http, config) {
                     }
                 })
                 /* last argument take like options */
-                console.log(arguments, localParams.length)
                 arguments[localParams.length]
                     ? options = Object.assign(arguments[localParams.length], { url: queryString, method: method }, options )
                     : options = Object.assign({ url: queryString, method: method }, options )
