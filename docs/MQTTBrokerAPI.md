@@ -2,8 +2,8 @@
 
 Params:
 * `*Selector`: Selected entity
-* `query`: Params in plain object for query string 
-* `body`: Params in plain object for request body 
+* `query`: Params in plain object for query string
+* `body`: Params in plain object for request body
 
 ### Example of use
 

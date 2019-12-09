@@ -3,8 +3,8 @@
 
 Params:
 * `*Selector`: Selected entity
-* `query`: Params in plain object for query string 
-* `body`: Params in plain object for request body 
+* `query`: Params in plain object for query string
+* `body`: Params in plain object for request body
 
 ### Example of use
 
@@ -58,7 +58,7 @@ connector.gw.getProtocols(protocolSelector, query)
 | http.gw.streams.post | gw.postStreams | query, body | Create new stream that is capable for transferring devices and channel messages to external platforms. |
 | http.gw.streams.subscriptions.post | gw.postStreamsSubscriptions | streamSelector, query, body | There are two available messages sources for now - channel and device. |
 | http.gw.streams.put | gw.putStreams | streamSelector, query, body | Change properties of existing streams matching filter parameters. |
-| http.gw.streams.subscriptions.put | gw.putStreamsSubscriptions | streamSelector, subscriptionSelector, query, body | Change properties of existing stream subscriptions matching filter parameters. | 
+| http.gw.streams.subscriptions.put | gw.putStreamsSubscriptions | streamSelector, subscriptionSelector, query, body | Change properties of existing stream subscriptions matching filter parameters. |
 | http.gw.streams.delete | gw.deleteStreams | streamSelector | Delete all streams matching filtering parameters |
 | http.gw.streams.subscriptions.delete | gw.deleteStreamsSubscriptions | streamSelector, subscriptionSelector | Delete all subscriptions matching filtering parameters. |
 | http.gw.calcs.post | gw.postCalcs | query, body | Create new calculator. |
