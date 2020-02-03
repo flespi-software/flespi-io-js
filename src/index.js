@@ -6,11 +6,11 @@ import poolExtender from './flespi-pool-io/index'
 import poolCamelCaseExtender from './flespi-pool-io/camelCase'
 import merge from 'lodash/merge'
 
-let isBrowser = typeof window !== 'undefined'
+const isBrowser = typeof window !== 'undefined'
 /* Class of the connection. It contains of configs and methods of the connection by all protocols. Config contain of settings of current protocol. */
 export default class Connection {
   constructor (config) {
-    let defaultConfig = { httpConfig: { server: 'https://flespi.io' }, socketConfig: { server: isBrowser ? 'wss://mqtt.flespi.io' : 'mqtt://mqtt.flespi.io:8883' }, token: '' }
+    const defaultConfig = { httpConfig: { server: 'https://flespi.io' }, socketConfig: { server: isBrowser ? 'wss://mqtt.flespi.io' : 'mqtt://mqtt.flespi.io:8883' }, token: '' }
     this.config = merge(defaultConfig, config) /* config contains {httpConfig, socketConfig, token} */
     if (this.config.token && this.config.token.indexOf('FlespiToken') === -1) {
       this.config.token = `FlespiToken ${this.config.token}`
@@ -27,6 +27,7 @@ export default class Connection {
     this.pool = poolExtender(this.http, this.socket)
     Object.assign(this, poolCamelCaseExtender(this.http, this.socket))
   }
+
   get token () { return this.config.token }
   set token (token) {
     if (typeof token === 'string') {
@@ -42,10 +43,19 @@ export default class Connection {
     this.config.httpConfig = config
     this.http.update('config', config)
   }
+
   /* socketConfig: {server, port(optional)}. If it is empty, setting up default prod flespi server for mqtt */
   get socketConfig () { return this.config.socketConfig }
   set socketConfig (config) {
     this.config.socketConfig = config
     this.socket.update('config', config)
+  }
+
+  /* flespi region */
+  setRegion (region) {
+    let { 'mqtt-ws': mqttHost, rest: restHost } = region
+    mqttHost = `wss://${mqttHost}`
+    this.socketConfig = Object.assign(this.socketConfig, { server: mqttHost })
+    this.httpConfig = Object.assign(this.httpConfig, { server: restHost })
   }
 }

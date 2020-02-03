@@ -56,7 +56,7 @@ async function createClient () {
     _currentClientVersion = _config.mqttSettings && _config.mqttSettings.protocolVersion ? _config.mqttSettings.protocolVersion : 4
     /* handling all handler by connect event */
     if (_events['connect']) {
-      _events['connect'].forEach((handler) => { handler && handler(connack) })
+      _events['connect'].forEach((handler) => { typeof handler === 'function' && handler(connack) })
     }
   })
 
@@ -66,7 +66,7 @@ async function createClient () {
     if (error.code === 2) { mqttConnector.close(true) }
     /* handling all handler by error event */
     if (_events['error']) {
-      _events['error'].forEach((handler) => { handler && handler(error) }) /* error = {message, code} */
+      _events['error'].forEach((handler) => { typeof handler === 'function' && handler(error) }) /* error = {message, code} */
     }
   })
 
@@ -75,7 +75,7 @@ async function createClient () {
     if (!_config.mqttSettings || (_config.mqttSettings && (_config.mqttSettings.clean === undefined || _config.mqttSettings.clean === true))) { _timestampsByTopic = {} }
     /* handling all handler by close event */
     if (_events['close']) {
-      _events['close'].forEach((handler) => { handler && handler() })
+      _events['close'].forEach((handler) => { typeof handler === 'function' && handler() })
     }
   })
 
@@ -83,12 +83,12 @@ async function createClient () {
   _client.on('disconnect', (packet) => {
     /* handling all handler by close event */
     if (_events['disconnect']) {
-      _events['disconnect'].forEach((handler) => { handler && handler(packet) })
+      _events['disconnect'].forEach((handler) => { typeof handler === 'function' && handler(packet) })
     }
   })
 
   /* calling each callbacks by subscribed topic after getting new message. */
-  let fallbackMessageProcessing = (topic, message, packet) => {
+  const fallbackMessageProcessing = (topic, message, packet) => {
       let topicPath = topic.split('/'), /* getting full topic path */
         /* searching for all the signed topics that criteria for the current current topic, comparing their path trees */
         activeTopicsId = Object.keys(_topics).filter((checkedTopicId) => {
@@ -144,21 +144,21 @@ async function createClient () {
   /* handling reconnect */
   _client.on('reconnect', () => {
     if (_events['reconnect']) {
-      _events['reconnect'].forEach((handler) => { handler && handler() })
+      _events['reconnect'].forEach((handler) => { typeof handler === 'function' && handler() })
     }
   })
 
   /* handling offline */
   _client.on('offline', () => {
     if (_events['offline']) {
-      _events['offline'].forEach((handler) => { handler && handler() })
+      _events['offline'].forEach((handler) => { typeof handler === 'function' && handler() })
     }
   })
 
   /* handling end */
   _client.on('end', () => {
     if (_events['end']) {
-      _events['end'].forEach((handler) => { handler && handler() })
+      _events['end'].forEach((handler) => { typeof handler === 'function' && handler() })
     }
   })
 }
@@ -215,7 +215,7 @@ mqttConnector.update = async function update (type, payload) {
 mqttConnector.hasClient = () => !!_client
 
 /* Check connection status */
-mqttConnector.connected = () => !!_client && _client._client.connected
+mqttConnector.connected = () => !!_client && _client.connected
 
 /* Subscription method for client of mqtt */
 mqttConnector.subscribe = async function subscribe (topic) {

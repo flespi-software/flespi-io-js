@@ -38,3 +38,4 @@ connector.platform.getCustomerAccounts(query)
 | http.platform.subaccounts.tokens.delete  | platform.deleteSubaccountsTokens | subaccountsSelector, tokensSelector  |  Delete tokens. |
 | http.platform.subaccounts.tokens.get  | platform.getSubaccountsTokens | subaccountsSelector, tokensSelector, query  |  Get subaccount's tokens. |
 | http.platform.subaccounts.tokens.put  | platform.putSubaccountsTokens | subaccountsSelector, tokensSelector, query, body  |  Modify subaccounts tokens. |
+| http.platform.subaccounts.logs.get  | platform.getSubaccountsLogs | subaccountsSelector, body  |  Get logs by subaccounts |

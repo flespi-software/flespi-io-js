@@ -58,3 +58,21 @@ connector.socketConfig = { server: 'ws://mqtt.server.io', mqttSettings: {
             }
         }
 ```
+
+### Methods
+
+* setRegion methods allows set flespi region for connection.
+```js
+  connector.setRegion(region)
+  /* region structure */
+  {
+    "cdn": "https://ru-cdn.flespi.io",
+    "default": false,
+    "gw": "ru-gw.flespi.io",
+    "mqtt": "ru-mqtt.flespi.io:8883",
+    "mqtt-ws": "ru-mqtt.flespi.io:443",
+    "region": "ru",
+    "rest": "https://ru.flespi.io"
+  }
+```
+
