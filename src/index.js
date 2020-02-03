@@ -55,7 +55,7 @@ export default class Connection {
   setRegion (region) {
     let { 'mqtt-ws': mqttHost, rest: restHost } = region
     mqttHost = `wss://${mqttHost}`
-    this.socketConfig = Object.assign(this.socketConfig, { server: mqttHost })
-    this.httpConfig = Object.assign(this.httpConfig, { server: restHost })
+    this.socketConfig = Object.assign(this.socketConfig, { server: mqttHost, port: undefined })
+    this.httpConfig = Object.assign(this.httpConfig, { server: restHost, port: undefined })
   }
 }
