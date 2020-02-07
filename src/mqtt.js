@@ -133,7 +133,7 @@ async function createClient () {
       /* calling each callbacks with payload as message by subscribed topic. */
       activeTopicsId.forEach((topicId) => {
         try {
-          _topics[topicId].handler(message, topic, packet)
+          _topics[topicId] && _topics[topicId].handler(message, topic, packet)
         } catch (e) {
           console.log(e)
         }
