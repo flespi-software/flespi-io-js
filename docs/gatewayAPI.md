@@ -71,4 +71,6 @@ connector.gw.getProtocols(protocolSelector, query)
 | http.gw.calcs.devices.put | gw.putCalcsDevices | calcSelector, deviceSelector, query, body | Modify device assigned to caluclator. |
 | http.gw.calcs.devices.intervals.get | gw.getCalcsDevicesIntervals | calcSelector, deviceSelector, intervalSelector, query | Fetch calculated device intervals. |
 | http.gw.calcs.devices.intervals.put | gw.putCalcsDevicesIntervals | calcSelector, deviceSelector, intervalSelector, body | Attach to automatically calculated device intervals custom parameters. |
-| http.gw.calcs.logs.get | gw.putCalcsLogs | calcSelector, query | Get logs for specified calc. |
+| http.gw.calcs.logs.get | gw.getCalcsLogs | calcSelector, query | Get logs for specified calc. |
+| http.gw.channels.traffic.get | gw.getChannelsTraffic | channelSelector, identSelector | Get list of idents that have stored traffic for given channel. |
+| http.gw.channels.traffic.events.get | gw.getChannelsTrafficEvents | channelSelector, identSelector, query | Fetch raw traffic stored for specified ident in given channel. |
