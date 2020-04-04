@@ -22,16 +22,16 @@ function getConfigs () {
 function generate (config) {
   /* recursive resolve references by config */
   function refResolver (ref) {
-    let parts = ref.split('/').slice(1)
-    let result = parts.reduce((result, part) => { return result[part] }, config)
-    if (result['$ref']) { refResolver(result['$ref']) } else { return result }
+    const parts = ref.split('/').slice(1)
+    const result = parts.reduce((result, part) => { return result[part] }, config)
+    if (result.$ref) { refResolver(result.$ref) } else { return result }
   }
   /* getting modified parameters by array of parameters from config */
   function getParams (parameters) {
     return parameters
       ? parameters.reduce((result, param) => {
-        if (param['$ref']) {
-          let resolved = refResolver(param['$ref'])
+        if (param.$ref) {
+          const resolved = refResolver(param.$ref)
           result.push({ name: resolved.name, in: resolved.in })
         } else {
           result.push({ name: param.name, in: param.in })
@@ -107,7 +107,7 @@ function generateConfig (name) {
       'lodash/merge': 'lodash/merge',
       'lodash/uniqueId': 'lodash/uniqueId',
       'async-mqtt': 'async-mqtt',
-      'mqtt': 'mqtt',
+      mqtt: 'mqtt',
       'form-data': 'form-data'
     }
   }
