@@ -1,10 +1,10 @@
 import Connection from './index'
 /* Main object of plugin */
-let ConnectionPlugin = {}
+const ConnectionPlugin = {}
 /* install function of plugin */
 ConnectionPlugin.install = function (Vue, config) {
   /* create of main connector */
-  let connector = new Connection(config)
+  const connector = new Connection(config)
   /* setting main connector to Vue */
   if (config.connectorName) {
     Vue[config.connectorName] = connector

@@ -1,7 +1,7 @@
 import config from './config.json'
 
 export default function (http, mqtt) {
-  let pool = {}, /* object with methods */
+  const pool = {}, /* object with methods */
     eventTypes = ['created', 'updated', 'deleted']/* processed event types */
     /* generate methods function */
   function generate (ext, config) {
@@ -12,13 +12,13 @@ export default function (http, mqtt) {
         /* make pooling method */
         ext[name] = async function (getHandler, updateHandler) {
           /* get entities */
-          let entities = await http.get(`${config[name].api}/${config[name].origin.replace(/\+/g, 'all')}`, {})
+          const entities = await http.get(`${config[name].api}/${config[name].origin.replace(/\+/g, 'all')}`, {})
           getHandler(entities)/* receive entities to handler */
           /* make subscription to REST changes in entities and return ids of subscriptions */
-          let ids = []
-          for (let eventType of eventTypes) {
+          const ids = []
+          for (const eventType of eventTypes) {
             try {
-              let grants = await mqtt.logs.subscribe(config[name].api, config[name].origin, eventType, (message) => { updateHandler(eventType, JSON.parse(message).item_data) }, { rh: 2 })
+              const grants = await mqtt.logs.subscribe(config[name].api, config[name].origin, eventType, (message) => { updateHandler(eventType, JSON.parse(message).item_data) }, { rh: 2 })
               if (grants) { ids.push(Object.keys(grants)[0]) }
             } catch (e) {
               console.log(e.message)

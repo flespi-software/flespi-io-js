@@ -1,22 +1,22 @@
 /* sugar generator */
 import CONFIGS from '../configs.json'
-let FData = typeof FormData !== 'undefined' ? FormData : require('form-data')
+const FData = typeof FormData !== 'undefined' ? FormData : require('form-data')
 // const CONFIGS = require('../configs.json')
 function generate (http, config) {
-  let base = config.basePath,
+  const base = config.basePath,
     baseName = base.slice(1)
     /* make namespace for current API */
   http[baseName] = {}
 
   function refResolver (ref) {
-    let parts = ref.split('/').slice(1)
-    let result = parts.reduce((result, part) => { return result[part] }, config)
-    if (result['$ref']) { refResolver(result['$ref']) } else { return result }
+    const parts = ref.split('/').slice(1)
+    const result = parts.reduce((result, part) => { return result[part] }, config)
+    if (result.$ref) { refResolver(result.$ref) } else { return result }
   }
 
   /* make object with all methods by current config */
   return Object.keys(config.paths).reduce((result, path, index) => {
-    let methods = Object.keys(config.paths[path]).filter((method) => method !== 'parameters') /* all methods by path w/o parameters */
+    const methods = Object.keys(config.paths[path]).filter((method) => method !== 'parameters') /* all methods by path w/o parameters */
     /* all parameters by path with resolve refs */
     // parameters = config.paths[path].parameters
     //   ? config.paths[path].parameters.reduce((result, param) => {
@@ -30,7 +30,7 @@ function generate (http, config) {
     //   }, {})
     //   : {}
     /* get params and parts of path from path */
-    let parsedPath = path.split('/').reduce((result, part) => {
+    const parsedPath = path.split('/').reduce((result, part) => {
       if (part.match(/{([\w.-]+)}/g)) {
         result.params.push(part)
       } else if (part) {
@@ -41,10 +41,10 @@ function generate (http, config) {
     }, { params: [], parts: [] })
     methods.forEach((method) => {
       /* all parameters by method with resolve refs */
-      let paramsByMethod = config.paths[path][method].parameters
+      const paramsByMethod = config.paths[path][method].parameters
         ? config.paths[path][method].parameters.reduce((result, param) => {
-          if (param['$ref']) {
-            let resolved = refResolver(param['$ref'])
+          if (param.$ref) {
+            const resolved = refResolver(param.$ref)
             result[resolved.name] = resolved.in
           } else {
             result[param.name] = param.in
@@ -62,14 +62,14 @@ function generate (http, config) {
         if (index === array.length - 1) {
           obj[name][method] = function () {
             let queryString = `${base}${path}`,
-              options = {},
-              localParams = [...parsedPath.params]
+              options = {}
+            const localParams = [...parsedPath.params]
 
             if (Object.values(paramsByMethod).includes('query')) { localParams.push('query') }
             if (Object.values(paramsByMethod).includes('body')) { localParams.push('body') }
             /* process params with multipart data */
             if (Object.values(paramsByMethod).includes('formData')) {
-              let formDataParams = Object.keys(paramsByMethod).filter((name) => paramsByMethod[name] === 'formData')
+              const formDataParams = Object.keys(paramsByMethod).filter((name) => paramsByMethod[name] === 'formData')
               formDataParams.forEach((name) => {
                 localParams.push(`formData_${name}`)
               })
@@ -93,7 +93,7 @@ function generate (http, config) {
                 if (!options.data) {
                   options.data = new FData()
                 }
-                let name = param.split('_')[1]
+                const name = param.split('_')[1]
                 options.data.append(name, arguments[index])
                 if (name === 'file') {
                   if (!options.headers) { options.headers = {} }
@@ -112,20 +112,20 @@ function generate (http, config) {
         return obj[name]
       }, http[baseName])
       /* make camel case methods */
-      let nameOfMethod = parsedPath.parts.reduce((result, part) => {
+      const nameOfMethod = parsedPath.parts.reduce((result, part) => {
         result += part[0].toUpperCase() + part.slice(1).replace(/-\w/g, (match) => { return match[1].toUpperCase() })
         return result
       }, `${method}`)
       result[nameOfMethod] = function () {
         let queryString = `${base}${path}`,
-          options = {},
-          localParams = [...parsedPath.params]
+          options = {}
+        const localParams = [...parsedPath.params]
 
         if (Object.values(paramsByMethod).includes('query')) { localParams.push('query') }
         if (Object.values(paramsByMethod).includes('body')) { localParams.push('body') }
         /* process params with multipart data */
         if (Object.values(paramsByMethod).includes('formData')) {
-          let formDataParams = Object.keys(paramsByMethod).filter((name) => paramsByMethod[name] === 'formData')
+          const formDataParams = Object.keys(paramsByMethod).filter((name) => paramsByMethod[name] === 'formData')
           formDataParams.forEach((name) => {
             localParams.push(`formData_${name}`)
           })
@@ -149,7 +149,7 @@ function generate (http, config) {
             if (!options.data) {
               options.data = new FData()
             }
-            let name = param.split('_')[1]
+            const name = param.split('_')[1]
             options.data.append(name, arguments[index])
             if (name === 'file') {
               if (!options.headers) { options.headers = {} }

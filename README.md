@@ -18,6 +18,8 @@ npm install git+https://github.com/flespi-software/flespi-io-js.git --save
 
 ## API
 * [Class Connection](docs/connection.md)
+* [Class RestConnection](docs/restconnection.md)
+* [Class MqttConnection](docs/mqttconnection.md)
 * [HTTP](docs/http.md)
 * [Platform API](docs/platformAPI.md)
 * [Gateway API](docs/gatewayAPI.md)

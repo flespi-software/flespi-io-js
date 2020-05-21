@@ -98,10 +98,10 @@ function generateConfig (name) {
     config.output.libraryExport = 'default'
   }
   /* for to make vue plugin rewrite entry */
-  if (name === 'vue-plugin') {
-    config.entry = ['./vue-plugin.js']
+  if (name === 'vue-plugin' || name === 'rest' || name === 'mqtt') {
+    config.entry = [`./${name}.js`]
   }
-  if (name === 'module' || name === 'vue-plugin' || name === 'node') {
+  if (name === 'module' || name === 'vue-plugin' || name === 'node' || name === 'rest' || name === 'mqtt') {
     config.externals = {
       axios: 'axios',
       'lodash/merge': 'lodash/merge',
@@ -131,7 +131,7 @@ getConfigs()
     fs.writeFileSync(path.resolve(__dirname, 'src', 'configs.json'), JSON.stringify(configs), 'utf8')
   })
   .then(() => {
-    ['main', 'module', 'vue-plugin', 'node'].forEach(function (name) {
+    ['main', 'module', 'vue-plugin', 'node', 'rest', 'mqtt'].forEach(function (name) {
       config.push(generateConfig(name))
     })
     webpack(config, (err, stats) => {

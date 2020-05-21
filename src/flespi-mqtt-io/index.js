@@ -11,12 +11,12 @@ function generate (ext, config) {
   if (!_mqtt) {
     _mqtt = ext
   }
-  let entities = Object.keys(config) /* array of entities by config */
+  const entities = Object.keys(config) /* array of entities by config */
 
   /* processing all entities in config */
   entities.forEach((entity, index, array) => {
-    let localConfig = config[entity], /* config current entity */
-      base = ''
+    const localConfig = config[entity] /* config current entity */
+    let base = ''
     /* if have a base of url - set him into a private variable */
     if (localConfig.base) {
       _base = localConfig.base

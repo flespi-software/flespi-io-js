@@ -13,13 +13,13 @@ function generate (mqtt, config) {
   if (!_mqtt) {
     _mqtt = mqtt
   }
-  let entities = Object.keys(config), /* array of entities by config */
+  const entities = Object.keys(config), /* array of entities by config */
     result = {}
 
   /* processing all entities in config */
   entities.forEach((entity, index, array) => {
-    let localConfig = config[entity], /* config current entity */
-      base = ''
+    const localConfig = config[entity] /* config current entity */
+    let base = ''
     /* if have a base of url - set him into a private variable */
     if (localConfig.base) {
       _base = localConfig.base
@@ -51,7 +51,7 @@ function generate (mqtt, config) {
     }
     /* recursive create methods for children if they have */
     if (localConfig.children) {
-      let currentPartNameOfMethod = entity[0].toUpperCase() + entity.slice(1) /* current entity with first symbol in upper case */
+      const currentPartNameOfMethod = entity[0].toUpperCase() + entity.slice(1) /* current entity with first symbol in upper case */
       _partNameOFMethod = `${_partNameOFMethod}${currentPartNameOfMethod}`
       Object.assign(result, generate(mqtt, localConfig.children))
       _partNameOFMethod = _partNameOFMethod.replace(currentPartNameOfMethod, '')/* restore part name */

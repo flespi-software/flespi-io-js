@@ -1,5 +1,5 @@
 import http from './http'
-import socket from './mqtt'
+import socket from './socket'
 import httpExtender from './flespi-http-io/index'
 import socketExtender from './flespi-mqtt-io/camelCase'
 import poolExtender from './flespi-pool-io/index'
@@ -20,7 +20,7 @@ export default class Connection {
     this.http.init(this.token, this.httpConfig)/* init HTTP */
     this.socket.init(this.token, this.socketConfig)/* init MQTT */
     /* extending http by sugar */
-    let httpSugar = httpExtender(this.http)
+    const httpSugar = httpExtender(this.http)
     Object.assign(this, httpSugar)
     /* extending mqtt by sugar */
     Object.assign(this, socketExtender(this.socket))
