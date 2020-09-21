@@ -16,9 +16,9 @@ connector.gw.getProtocols(protocolSelector, query)
 
 | Method  | Alias  | Params  | Description  |
 |---|---|---|---|
-| http.gw.protocols.get | gw.getProtocols | protocolSelector, query | Get collection of protocols matching filtering parameters. Use special keyword "all" to retreieve all protocols.|
-| http.gw.protocols.commands.get | gw.getProtocolsCommands | protocolSelector, protocolCmdsSelector, query |Get commands collection supported by selected protocol. |
-| http.gw.protocols.deviceTypes.get | gw.getProtocolsDeviceTypes | protocolSelector, deviceTypeSelector, query |Get device types collection supported by selected protocol. |
+| http.gw.channelProtocols.get | gw.getChannelProtocols | protocolSelector, query | Get collection of protocols matching filtering parameters. Use special keyword "all" to retreieve all protocols.|
+| http.gw.channelProtocols.commands.get | gw.getChannelProtocolsCommands | protocolSelector, protocolCmdsSelector, query |Get commands collection supported by selected protocol. |
+| http.gw.channelProtocols.deviceTypes.get | gw.getChannelProtocolsDeviceTypes | protocolSelector, deviceTypeSelector, query |Get device types collection supported by selected protocol. |
 | http.gw.channels.get | gw.getChannels | channelSelector, query | Get collection of channels matching filter parameters. Use special keyword "all" to retreieve all channels.|
 | http.gw.channels.commandsQueue.get | gw.getChannelsCommandsQueue | channelSelector, commandsQueueSelector, query | Get commands waiting to be sent meeting filtering conditions.|
 | http.gw.channels.commandsResult.get | gw.getChannelsCommandsResult | channelSelector, commandsResultSelector, query |Get executed or expired commands from specified channels. |

@@ -123,8 +123,6 @@ connector.subscribeLogs(api, origin, event_type, handler)
 |---|---|---|---|
 | socket.logs.subscribe | subscribeLogs | api, origin, event_type, handler, [options] | Subscribe to logs. {event_type} has occurred in {origin}, see platform logs for more information |
 | socket.logs.unsubscribe | unsubscribeLogs | api, origin, event_type, [indexOfSubscription], [options] | Unsubscribe from logs. {event_type} has occurred in {origin}, see platform logs for more information |
-| socket.messages.abques.subscribe | subscribeMessagesAbques | abque_id, name, handler, [options] | Subscribe to new message posted to abque |
-| socket.messages.abques.unsubscribe | unsubscribeMessagesAbques | abque_id, name, [indexOfSubscription], [options] | Unsubscribe from new message posted to abque |
 | socket.messages.channels.subscribe | subscribeMessagesChannels | channel_id, ident, handler, [options] | Subscribe to new message received by channel |
 | socket.messages.channels.unsubscribe | unsubscribeMessagesChannels | channel_id, ident, [indexOfSubscription], [options] | Unsubscribe from new message received by channel |
 | socket.messages.devices.subscribe | subscribeMessagesDevices | device_id, handler, [options] | Subscribe to new message received by device |
