@@ -35,7 +35,7 @@
   "author": "sebu",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "form-data": "^3.0.0",
     "in-array": "^0.1.2",
     "lodash": "^4.17.15",
