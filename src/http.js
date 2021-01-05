@@ -19,8 +19,8 @@ function getBaseURl () {
 
 /* Main function of http connection. It setting up private variables, global headers and return promise of the request */
 function http (options) {
-  const config = { baseURL: getBaseURl(), headers: _headers }
-  return axios(merge({}, config, options))
+  const config = merge(_config, { baseURL: getBaseURl(), headers: _headers })
+  return axios(merge(config, options))
 }
 
 /* init module logic */
@@ -41,7 +41,7 @@ http.update = function (type, payload) {
       break
     }
     case 'config': {
-      _config = Object.assign(_config, payload)
+      _config = merge(_config, payload)
       break
     }
   }
@@ -51,11 +51,11 @@ _methods.forEach((method) => {
   /* methods w/o data */
   if (method === 'get' || method === 'delete') {
     http[method] = function (url, options) {
-      return http(Object.assign({}, options, { url: url, method: method }))
+      return http(merge(options, { url: url, method: method }))
     }
   } else { /* methods with data */
     http[method] = function (url, data, options) {
-      return http(Object.assign({}, options, { url: url, method: method, data: data }))
+      return http(merge(options, { url: url, method: method, data: data }))
     }
   }
 })

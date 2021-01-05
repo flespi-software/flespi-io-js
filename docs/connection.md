@@ -7,6 +7,7 @@ The arguments are:
     * `httpConfig` config for http connections
         * `server` server for http connections
         * `port (optional)` port for http connections
+        * `...axios settings` some axios settings
     * `socketConfig` config for mqtt connections by socket
         * `server` server for mqtt connections
         * `port (optional)` port for mqtt connections

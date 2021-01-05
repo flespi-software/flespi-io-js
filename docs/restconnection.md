@@ -12,6 +12,7 @@ The arguments are:
     * `settings` config for http connections
         * `server` server for http connections
         * `port (optional)` port for http connections
+        * `...axios settings` some axios settings
 
 
 ### getters and setters
