@@ -20,27 +20,13 @@
         "methods": [
           {
             "name": "subscribe",
-            "pattern": "gw/devices/{device_id}/#",
+            "pattern": "gw/devices/{device_id}",
             "params": ["device_id"]
           },
           {
             "name": "unsubscribe",
-            "pattern": "gw/devices/{device_id}/#",
+            "pattern": "gw/devices/{device_id}",
             "params": ["device_id"]
-          }
-        ]
-      },
-      "abques": {
-        "methods": [
-          {
-            "name": "subscribe",
-            "pattern": "storage/abques/{abque_id}/{name}",
-            "params": ["abque_id", "name"]
-          },
-          {
-            "name": "unsubscribe",
-            "pattern": "storage/abques/{abque_id}/{name}",
-            "params": ["abque_id", "name"]
           }
         ]
       },
