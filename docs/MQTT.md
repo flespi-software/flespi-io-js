@@ -140,6 +140,21 @@ connector.subscribeLogs(api, origin, event_type, handler)
 | socket.intervals.subscribe | subscribeIntervals | calc_id, device_id, event, handler, [options] | Subscribe to intervals events |
 | socket.intervals.unsubscribe | unsubscribeIntervals | calc_id, device_id, event, [indexOfSubscription], [options] | Unsubscribe from intervals events |
 
+* subscribe like handlers options structure:
+    * `prefix` topic prefix like `$filter/{filter}`
+    * `qos` qos subscription level, default 0
+    * `nl` No Local MQTT 5.0 flag (If the value is true, Application Messages MUST NOT be forwarded to a connection with a ClientID equal to the ClientID of the publishing connection)
+    * `rap` Retain as Published MQTT 5.0 flag (If true, Application Messages forwarded using this subscription keep the RETAIN flag they were published with. If false, Application Messages forwarded using this subscription have the RETAIN flag set to 0.)
+    * `rh` Retain Handling MQTT 5.0 (This option specifies whether retained messages are sent when the subscription is established.)
+    * `properties`: `object`
+        * `subscriptionIdentifier`:  representing the identifier of the subscription `number`,
+        * `userProperties`: The User Property is allowed to appear multiple times to represent multiple name, value pairs `object`
+
+* unsubscribe like handlers options structure:
+    * `prefix` topic prefix like `$filter/{filter}`
+    * `properties`: `object`
+        * `userProperties`: The User Property is allowed to appear multiple times to represent multiple name, value pairs `object`
+
 #### MQTT events
 
 Event `connect`: Emitted on successful (re)connection. In handler provided connack packet.
