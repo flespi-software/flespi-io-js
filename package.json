@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@git.gurtam.net:flespi/frontend/vuex-flespi-io-plugin.git"
+    "url": "https://github.com/flespi-software/flespi-io-js.git"
   },
   "devDependencies": {
     "@babel/core": "^7.8.7",
