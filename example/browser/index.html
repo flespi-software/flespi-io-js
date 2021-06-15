@@ -10,11 +10,6 @@
 
     <meta name="theme-color" content="#333333">
 
-    <% for (var chunk of webpack.chunks) {
-    for (var file of chunk.files) {
-    if (file.match(/\.(js|css)$/)) { %>
-    <link rel="<%= chunk.initial?'preload':'prefetch' %>" href="<%= htmlWebpackPlugin.files.publicPath + file %>" as="<%= file.match(/\.css$/)?'style':'script' %>"><% }}} %>
-
 </head>
 <body>
     <noscript>
@@ -35,5 +30,8 @@
     <div style="width: 33%; float: right">
         <input type="file" id="fileData">
     </div>
+    <% for (var chunk in htmlWebpackPlugin.files.js) { %>
+      <script src="<%= htmlWebpackPlugin.files.js[chunk]%>"></script>
+    <% } %>
 </body>
 </html>

@@ -1,5 +1,4 @@
-var
-  path = require('path'),
+var path = require('path'),
   webpack = require('webpack'),
   HtmlWebpackPlugin = require('html-webpack-plugin')
 
@@ -19,7 +18,7 @@ module.exports = {
       path.resolve(__dirname, 'node_modules')
     ]
   },
-  devtool: '#cheap-module-eval-source-map',
+  devtool: 'inline-cheap-module-source-map',
   devServer: {
     historyApiFallback: true,
     noInfo: true
@@ -38,6 +37,10 @@ module.exports = {
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+      Buffer: ['buffer', 'Buffer']
+    }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: 'example/browser/index.html',
