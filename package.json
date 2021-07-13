@@ -1,6 +1,6 @@
 {
   "name": "flespi-io-js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "flespi http/mqtt connection library",
   "main": "./dist/main.js",
   "module": "./dist/module.js",
