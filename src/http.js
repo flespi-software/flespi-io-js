@@ -1,7 +1,6 @@
 import axios from 'axios'
 import merge from 'lodash/merge'
 
-const methods = ['get', 'post', 'put', 'delete'] /* methods http request */
 /* Simple helper by getting up of baseURL parameter */
 const getBaseURl = (config) => {
   let baseURL = ''
@@ -47,16 +46,16 @@ class HTTP {
     return axios(merge({}, this.config, options))
   }
   get (url, options) {
-    return axios(merge({}, this.config, options, { url: url, method: method }))
+    return axios(merge({}, this.config, options, { url: url, method: 'get' }))
   }
   delete (url, options) {
-    return axios(merge({}, this.config, options, { url: url, method: method }))
+    return axios(merge({}, this.config, options, { url: url, method: 'delete' }))
   }
   post (url, data, options) {
-    return axios(merge({}, this.config, options, { url: url, method: method, data: data }))
+    return axios(merge({}, this.config, options, { url: url, method: 'post', data: data }))
   }
   put (url, data, options) {
-    return axios(merge({}, this.config, options, { url: url, method: method, data: data }))
+    return axios(merge({}, this.config, options, { url: url, method: 'put', data: data }))
   }
   /* availability make request to another resourses */
   external () { return axios(...arguments) }
