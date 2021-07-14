@@ -17,18 +17,6 @@ function generate (http, config) {
   /* make object with all methods by current config */
   return Object.keys(config.paths).reduce((result, path, index) => {
     const methods = Object.keys(config.paths[path]).filter((method) => method !== 'parameters') /* all methods by path w/o parameters */
-    /* all parameters by path with resolve refs */
-    // parameters = config.paths[path].parameters
-    //   ? config.paths[path].parameters.reduce((result, param) => {
-    //     if (param['$ref']) {
-    //       let resolved = refResolver(param['$ref'])
-    //       result[resolved.name] = resolved.in
-    //     } else {
-    //       result[param.name] = param.in
-    //     }
-    //     return result
-    //   }, {})
-    //   : {}
     /* get params and parts of path from path */
     const parsedPath = path.split('/').reduce((result, part) => {
       if (part.match(/{([\w.-]+)}/g)) {
@@ -106,7 +94,7 @@ function generate (http, config) {
               ? options = Object.assign(arguments[localParams.length], { url: queryString, method: method }, options)
               : options = Object.assign({ url: queryString, method: method }, options)
 
-            return http(options)
+            return http.request(options)
           }
         }
         return obj[name]
@@ -162,7 +150,7 @@ function generate (http, config) {
           ? options = Object.assign(arguments[localParams.length], { url: queryString, method: method }, options)
           : options = Object.assign({ url: queryString, method: method }, options)
 
-        return http(options)
+        return http.request(options)
       }
     })
     return result

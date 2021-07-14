@@ -1,43 +1,40 @@
-import socket from './socket'
-import socketExtender from './flespi-mqtt-io/camelCase'
+import MQTT from './socket'
+import socketExtender from './flespi-mqtt-io/index'
 import merge from 'lodash/merge'
 
 const isBrowser = typeof window !== 'undefined'
 /* Class of the connection. It contains of configs and methods of the connection by all protocols. Config contain of settings of current protocol. */
-export default class MqttConnection {
+export default class MqttConnection extends MQTT {
   constructor (config) {
-    const defaultConfig = { settings: { server: isBrowser ? 'wss://mqtt.flespi.io' : 'mqtt://mqtt.flespi.io:8883' }, token: '' }
-    this.config = merge(defaultConfig, config) /* config contains {settings, token} */
-    if (this.config.token && this.config.token.indexOf('FlespiToken') === -1) {
-      this.config.token = `FlespiToken ${this.config.token}`
+    super(config)
+    const defaultConfig = { server: isBrowser ? 'wss://mqtt.flespi.io' : 'mqtt://mqtt.flespi.io:8883', token: '' }
+    this._config = merge(defaultConfig, config) /* config contains {...settings, token} */
+    if (this._config.token && this._config.token.indexOf('FlespiToken') === -1) {
+      this._config.token = `FlespiToken ${this._config.token}`
     }
-    const mqtt = Object.assign(socket, socketExtender(socket))
-    // this.socket = socket/* setting up mqtt to proto */
-    // this.socket.init(this.token, this.config)/* init MQTT */
     /* extending mqtt by sugar */
-    Object.assign(this, mqtt)
-    this.init(this.token, this.settings)
+    const mqttSugar = socketExtender(this)
+    Object.assign(this, mqttSugar)
   }
 
-  get token () { return this.config.token }
+  get token () { return this._config.token }
   set token (token) {
     if (typeof token === 'string') {
-      this.config.token = token
-    } else { this.config.token = '' }
+      this._config.token = token
+    } else { this._config.token = '' }
     this.update('token', this.token)
   }
 
   /* socketConfig: {server, port(optional)}. If it is empty, setting up default prod flespi server for mqtt */
-  get settings () { return this.config.settings }
-  set settings (settings) {
-    this.config.settings = settings
-    this.update('config', settings)
+  get config () { return this._config }
+  set config (config) {
+    this.update('config', config)
   }
 
   /* flespi region */
   setRegion (region) {
     let { 'mqtt-ws': mqttHost } = region
     mqttHost = `wss://${mqttHost}`
-    this.settings = Object.assign(this.config.settings, { server: mqttHost, port: undefined })
+    this.settings = Object.assign(this.config, { server: mqttHost, port: undefined })
   }
 }

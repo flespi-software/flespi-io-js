@@ -1,7 +1,7 @@
-import http from './http'
-import socket from './socket'
+import HTTP from './http'
+import MQTT from './socket'
 import httpExtender from './flespi-http-io/index'
-import socketExtender from './flespi-mqtt-io/camelCase'
+import socketExtender from './flespi-mqtt-io/index'
 import poolExtender from './flespi-pool-io/index'
 import poolCamelCaseExtender from './flespi-pool-io/camelCase'
 import merge from 'lodash/merge'
@@ -15,15 +15,14 @@ export default class Connection {
     if (this.config.token && this.config.token.indexOf('FlespiToken') === -1) {
       this.config.token = `FlespiToken ${this.config.token}`
     }
-    this.socket = socket/* setting up mqtt to proto */
-    this.http = http/* setting up http to proto */
-    this.http.init(this.token, this.httpConfig)/* init HTTP */
-    this.socket.init(this.token, this.socketConfig)/* init MQTT */
+    this.socket = new MQTT(merge({}, this.socketConfig, { token: this.config.token }))/* setting up mqtt to proto */
+    this.http = new HTTP(merge({}, this.httpConfig, { token: this.config.token }))/* setting up http to proto */
     /* extending http by sugar */
     const httpSugar = httpExtender(this.http)
     Object.assign(this, httpSugar)
     /* extending mqtt by sugar */
-    Object.assign(this, socketExtender(this.socket))
+    const mqttSugar = socketExtender(this.socket)
+    Object.assign(this, mqttSugar)
     this.pool = poolExtender(this.http, this.socket)
     Object.assign(this, poolCamelCaseExtender(this.http, this.socket))
   }

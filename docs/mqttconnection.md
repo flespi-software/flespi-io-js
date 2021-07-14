@@ -9,11 +9,10 @@ The arguments are:
 * `config` is a global config for all connections you have
     * `connectorName` is a name of global variable of connector(only for initialization Vue plugin)
     * `token` is a token for connections
-    * `settings` config for mqtt connections by socket
-        * `server` server for mqtt connections
-        * `port (optional)` port for mqtt connections
-        * `clientId (optional)` client id for mqtt connections
-        * `mqttSettings` mqtt settings by MQTT.js API
+    * `server` server for mqtt connections
+    * `port (optional)` port for mqtt connections
+    * `clientId (optional)` client id for mqtt connections
+    * `mqttSettings` mqtt settings by MQTT.js API
 
 
 ### getters and setters
@@ -21,14 +20,14 @@ The arguments are:
 ```js
 let connector = new MqttConnection({
   token: 'FlespiToken xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-  socketConfig: { server: `ws://server.io`, mqttSettings: {
-            reschedulePings: true,
-            keepalive: 3600,
-            resubscribe: false,
-            reconnectPeriod: 5000,
-            connectTimeout: 3600000
-        }
-    }
+  server: `ws://server.io`,
+  mqttSettings: {
+    reschedulePings: true,
+    keepalive: 3600,
+    resubscribe: false,
+    reconnectPeriod: 5000,
+    connectTimeout: 3600000
+  }
 })
 ```
 
@@ -42,15 +41,17 @@ connector.token = 'FlespiToken XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 * mqttConfig
 
 ```js
-let socketConfig = connector.settings
-connector.settings = { server: 'ws://mqtt.server.io', mqttSettings: {
-                reschedulePings: true,
-                keepalive: 3600,
-                resubscribe: false,
-                reconnectPeriod: 5000,
-                connectTimeout: 3600000
-            }
-        }
+let socketConfig = connector.config
+connector.config = {
+  server: `ws://server.io`,
+  mqttSettings: {
+    reschedulePings: true,
+    keepalive: 3600,
+    resubscribe: false,
+    reconnectPeriod: 5000,
+    connectTimeout: 3600000
+  }
+}
 ```
 
 ### Methods

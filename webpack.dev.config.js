@@ -21,7 +21,8 @@ module.exports = {
   devtool: 'inline-cheap-module-source-map',
   devServer: {
     historyApiFallback: true,
-    noInfo: true
+    noInfo: true,
+    open: 'Google Chrome'
   },
   module: {
     rules: [
