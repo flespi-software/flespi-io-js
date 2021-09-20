@@ -9,14 +9,13 @@ function generate () {
   * @param mqtt {Function} extensible function object
   * @param config {Object} settings of sugar
   * */
-  return function (mqtt, config) {
+  function generate (mqtt, config) {
     /* setting mqtt function object */
     if (!_mqtt) {
       _mqtt = mqtt
     }
     const entities = Object.keys(config), /* array of entities by config */
       result = {}
-
     /* processing all entities in config */
     entities.forEach((entity, index, array) => {
       const localConfig = config[entity] /* config current entity */
@@ -62,6 +61,7 @@ function generate () {
     })
     return result
   }
+  return generate
 }
 
 export default (mqtt) => { return generate()(mqtt, config) }
