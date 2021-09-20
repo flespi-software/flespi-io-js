@@ -74,3 +74,4 @@ connector.gw.getProtocols(protocolSelector, query)
 | http.gw.calcs.logs.get | gw.getCalcsLogs | calcSelector, query | Get logs for specified calc. |
 | http.gw.channels.idents.get | gw.getChannelsIdents | channelSelector, identSelector | Get list of idents that have stored traffic for given channel. |
 | http.gw.channels.idents.packets.get | gw.getChannelsIdentsPackets | channelSelector, identSelector, query | Fetch raw traffic stored for specified ident in given channel. |
+| http.gw.devices.packets.get | gw.getDevicesPackets | deviceSelector, query | Fetch raw traffic stored for specified device. |

@@ -57,9 +57,9 @@ class HTTP {
   put (url, data, options) {
     return axios(merge({}, this.config, options, { url: url, method: 'put', data: data }))
   }
-  /* availability make request to another resourses */
-  external () { return axios(...arguments) }
 }
+/* availability make request to another resourses */
+HTTP.prototype.external = axios
 
 // export default extender(http)
 export default HTTP
