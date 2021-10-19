@@ -37,7 +37,9 @@ class HTTP {
         if (this.config.token !== payload.token) {
           this.config.headers.Authorization = payload.token
         }
-        this.config = merge({}, this.config, payload)
+        const config = merge({}, this.config, payload)
+        config.baseURL = getBaseURl(config)
+        this.config = config
         break
       }
     }
