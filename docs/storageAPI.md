@@ -40,3 +40,5 @@ connector.storage.getAbques(abqueSelector, query)
 | http.storage.cdns.put | storage.putCdns | cdnsSelector, query, body | Update all existing cdns matching filtering parameters. |
 | http.storage.cdns.delete | storage.deleteCdns | cdnsSelector | Remove all existing cdns matching filtering parameters. |
 | http.storage.cdns.files.delete | storage.deleteCdnsFiles | cdnsSelector, body | Delete specified file from the cdn.  |
+| http.storage.expressions.functions.get | storage.getFunctionsExpressions | *Empty* | Fetch list of functions possible to use in expression.  |
+| http.storage.expressions.test.post | storage.postTestExpressions | body | Test result of expression applied over specified input of JSON elements.  |

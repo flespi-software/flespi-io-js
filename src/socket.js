@@ -14,13 +14,12 @@ class MQTT {
   }
   _generateTimestampFilteringWrapper (name, handler) {
     return function (message, topic, packet) {
-      const timestamp = packet.properties && packet.properties.userProperties && packet.properties.userProperties.timestamp ? parseFloat(packet.properties.userProperties.timestamp) : 0,
-        seqno = packet.properties && packet.properties.userProperties && packet.properties.userProperties.seqno ? parseFloat(packet.properties.userProperties.seqno) : 0
+      const timestamp = packet.properties && packet.properties.userProperties && packet.properties.userProperties.timestamp ? parseFloat(packet.properties.userProperties.timestamp) : 0
       if (!this._timestampsByTopic[name]) { this._timestampsByTopic[name] = {} }
-      if (!this._timestampsByTopic[name][topic]) { this._timestampsByTopic[name][topic] = { timestamp: 0, seqno: 0 } }
-      if (timestamp > this._timestampsByTopic[name][topic].timestamp || (timestamp === this._timestampsByTopic[name][topic].timestamp && seqno >= this._timestampsByTopic[name][topic].seqno)) {
+      if (!this._timestampsByTopic[name][topic]) { this._timestampsByTopic[name][topic] = { timestamp: 0 } }
+      if (timestamp > this._timestampsByTopic[name][topic].timestamp) {
         handler(message, topic, packet)
-        this._timestampsByTopic[name][topic] = { timestamp, seqno }
+        this._timestampsByTopic[name][topic] = { timestamp }
       }
     }
   }
