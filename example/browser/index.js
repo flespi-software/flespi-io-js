@@ -3,7 +3,7 @@ import Connection from '../../src/index'
 //import MQTT from '../../src/mqtt'
 // import HTTP from '../../src/rest'
 
-const connector = new Connection({ socketConfig: { clientId: 'ThisIsMe!', mqttSettings: { protocolVersion: 5 } } })
+const connector = new Connection({ httpConfig: { flespiApp: 'flespi-io-test' }, socketConfig: { clientId: 'ThisIsMe!', mqttSettings: { protocolVersion: 5 } } })
 // const connector = new MQTT({ mqttSettings: { protocolVersion: 5 }, clientId: 'ThisIsMejfjgfj!' })
 // const connector = new HTTP()
 

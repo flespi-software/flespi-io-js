@@ -9,6 +9,7 @@ The arguments are:
 * `config` is a global config for all connections you have
     * `connectorName` is a name of global variable of connector(only for initialization Vue plugin)
     * `token` is a token for connections
+    * `flespiApp` is a app name, setting up x-flespi-app header
     * `server` server for http connections
     * `port (optional)` port for http connections
     * `...axios settings` some axios settings

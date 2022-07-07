@@ -20,7 +20,10 @@ class HTTP {
       {},
       {
         baseURL: getBaseURl(options),
-        headers: { Authorization: options.token }
+        headers: {
+          Authorization: options.token,
+          'x-flespi-app': options.flespiApp
+        }
       },
       options
     )
@@ -36,6 +39,9 @@ class HTTP {
       case 'config': {
         if (this.config.token !== payload.token) {
           this.config.headers.Authorization = payload.token
+        }
+        if (this.config.flespiApp !== payload.flespiApp) {
+          this.config.headers['x-flespi-app'] = payload.flespiApp
         }
         const config = merge({}, this.config, payload)
         config.baseURL = getBaseURl(config)
