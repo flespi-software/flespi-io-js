@@ -16,17 +16,20 @@ class HTTP {
   /* Main function of http connection. It setting up private variables, global headers and return promise of the request */
   constructor (options) {
     /* config of http connection {server, port(optional), token} */
-    this.config = merge(
+    const config = merge(
       {},
       {
         baseURL: getBaseURl(options),
         headers: {
-          Authorization: options.token,
-          'x-flespi-app': options.flespiApp
+          Authorization: options.token
         }
       },
       options
     )
+    if (options.flespiApp) {
+      config.headers['x-flespi-app'] = options.flespiApp
+    }
+    this.config = config
   }
   /* Updating function of the http connection. Thats update private params of the connection and rebuild client */
   update (type, payload) {
@@ -41,7 +44,11 @@ class HTTP {
           this.config.headers.Authorization = payload.token
         }
         if (this.config.flespiApp !== payload.flespiApp) {
-          this.config.headers['x-flespi-app'] = payload.flespiApp
+          if (payload.flespiApp) {
+            this.config.headers['x-flespi-app'] = payload.flespiApp
+          } else {
+            delete this.config.headers['x-flespi-app']
+          }
         }
         const config = merge({}, this.config, payload)
         config.baseURL = getBaseURl(config)
