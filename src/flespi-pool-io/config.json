@@ -3,6 +3,10 @@
     "api": "gw",
     "origin": "devices/+"
   },
+  "groups": {
+    "api": "gw",
+    "origin": "groups/+"
+  },
   "streams": {
     "api": "gw",
     "origin": "streams/+",
@@ -33,7 +37,7 @@
     "children": {
       "tokens": {
         "api": "platform",
-        "origin": "customer/tokens/+"
+        "origin": "tokens/+"
       }
     }
   },
