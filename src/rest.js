@@ -34,6 +34,7 @@ export default class RestConnection {
   /* flespi region */
   setRegion (region) {
     const { rest: restHost } = region
-    this.config = Object.assign(this.config, { server: restHost, port: undefined })
+    // restHost = restHost.split(':')
+    this.config = Object.assign(this.config, { server: restHost, port: '' })
   }
 }
