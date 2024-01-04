@@ -1,5 +1,5 @@
 import axios from 'axios'
-import merge from 'lodash/merge'
+import merge from 'lodash-es/merge'
 
 /* Simple helper by getting up of baseURL parameter */
 const getBaseURl = (config) => {

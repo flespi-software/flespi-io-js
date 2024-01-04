@@ -4,7 +4,7 @@ import httpExtender from './flespi-http-io/index'
 import socketExtender from './flespi-mqtt-io/index'
 import poolExtender from './flespi-pool-io/index'
 import poolCamelCaseExtender from './flespi-pool-io/camelCase'
-import merge from 'lodash/merge'
+import merge from 'lodash-es/merge'
 
 const isBrowser = typeof window !== 'undefined'
 /* Class of the connection. It contains of configs and methods of the connection by all protocols. Config contain of settings of current protocol. */

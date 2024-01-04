@@ -1,6 +1,6 @@
 import HTTP from './http'
 import httpExtender from './flespi-http-io/index'
-import merge from 'lodash/merge'
+import merge from 'lodash-es/merge'
 
 /* Class of the connection. It contains of configs and methods of the connection by all protocols. Config contain of settings of current protocol. */
 export default class RestConnection {

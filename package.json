@@ -1,6 +1,6 @@
 {
   "name": "flespi-io-js",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "description": "flespi http/mqtt connection library",
   "main": "./dist/main.js",
   "module": "./dist/module.js",
@@ -37,6 +37,8 @@
     "form-data": "^4.0.0",
     "in-array": "^0.1.2",
     "lodash": "^4.17.21",
-    "mqtt": "^4.2.6"
+    "lodash-es": "^4.17.21",
+    "mqtt": "^4.3.7",
+    "stream-browserify": "^3.0.0"
   }
 }

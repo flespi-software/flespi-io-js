@@ -1,6 +1,6 @@
 import mqtt from './flespi-mqtt-io/async'
-import uniqueId from 'lodash/uniqueId'
-import merge from 'lodash/merge'
+import uniqueId from 'lodash-es/uniqueId'
+import merge from 'lodash-es/merge'
 
 class MQTT {
   constructor (config) {

@@ -1,6 +1,6 @@
 'use strict'
 
-import mqtt from 'mqtt'
+import * as mqtt from 'mqtt/dist/mqtt.min'
 
 class AsyncClient {
   constructor (client) {

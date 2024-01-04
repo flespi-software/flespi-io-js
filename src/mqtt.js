@@ -1,6 +1,6 @@
 import MQTT from './socket'
 import socketExtender from './flespi-mqtt-io/index'
-import merge from 'lodash/merge'
+import merge from 'lodash-es/merge'
 
 const isBrowser = typeof window !== 'undefined'
 /* Class of the connection. It contains of configs and methods of the connection by all protocols. Config contain of settings of current protocol. */
