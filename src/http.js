@@ -40,7 +40,7 @@ class HTTP {
         break
       }
       case 'config': {
-        if (this.config.token !== payload.token) {
+        if (this.config.token !== payload.token && payload.token) {
           this.config.headers.Authorization = payload.token
         }
         if (this.config.flespiApp !== payload.flespiApp) {

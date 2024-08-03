@@ -13,21 +13,41 @@ class MQTT {
     this._createClient()
   }
   _generateTimestampFilteringWrapper (name, handler) {
+    const that = this
     return function (message, topic, packet) {
       const timestamp = packet.properties && packet.properties.userProperties && packet.properties.userProperties.timestamp ? parseFloat(packet.properties.userProperties.timestamp) : 0
-      if (!this._timestampsByTopic[name]) { this._timestampsByTopic[name] = {} }
-      if (!this._timestampsByTopic[name][topic]) { this._timestampsByTopic[name][topic] = { timestamp: 0 } }
-      if (timestamp > this._timestampsByTopic[name][topic].timestamp) {
+      if (!that._timestampsByTopic[name]) { that._timestampsByTopic[name] = {} }
+      if (!that._timestampsByTopic[name][topic]) { that._timestampsByTopic[name][topic] = { timestamp: 0 } }
+      if (timestamp > that._timestampsByTopic[name][topic].timestamp) {
         handler(message, topic, packet)
-        this._timestampsByTopic[name][topic] = { timestamp }
+        that._timestampsByTopic[name][topic] = { timestamp }
+      }
+    }
+  }
+  _generateIdentifierFilteringWrapper (id, handler) {
+    const that = this
+    return function (message, topic, packet) {
+      const identifier = packet.properties && packet.properties.subscriptionIdentifier
+      if ((Array.isArray(identifier) && identifier.indexOf(id)) || (!Array.isArray(identifier) && identifier === id)) {
+        handler(message, topic, packet)
+      }
+    }
+  }
+  _generateCidFilteringWrapper (cid, handler) {
+    const that = this
+    return function (message, topic, packet) {
+      const pcid = packet.properties && packet.properties.userProperties && packet.properties.userProperties.cid
+      if (pcid == cid) {
+        handler(message, topic, packet)
       }
     }
   }
 
+
   /* Private method for creating, setting and subscribing for events of client of mqtt connection */
   async _createClient () {
     if (this._client) { // if client exist, clear him
-      await this._client.end(true)
+      await this.close(true) // ._client.end(true)
     }
     /* if config is empty - dont create new client */
     if (!this._config.token || !this._config.server) { return false }
@@ -82,6 +102,13 @@ class MQTT {
 
     /* Handle disconnect by broker */
     this._client.on('disconnect', (packet) => {
+      if (packet)
+      console.log(this._client, packet)
+      // if (packet. === 142) {
+      //   this._client.options
+      //   // -duplicate-${Math.random().toString(16).substring(2, 10)}
+
+      // }
       /* handling all handler by close event */
       if (this._events.disconnect) {
         this._events.disconnect.forEach((handler) => { typeof handler === 'function' && handler(packet) })
@@ -205,11 +232,21 @@ class MQTT {
         if (!topic.options) { topic.options = {} }
         topic.options = merge(topic.options, { properties: { subscriptionIdentifier: id } })
       }
+
+      if (isProtocolNew && topic.options && topic.options.properties && topic.options.properties.userProperties && topic.options.properties.userProperties.cid) {
+        topic.handler = this._generateCidFilteringWrapper(topic.options.properties.userProperties.cid, topic.handler)
+      }
+      if (isProtocolNew && topic.options && topic.options.filterByIdentifier) {
+        topic.handler = this._generateIdentifierFilteringWrapper((topic.options && topic.options.subscriptionIdentifier) || id, topic.handler)
+      }
       this._topics[id] = topic
       /* if has client and he is connected */
       if (this._client) {
         try {
-          const granted = await this._client.subscribe(topic.name, topic.options)
+          let options = { ...topic.options }
+          delete options.filterByIdentifier
+          delete options.filterByTimestamp
+          const granted = await this._client.subscribe(topic.name, options)
           result[id] = granted
         } catch (e) {
           result[id] = e
