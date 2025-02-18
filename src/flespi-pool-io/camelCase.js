@@ -28,7 +28,10 @@ function generate () {
           const ids = []
           for (const eventType of eventTypes) {
             try {
-              const grants = await mqtt.logs.subscribe(localConfig.api, localConfig.origin, eventType, (message) => { updateHandler(eventType, JSON.parse(message).item_data) }, { rh: 0 })
+              const grants = await mqtt.logs.subscribe(localConfig.api, localConfig.origin, eventType, (message) => {
+                const messageJson = JSON.parse(message)
+                updateHandler(eventType, (typeof messageJson.new === 'object') ? messageJson.new : messageJson.old)
+              }, { rh: 0 })
               if (grants) { ids.push(Object.keys(grants)[0]) }
             } catch (e) {
               console.log(e)
