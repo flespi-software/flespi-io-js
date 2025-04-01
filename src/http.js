@@ -69,6 +69,9 @@ class HTTP {
   post (url, data, options) {
     return axios(merge({}, this.config, options, { url: url, method: 'post', data: data }))
   }
+  patch (url, data, options) {
+    return axios(merge({}, this.config, options, { url: url, method: 'patch', data: data }))
+  }
   put (url, data, options) {
     return axios(merge({}, this.config, options, { url: url, method: 'put', data: data }))
   }

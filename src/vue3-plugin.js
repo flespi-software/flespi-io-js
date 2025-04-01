@@ -15,7 +15,6 @@ const connectionInit = (app, config) => {
 const ConnectionPlugin = {}
 /* install function of plugin */
 ConnectionPlugin.install = function (app, config) {
-  console.log(app, config)
   if (Array.isArray(config)) {
     config.forEach((con) => { connectionInit(app, con) })
   } else {
