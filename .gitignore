@@ -9,3 +9,12 @@ npm-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# Vite
+dist
+dist-ssr
+*.local
+.vite
+
+# Generated configs
+src/configs.json

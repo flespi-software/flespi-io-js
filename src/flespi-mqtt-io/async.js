@@ -1,6 +1,7 @@
 'use strict'
 
-import * as mqtt from 'mqtt/dist/mqtt.min'
+// Import MQTT - works for both Node.js and browser
+import mqtt from 'mqtt'
 
 class AsyncClient {
   constructor (client) {

@@ -1,44 +1,43 @@
 {
   "name": "flespi-io-js",
-  "version": "2.6.0",
+  "version": "3.0.0",
   "description": "flespi http/mqtt connection library",
   "main": "./dist/main.js",
   "module": "./dist/module.js",
+  "type": "module",
   "scripts": {
-    "build": "node ./build.js",
-    "dev": "webpack server --config webpack.dev.config.js"
+    "build": "node scripts/build.js",
+    "build:main": "node scripts/fetch-configs.js && vite build --config vite.config.main.js",
+    "dev": "vite",
+    "preview": "vite build && vite preview",
+    "fetch-configs": "node scripts/fetch-configs.js",
+    "test": "node tests/run-all.js",
+    "test:mqtt": "node tests/test-mqtt-integration.js"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/flespi-software/flespi-io-js.git"
   },
   "devDependencies": {
-    "@babel/core": "^7.14.0",
-    "@quasar/babel-preset-app": "^2.0.0",
     "@vue/eslint-config-standard": "^6.0.0",
-    "babel-eslint": "^10.0.0",
-    "babel-loader": "^8.0.6",
     "eslint": "^7.21.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-vue": "^7.7.0",
-    "eslint-webpack-plugin": "^2.4.0",
-    "git-directory-deploy": "^1.5.1",
-    "html-webpack-plugin": "^5.3.0",
     "process": "^0.11.10",
-    "shebang-loader": "0.0.1",
-    "webpack": "^5.39.0",
-    "webpack-cli": "^4.7.2",
-    "webpack-dev-server": "^3.11.0"
+    "terser": "^5.44.1",
+    "vite": "^5.4.21",
+    "vite-plugin-node-polyfills": "^0.22.0"
   },
   "author": "sebu",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.21.1",
-    "form-data": "^4.0.0",
+    "axios": "^1.13.2",
+    "form-data": "^4.0.5",
     "in-array": "^0.1.2",
     "lodash": "^4.17.21",
-    "lodash-es": "^4.17.21",
-    "mqtt": "^4.3.8",
-    "stream-browserify": "^3.0.0"
+    "lodash-es": "^4.17.22",
+    "mqtt": "^5.14.1",
+    "stream-browserify": "^3.0.0",
+    "ws": "^8.19.0"
   }
 }

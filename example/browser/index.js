@@ -1,5 +1,5 @@
 // import Connection from 'flespi-io-js'
-import Connection from '../../src/index'
+import Connection from '../../src/index.js'
 //import MQTT from '../../src/mqtt'
 // import HTTP from '../../src/rest'
 
