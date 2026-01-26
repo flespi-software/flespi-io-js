@@ -5,6 +5,19 @@
   "main": "./dist/main.js",
   "module": "./dist/module.js",
   "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/module.js",
+      "require": "./dist/main.js",
+      "default": "./dist/main.js"
+    },
+    "./vue-plugin": "./dist/vue-plugin.js",
+    "./vue3-plugin": "./dist/vue3-plugin.js",
+    "./node": "./dist/node.mjs",
+    "./rest": "./dist/rest.js",
+    "./mqtt": "./dist/mqtt.js",
+    "./dist/*": "./dist/*"
+  },
   "scripts": {
     "build": "node scripts/build.js",
     "build:main": "node scripts/fetch-configs.js && vite build --config vite.config.main.js",

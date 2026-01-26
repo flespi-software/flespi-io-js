@@ -11,7 +11,7 @@ npm-debug.log*
 !.vscode/extensions.json
 
 # Vite
-dist
+# dist
 dist-ssr
 *.local
 .vite
