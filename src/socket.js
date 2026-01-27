@@ -284,7 +284,7 @@ class MQTT {
       delete this._topics[index]
     })
     /* if has client and he is connected */
-    if (needUnsubscribe && !this._client._client.disconnecting) {
+    if (needUnsubscribe && this._client && !this._client._client.disconnecting) {
       const state = await this._client.unsubscribe(name, options)
       return state
     } else { return false }
@@ -293,8 +293,10 @@ class MQTT {
   /* Unsubscription method for client of mqtt from all topics */
   async unsubscribeAll (options) {
     this._timestampsByTopic = {}
-    for (const topicId of Object.keys(this._topics)) {
-      await this._client.unsubscribe(this._topics[topicId].name, options)
+    if (this._client) {
+      for (const topicId of Object.keys(this._topics)) {
+        await this._client.unsubscribe(this._topics[topicId].name, options)
+      }
     }
   }
 

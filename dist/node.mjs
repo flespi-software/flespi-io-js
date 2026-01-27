@@ -1205,7 +1205,7 @@ class MQTT {
       }
       delete this._topics[index];
     });
-    if (needUnsubscribe && !this._client._client.disconnecting) {
+    if (needUnsubscribe && this._client && !this._client._client.disconnecting) {
       const state2 = await this._client.unsubscribe(name, options);
       return state2;
     } else {
@@ -1215,8 +1215,10 @@ class MQTT {
   /* Unsubscription method for client of mqtt from all topics */
   async unsubscribeAll(options) {
     this._timestampsByTopic = {};
-    for (const topicId of Object.keys(this._topics)) {
-      await this._client.unsubscribe(this._topics[topicId].name, options);
+    if (this._client) {
+      for (const topicId of Object.keys(this._topics)) {
+        await this._client.unsubscribe(this._topics[topicId].name, options);
+      }
     }
   }
   /* Publishing method for client of mqtt. publish(topic, message, [options]). Message must be a String or Buffer */
