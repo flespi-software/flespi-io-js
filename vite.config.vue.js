@@ -26,8 +26,8 @@ export default defineConfig({
           axios: 'axios',
           mqtt: 'mqtt',
           'form-data': 'form-data',
-          'lodash-es/merge': 'lodash-es/merge',
-          'lodash-es/uniqueId': 'lodash-es/uniqueId'
+          'lodash/merge': 'lodash/merge',
+          'lodash/uniqueId': 'lodash/uniqueId'
         }
       }
     },

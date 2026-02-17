@@ -15,7 +15,7 @@ export default defineConfig({
         globals: {
           axios: 'axios',
           'form-data': 'form-data',
-          'lodash-es/merge': 'lodash-es/merge'
+          'lodash/merge': 'lodash/merge'
         }
       }
     },

@@ -1,7 +1,7 @@
 import axios from "axios";
-import merge from "lodash-es/merge";
+import merge from "lodash/merge";
 import mqtt$2 from "mqtt";
-import uniqueId from "lodash-es/uniqueId";
+import uniqueId from "lodash/uniqueId";
 const getBaseURl = (config2) => {
   let baseURL = "";
   if (config2.server) {
@@ -714,6 +714,20 @@ const CONFIGS = [
           ]
         }
       },
+      "/customer/logs/calculate": {
+        post: {
+          parameters: [
+            {
+              name: "x-flespi-cid",
+              "in": "header"
+            },
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
       "/customer/statistics": {
         get: {
           parameters: [
@@ -770,6 +784,22 @@ const CONFIGS = [
             {
               name: "data",
               "in": "query"
+            }
+          ]
+        }
+      },
+      "/deleted/{deleted-selector}/logs/calculate": {
+        parameters: [
+          {
+            name: "deleted-selector",
+            "in": "path"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
             }
           ]
         }
@@ -871,6 +901,22 @@ const CONFIGS = [
             {
               name: "data",
               "in": "query"
+            }
+          ]
+        }
+      },
+      "/grants/{grants-selector}/logs/calculate": {
+        parameters: [
+          {
+            name: "grants-selector",
+            "in": "path"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
             }
           ]
         }
@@ -985,6 +1031,26 @@ const CONFIGS = [
           ]
         }
       },
+      "/identity-providers/{identity-provider-selector}/logs/calculate": {
+        parameters: [
+          {
+            name: "identity-provider-selector",
+            "in": "path"
+          },
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
       "/limits": {
         post: {
           parameters: [
@@ -1060,6 +1126,22 @@ const CONFIGS = [
             {
               name: "data",
               "in": "query"
+            }
+          ]
+        }
+      },
+      "/limits/{limits-selector}/logs/calculate": {
+        parameters: [
+          {
+            name: "limits-selector",
+            "in": "path"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
             }
           ]
         }
@@ -1211,6 +1293,22 @@ const CONFIGS = [
             {
               name: "data",
               "in": "query"
+            }
+          ]
+        }
+      },
+      "/realms/{realm-selector}/logs/calculate": {
+        parameters: [
+          {
+            name: "realm-selector",
+            "in": "path"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
             }
           ]
         }
@@ -1570,6 +1668,26 @@ const CONFIGS = [
           ]
         }
       },
+      "/subaccounts/{subaccounts-selector}/logs/calculate": {
+        parameters: [
+          {
+            name: "subaccounts-selector",
+            "in": "path"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "x-flespi-cid",
+              "in": "header"
+            },
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
       "/tokens": {
         post: {
           parameters: [
@@ -1651,6 +1769,26 @@ const CONFIGS = [
           ]
         }
       },
+      "/tokens/{tokens-selector}/logs/calculate": {
+        parameters: [
+          {
+            name: "tokens-selector",
+            "in": "path"
+          },
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
       "/webhooks": {
         post: {
           parameters: [
@@ -1718,6 +1856,22 @@ const CONFIGS = [
             {
               name: "data",
               "in": "query"
+            }
+          ]
+        }
+      },
+      "/webhooks/{webhooks-selector}/logs/calculate": {
+        parameters: [
+          {
+            name: "webhooks-selector",
+            "in": "path"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
             }
           ]
         }
@@ -1849,6 +2003,22 @@ const CONFIGS = [
             {
               name: "data",
               "in": "query"
+            }
+          ]
+        }
+      },
+      "/assets/{assets.selector}/logs/calculate": {
+        parameters: [
+          {
+            name: "assets.selector",
+            "in": "path"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
             }
           ]
         }
@@ -2198,6 +2368,22 @@ const CONFIGS = [
           ]
         }
       },
+      "/calcs/{calcs.selector}/logs/calculate": {
+        parameters: [
+          {
+            name: "calcs.selector",
+            "in": "path"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
       "/channel-protocols/{channel-protocols.selector}": {
         parameters: [
           {
@@ -2427,6 +2613,22 @@ const CONFIGS = [
             {
               name: "data",
               "in": "query"
+            }
+          ]
+        }
+      },
+      "/channels/{ch-selector}/logs/calculate": {
+        parameters: [
+          {
+            name: "ch-selector",
+            "in": "path"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
             }
           ]
         }
@@ -2711,6 +2913,22 @@ const CONFIGS = [
           ]
         }
       },
+      "/devices/{dev-selector}/logs/calculate": {
+        parameters: [
+          {
+            name: "dev-selector",
+            "in": "path"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
       "/devices/{dev-selector}/media": {
         parameters: [
           {
@@ -2972,6 +3190,22 @@ const CONFIGS = [
           ]
         }
       },
+      "/geofences/{geofences.selector}/logs/calculate": {
+        parameters: [
+          {
+            name: "geofences.selector",
+            "in": "path"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
       "/groups": {
         post: {
           parameters: [
@@ -3145,6 +3379,22 @@ const CONFIGS = [
           ]
         }
       },
+      "/groups/{groups.selector}/logs/calculate": {
+        parameters: [
+          {
+            name: "groups.selector",
+            "in": "path"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
       "/message-parameters/{message-parameter.selector}": {
         parameters: [
           {
@@ -3232,6 +3482,22 @@ const CONFIGS = [
             {
               name: "data",
               "in": "query"
+            }
+          ]
+        }
+      },
+      "/modems/{modem-selector}/logs/calculate": {
+        parameters: [
+          {
+            name: "modem-selector",
+            "in": "path"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
             }
           ]
         }
@@ -3477,6 +3743,22 @@ const CONFIGS = [
             {
               name: "data",
               "in": "query"
+            }
+          ]
+        }
+      },
+      "/plugins/{plugin.selector}/logs/calculate": {
+        parameters: [
+          {
+            name: "plugin.selector",
+            "in": "path"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
             }
           ]
         }
@@ -3729,6 +4011,22 @@ const CONFIGS = [
           ]
         }
       },
+      "/streams/{stream.selector}/logs/calculate": {
+        parameters: [
+          {
+            name: "stream.selector",
+            "in": "path"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
       "/streams/{stream.selector}/messages": {
         parameters: [
           {
@@ -3874,6 +4172,22 @@ const CONFIGS = [
           ]
         }
       },
+      "/cdns/{cdn-selector}/logs/calculate": {
+        parameters: [
+          {
+            name: "cdn-selector",
+            "in": "path"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
       "/containers": {
         post: {
           parameters: [
@@ -3959,6 +4273,22 @@ const CONFIGS = [
           ]
         }
       },
+      "/containers/{container-selector}/logs/calculate": {
+        parameters: [
+          {
+            name: "container-selector",
+            "in": "path"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
       "/containers/{container-selector}/messages": {
         parameters: [
           {
@@ -4015,6 +4345,16 @@ const CONFIGS = [
             {
               name: "data",
               "in": "query"
+            }
+          ]
+        }
+      },
+      "/logs/calculate": {
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
             }
           ]
         }

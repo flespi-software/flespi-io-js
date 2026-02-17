@@ -24,8 +24,8 @@ export default defineConfig({
       output: {
         globals: {
           mqtt: 'mqtt',
-          'lodash-es/merge': 'lodash-es/merge',
-          'lodash-es/uniqueId': 'lodash-es/uniqueId'
+          'lodash/merge': 'lodash/merge',
+          'lodash/uniqueId': 'lodash/uniqueId'
         }
       }
     },

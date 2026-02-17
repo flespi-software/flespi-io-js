@@ -25,8 +25,8 @@ export default defineConfig({
         globals: {
           axios: 'axios',
           mqtt: 'mqtt',
-          'lodash-es/merge': 'lodash-es/merge',
-          'lodash-es/uniqueId': 'lodash-es/uniqueId'
+          'lodash/merge': 'lodash/merge',
+          'lodash/uniqueId': 'lodash/uniqueId'
         },
         exports: 'default'
       }
