@@ -13,7 +13,16 @@ const __dirname = path.dirname(__filename)
 const tests = [
   'test-build-outputs.js',
   'test-config-generation.js',
-  'test-library-integration.js'
+  'test-library-integration.js',
+  'test-http-class.js',
+  'test-mqtt-class.js',
+  'test-connection-class.js',
+  'test-rest-connection.js',
+  'test-mqtt-connection.js',
+  'test-http-sugar.js',
+  'test-mqtt-sugar.js',
+  'test-vue-plugins.js',
+  'test-type-declarations.js'
 ]
 
 console.log('Running All Tests')

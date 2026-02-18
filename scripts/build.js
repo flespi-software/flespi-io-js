@@ -17,7 +17,20 @@ try {
   process.exit(1)
 }
 
-// Step 2: Build all targets
+// Step 2: Generate type declarations
+console.log('\n============================================')
+console.log('Generating type declarations...')
+console.log('============================================\n')
+
+try {
+  execSync('node scripts/generate-types.js', { stdio: 'inherit', cwd: path.resolve(__dirname, '..') })
+  console.log('✓ Type declarations generated successfully\n')
+} catch (error) {
+  console.error('\n✗ Failed to generate type declarations')
+  process.exit(1)
+}
+
+// Step 3: Build all targets
 const targets = [
   'main',
   'module',
