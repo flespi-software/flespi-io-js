@@ -58,5 +58,36 @@ conn.poolDevices(
 
 See full example in [example/node-example.ts](example/node-example.ts).
 
+## Web Worker mode (MQTT)
+
+Browser tabs throttle timers and kill WebSocket connections when the user navigates away. This causes MQTT disconnects. To solve this, you can run the MQTT client inside a Web Worker — Workers are not throttled by browser tab sleeping.
+
+The feature is **opt-in** — pass `useWorker` in `socketConfig`. Without it, behavior is identical to previous versions.
+
+```js
+import Connection from 'flespi-io-js'
+
+// Option 1: pass URL string — library creates the Worker
+const conn = new Connection({
+  token: 'FlespiToken xxxx',
+  socketConfig: {
+    useWorker: '/path/to/mqtt-worker.js'
+  }
+})
+
+// Option 2: pass a Worker instance (recommended for bundler users)
+const worker = new Worker(new URL('flespi-io-js/mqtt-worker', import.meta.url))
+const conn2 = new Connection({
+  token: 'FlespiToken xxxx',
+  socketConfig: {
+    useWorker: worker
+  }
+})
+```
+
+The worker script is available as `flespi-io-js/mqtt-worker` or directly at `dist/mqtt-worker.js`. It is a self-contained IIFE bundle with mqtt.js and all dependencies included.
+
+In Node.js or environments without `Worker`, the option is silently ignored with a console warning.
+
 ## License
 [MIT](https://github.com/flespi-software/flespi-io-js/blob/master/LICENSE) license.

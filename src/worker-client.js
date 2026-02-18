@@ -53,7 +53,7 @@ class WorkerAsyncClient {
           if (msg.event === 'message') {
             /* Deserialize: ArrayBuffer → Buffer, rebuild packet */
             const topic = msg.args[0]
-            const buf = typeof Buffer !== 'undefined' ? Buffer.from(msg.args[1]) : msg.args[1]
+            const buf = typeof Buffer !== 'undefined' ? Buffer.from(msg.args[1]) : new TextDecoder().decode(msg.args[1])
             const packet = msg.args[2]
             this._client.emit('message', topic, buf, packet)
           } else {

@@ -7,6 +7,7 @@ export interface PlatformHttpSugar {
   postBillingInvoicesCharge(invoicesSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getBillingPayment_portal(options?: AxiosRequestConfig): Promise<AxiosResponse>
   getCustomer(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  patchCustomer(query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   putCustomer(query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getCustomerChat(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postCustomerChat(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>

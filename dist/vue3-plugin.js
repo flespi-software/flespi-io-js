@@ -269,7 +269,7 @@ class WorkerAsyncClient {
         case "event": {
           if (msg.event === "message") {
             const topic = msg.args[0];
-            const buf = typeof Buffer !== "undefined" ? Buffer.from(msg.args[1]) : msg.args[1];
+            const buf = typeof Buffer !== "undefined" ? Buffer.from(msg.args[1]) : new TextDecoder().decode(msg.args[1]);
             const packet = msg.args[2];
             this._client.emit("message", topic, buf, packet);
           } else {
@@ -779,6 +779,22 @@ const CONFIGS = [
             {
               name: "fields",
               "in": "query"
+            }
+          ]
+        },
+        patch: {
+          parameters: [
+            {
+              name: "x-flespi-cid",
+              "in": "header"
+            },
+            {
+              name: "fields",
+              "in": "query"
+            },
+            {
+              name: "data",
+              "in": "body"
             }
           ]
         },
