@@ -38,7 +38,8 @@ const targets = [
   'vue3',
   'node',
   'rest',
-  'mqtt'
+  'mqtt',
+  'mqtt-worker'
 ]
 
 console.log('\n============================================')

@@ -425,7 +425,7 @@ _cloneBuffer.exports;
   var freeExports = exports$1 && !exports$1.nodeType && exports$1;
   var freeModule = freeExports && true && module && !module.nodeType && module;
   var moduleExports = freeModule && freeModule.exports === freeExports;
-  var Buffer = moduleExports ? root2.Buffer : void 0, allocUnsafe = Buffer ? Buffer.allocUnsafe : void 0;
+  var Buffer2 = moduleExports ? root2.Buffer : void 0, allocUnsafe = Buffer2 ? Buffer2.allocUnsafe : void 0;
   function cloneBuffer2(buffer, isDeep) {
     if (isDeep) {
       return buffer.slice();
@@ -549,8 +549,8 @@ isBuffer$2.exports;
   var freeExports = exports$1 && !exports$1.nodeType && exports$1;
   var freeModule = freeExports && true && module && !module.nodeType && module;
   var moduleExports = freeModule && freeModule.exports === freeExports;
-  var Buffer = moduleExports ? root2.Buffer : void 0;
-  var nativeIsBuffer = Buffer ? Buffer.isBuffer : void 0;
+  var Buffer2 = moduleExports ? root2.Buffer : void 0;
+  var nativeIsBuffer = Buffer2 ? Buffer2.isBuffer : void 0;
   var isBuffer2 = nativeIsBuffer || stubFalse2;
   module.exports = isBuffer2;
 })(isBuffer$2, isBuffer$2.exports);
@@ -1120,6 +1120,160 @@ const mqtt$1 = {
   },
   AsyncClient
 };
+let _nextId = 1;
+class WorkerEventEmitter {
+  constructor() {
+    this._handlers = {};
+    this.connected = false;
+    this.disconnecting = false;
+    this.options = {};
+  }
+  on(event, handler) {
+    if (!this._handlers[event]) {
+      this._handlers[event] = [];
+    }
+    this._handlers[event].push(handler);
+    return this;
+  }
+  off(event, handler) {
+    if (!this._handlers[event]) return this;
+    if (handler) {
+      this._handlers[event] = this._handlers[event].filter((h) => h !== handler);
+    } else {
+      delete this._handlers[event];
+    }
+    return this;
+  }
+  removeListener(event, handler) {
+    return this.off(event, handler);
+  }
+  emit(event, ...args) {
+    const handlers = this._handlers[event];
+    if (handlers) {
+      handlers.forEach((h) => {
+        try {
+          h(...args);
+        } catch (e) {
+          console.error(e);
+        }
+      });
+    }
+  }
+}
+class WorkerAsyncClient {
+  constructor(worker, url, options) {
+    this._worker = worker;
+    this._client = new WorkerEventEmitter();
+    this._pending = {};
+    this._worker.onmessage = (e) => {
+      const msg = e.data;
+      switch (msg.type) {
+        case "event": {
+          if (msg.event === "message") {
+            const topic = msg.args[0];
+            const buf = typeof Buffer !== "undefined" ? Buffer.from(msg.args[1]) : msg.args[1];
+            const packet = msg.args[2];
+            this._client.emit("message", topic, buf, packet);
+          } else {
+            const args = msg.args.map((arg) => {
+              if (arg && typeof arg === "object" && arg.message && "code" in arg) {
+                const err = new Error(arg.message);
+                err.code = arg.code;
+                return err;
+              }
+              return arg;
+            });
+            this._client.emit(msg.event, ...args);
+          }
+          break;
+        }
+        case "result": {
+          const p = this._pending[msg.id];
+          if (p) {
+            delete this._pending[msg.id];
+            p.resolve(msg.result);
+          }
+          break;
+        }
+        case "error": {
+          const p = this._pending[msg.id];
+          if (p) {
+            delete this._pending[msg.id];
+            const err = new Error(msg.error.message);
+            err.code = msg.error.code;
+            p.reject(err);
+          }
+          break;
+        }
+        case "state": {
+          this._client.connected = msg.connected;
+          this._client.disconnecting = msg.disconnecting;
+          break;
+        }
+      }
+    };
+    this._worker.onerror = (e) => {
+      const err = new Error(e.message || "Worker error");
+      this._client.emit("error", err);
+    };
+    const id = _nextId++;
+    this._worker.postMessage({ type: "connect", id, url, options });
+  }
+  get connected() {
+    return this._client.connected;
+  }
+  get reconnecting() {
+    return false;
+  }
+  _sendCommand(type, payload) {
+    return new Promise((resolve, reject) => {
+      const id = _nextId++;
+      this._pending[id] = { resolve, reject };
+      this._worker.postMessage(Object.assign({ type, id }, payload));
+    });
+  }
+  subscribe(topic, options) {
+    return this._sendCommand("subscribe", { topic, options });
+  }
+  unsubscribe(topic, options) {
+    return this._sendCommand("unsubscribe", { topic, options });
+  }
+  publish(topic, message, options) {
+    const payload = { topic, options };
+    const transferable = [];
+    if (message instanceof ArrayBuffer) {
+      payload.message = message;
+      transferable.push(message);
+    } else if (typeof Buffer !== "undefined" && Buffer.isBuffer(message)) {
+      const ab = message.buffer.slice(message.byteOffset, message.byteOffset + message.byteLength);
+      payload.message = ab;
+      transferable.push(ab);
+    } else {
+      payload.message = message;
+    }
+    const id = _nextId++;
+    return new Promise((resolve, reject) => {
+      this._pending[id] = { resolve, reject };
+      this._worker.postMessage(Object.assign({ type: "publish", id }, payload), transferable);
+    });
+  }
+  end(force) {
+    return this._sendCommand("end", { force }).then((result) => {
+      this._client.connected = false;
+      this._client.disconnecting = false;
+      return result;
+    });
+  }
+  on(...args) {
+    return this._client.on(...args);
+  }
+  off(...args) {
+    return this._client.off(...args);
+  }
+  removeListener(...args) {
+    return this._client.removeListener(...args);
+  }
+}
 function arrayMap$1(array, iteratee) {
   var index = -1, length = array == null ? 0 : array.length, result = Array(length);
   while (++index < length) {
@@ -1226,7 +1380,22 @@ class MQTT {
     }, mqttConfig = Object.assign(defaultMqttConfig, this._config.mqttSettings);
     mqttConfig.username = this._config.token;
     mqttConfig.clientId = this._config.clientId || `flespi-io-js_${Math.random().toString(16).substr(2, 8)}`;
-    this._client = mqtt$1.connect(baseURL, mqttConfig);
+    if (this._config.useWorker && typeof Worker !== "undefined") {
+      let worker;
+      if (this._config.useWorker instanceof Worker) {
+        worker = this._config.useWorker;
+      } else if (typeof this._config.useWorker === "string") {
+        worker = new Worker(this._config.useWorker);
+      } else {
+        throw new Error("useWorker must be a Worker instance or a URL string");
+      }
+      this._client = new WorkerAsyncClient(worker, baseURL, mqttConfig);
+    } else {
+      if (this._config.useWorker && typeof Worker === "undefined") {
+        console.warn("flespi-io-js: useWorker ignored — Worker not available in this environment");
+      }
+      this._client = mqtt$1.connect(baseURL, mqttConfig);
+    }
     this._client.on("connect", (connack) => {
       if (!connack.sessionPresent && !mqttConfig.resubscribe) {
         this._topics = {};

@@ -33,6 +33,9 @@
       "types": "./types/mqtt.d.ts",
       "default": "./dist/mqtt.js"
     },
+    "./mqtt-worker": {
+      "default": "./dist/mqtt-worker.js"
+    },
     "./dist/*": "./dist/*"
   },
   "scripts": {

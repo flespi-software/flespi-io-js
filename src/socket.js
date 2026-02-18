@@ -1,4 +1,5 @@
 import mqtt from './flespi-mqtt-io/async'
+import WorkerAsyncClient from './worker-client'
 import uniqueId from 'lodash/uniqueId'
 import merge from 'lodash/merge'
 
@@ -67,7 +68,22 @@ class MQTT {
     mqttConfig.username = this._config.token
     mqttConfig.clientId = this._config.clientId || `flespi-io-js_${Math.random().toString(16).substr(2, 8)}`
     /* mqtt connection creating by baseURL and token */
-    this._client = mqtt.connect(baseURL, mqttConfig)
+    if (this._config.useWorker && typeof Worker !== 'undefined') {
+      let worker
+      if (this._config.useWorker instanceof Worker) {
+        worker = this._config.useWorker
+      } else if (typeof this._config.useWorker === 'string') {
+        worker = new Worker(this._config.useWorker)
+      } else {
+        throw new Error('useWorker must be a Worker instance or a URL string')
+      }
+      this._client = new WorkerAsyncClient(worker, baseURL, mqttConfig)
+    } else {
+      if (this._config.useWorker && typeof Worker === 'undefined') {
+        console.warn('flespi-io-js: useWorker ignored — Worker not available in this environment')
+      }
+      this._client = mqtt.connect(baseURL, mqttConfig)
+    }
 
     /* make subscribe to all topics on client after connecting */
     this._client.on('connect', (connack) => {

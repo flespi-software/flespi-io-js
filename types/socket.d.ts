@@ -4,6 +4,7 @@ export interface MqttConfig {
   token?: string
   clientId?: string
   mqttSettings?: MqttSettings
+  useWorker?: string | Worker
   [key: string]: any
 }
 
