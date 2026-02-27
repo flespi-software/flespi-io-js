@@ -1,12 +1,12 @@
 import { HTTP, HttpConfig } from './http'
 import { MQTT, MqttConfig, MqttMessageHandler, SubscribeOptions } from './socket'
-import { PlatformHttpSugar, GwHttpSugar, StorageHttpSugar, MqttHttpSugar, AuthHttpSugar } from './generated/http-sugar'
+import { PlatformHttpSugar, GwHttpSugar, StorageHttpSugar, MqttHttpSugar, AuthHttpSugar, AiHttpSugar } from './generated/http-sugar'
 import { MqttSugarNamespaced, MqttSugarCamelCase } from './generated/mqtt-sugar'
 import { PoolNamespaced, PoolCamelCase } from './generated/pool-sugar'
 
 export { HTTP, HttpConfig } from './http'
 export { MQTT, MqttConfig, MqttSettings, MqttMessageHandler, SubscribeOptions, TopicDescriptor, MqttEventName } from './socket'
-export { PlatformHttpSugar, GwHttpSugar, StorageHttpSugar, MqttHttpSugar, AuthHttpSugar } from './generated/http-sugar'
+export { PlatformHttpSugar, GwHttpSugar, StorageHttpSugar, MqttHttpSugar, AuthHttpSugar, AiHttpSugar } from './generated/http-sugar'
 export { MqttSugarNamespaced, MqttSugarCamelCase } from './generated/mqtt-sugar'
 export { PoolNamespaced, PoolCamelCase, PoolGetHandler, PoolUpdateHandler } from './generated/pool-sugar'
 
@@ -38,6 +38,7 @@ declare class Connection {
   storage: StorageHttpSugar
   mqtt: MqttHttpSugar
   auth: AuthHttpSugar
+  ai: AiHttpSugar
 }
 
 interface Connection extends MqttSugarCamelCase, PoolCamelCase {}

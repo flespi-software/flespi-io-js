@@ -331,3 +331,17 @@ export interface AuthHttpSugar {
   putPassword(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getRegions(options?: AxiosRequestConfig): Promise<AxiosResponse>
 }
+
+export interface AiHttpSugar {
+  getLogs(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  postLogsCalculate(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getMcpDevelop(options?: AxiosRequestConfig): Promise<AxiosResponse>
+  postMcpDevelop(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getMcpSupport(options?: AxiosRequestConfig): Promise<AxiosResponse>
+  postMcpSupport(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  postToolsGeneratePvmCode(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  postToolsGetApiSchema(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  postToolsSearchApiMethods(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  postToolsSearchDeviceDocumentation(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  postToolsSearchFlespiDocumentation(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+}

@@ -5769,6 +5769,107 @@ const CONFIGS = [
         get: {}
       }
     }
+  },
+  {
+    basePath: "/ai",
+    paths: {
+      "/logs": {
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        }
+      },
+      "/logs/calculate": {
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
+      "/mcp/develop": {
+        get: {
+          parameters: []
+        },
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
+      "/mcp/support": {
+        get: {
+          parameters: []
+        },
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
+      "/tools/generate-pvm-code": {
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
+      "/tools/get-api-schema": {
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
+      "/tools/search-api-methods": {
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
+      "/tools/search-device-documentation": {
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
+      "/tools/search-flespi-documentation": {
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      }
+    }
   }
 ];
 const FData = typeof FormData !== "undefined" ? FormData : require("form-data");

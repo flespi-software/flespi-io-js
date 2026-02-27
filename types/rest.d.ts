@@ -1,5 +1,5 @@
 import { HTTP, HttpConfig } from './http'
-import { PlatformHttpSugar, GwHttpSugar, StorageHttpSugar, MqttHttpSugar, AuthHttpSugar } from './generated/http-sugar'
+import { PlatformHttpSugar, GwHttpSugar, StorageHttpSugar, MqttHttpSugar, AuthHttpSugar, AiHttpSugar } from './generated/http-sugar'
 
 export interface Region {
   rest: string
@@ -18,6 +18,7 @@ declare class RestConnection {
   storage: StorageHttpSugar
   mqtt: MqttHttpSugar
   auth: AuthHttpSugar
+  ai: AiHttpSugar
 }
 
 export default RestConnection

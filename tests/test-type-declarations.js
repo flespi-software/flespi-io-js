@@ -82,6 +82,7 @@ assert(httpSugarContent.includes('GwHttpSugar'), 'GwHttpSugar interface')
 assert(httpSugarContent.includes('StorageHttpSugar'), 'StorageHttpSugar interface')
 assert(httpSugarContent.includes('MqttHttpSugar'), 'MqttHttpSugar interface')
 assert(httpSugarContent.includes('AuthHttpSugar'), 'AuthHttpSugar interface')
+assert(httpSugarContent.includes('AiHttpSugar'), 'AiHttpSugar interface')
 
 // ── HTTP sugar types match runtime methods ──────────────────────────────────
 
@@ -109,7 +110,8 @@ for (const [ns, iface] of [
   ['gw', 'GwHttpSugar'],
   ['storage', 'StorageHttpSugar'],
   ['mqtt', 'MqttHttpSugar'],
-  ['auth', 'AuthHttpSugar']
+  ['auth', 'AuthHttpSugar'],
+  ['ai', 'AiHttpSugar']
 ]) {
   const runtimeMethods = Object.keys(conn[ns]).filter(k =>
     typeof conn[ns][k] === 'function' &&

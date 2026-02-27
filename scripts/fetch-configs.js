@@ -27,7 +27,8 @@ async function getConfigs() {
     fetchWithRetry('https://flespi.io/gw/api.json').then(data => { console.log('✓ Gateway API'); return data }),
     fetchWithRetry('https://flespi.io/storage/api.json').then(data => { console.log('✓ Storage API'); return data }),
     fetchWithRetry('https://flespi.io/mqtt/api.json').then(data => { console.log('✓ MQTT API'); return data }),
-    fetchWithRetry('https://flespi.io/auth/api.json').then(data => { console.log('✓ Auth API'); return data })
+    fetchWithRetry('https://flespi.io/auth/api.json').then(data => { console.log('✓ Auth API'); return data }),
+    fetchWithRetry('https://flespi.io/ai/api.json').then(data => { console.log('✓ AI API'); return data })
   ])
 }
 

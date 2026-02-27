@@ -22,7 +22,8 @@ function generateHttpSugar () {
     gw: 'GwHttpSugar',
     storage: 'StorageHttpSugar',
     mqtt: 'MqttHttpSugar',
-    auth: 'AuthHttpSugar'
+    auth: 'AuthHttpSugar',
+    ai: 'AiHttpSugar'
   }
 
   const lines = [
