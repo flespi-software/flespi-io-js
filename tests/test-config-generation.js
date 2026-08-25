@@ -38,16 +38,16 @@ try {
   console.log('✓ configs.json is valid JSON')
   passed++
 
-  // Should be an array of 5 API configs
+  // Should be an array of 6 API configs
   if (Array.isArray(configs)) {
     console.log(`✓ configs is an array (${configs.length} items)`)
     passed++
 
-    if (configs.length === 5) {
-      console.log('✓ Contains 5 API configurations (platform, gw, storage, mqtt, auth)')
+    if (configs.length === 6) {
+      console.log('✓ Contains 6 API configurations (platform, gw, storage, mqtt, auth, ai)')
       passed++
     } else {
-      console.log(`✗ Expected 5 configs, got ${configs.length}`)
+      console.log(`✗ Expected 6 configs, got ${configs.length}`)
       failed++
     }
   } else {
@@ -79,7 +79,7 @@ try {
 
   // Check if configs contain expected API namespaces
   const basePaths = configs.map(c => c.basePath)
-  const expectedPaths = ['/platform', '/gw', '/storage', '/mqtt', '/auth']
+  const expectedPaths = ['/platform', '/gw', '/storage', '/mqtt', '/auth', '/ai']
 
   console.log('\nChecking API namespaces...\n')
   expectedPaths.forEach(expected => {

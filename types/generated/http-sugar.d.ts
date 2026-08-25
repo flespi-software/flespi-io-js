@@ -6,6 +6,7 @@ export interface PlatformHttpSugar {
   getBillingInvoices(invoicesSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postBillingInvoicesCharge(invoicesSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getBillingPayment_portal(options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getChangelogPosts(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getCustomer(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   patchCustomer(query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   putCustomer(query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
@@ -15,13 +16,14 @@ export interface PlatformHttpSugar {
   postCustomerChatFile(formData_file?: any, formData_data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postCustomerChatAiAssistant(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getCustomerChatKnowledge(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  postCustomerGeneratePvmCode(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getCustomerLogs(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getCustomerLogsCalculate(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postCustomerLogsCalculate(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getCustomerStatistics(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getCustomerUnsubscribe(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getDeleted(deletedSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getDeletedLogs(deletedSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getDeletedLogsCalculate(deletedSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postDeletedLogsCalculate(deletedSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postDeletedRestore(deletedSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
   deleteGrantors(grantsSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
@@ -32,6 +34,7 @@ export interface PlatformHttpSugar {
   patchGrants(grantsSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   putGrants(grantsSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getGrantsLogs(grantsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getGrantsLogsCalculate(grantsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postGrantsLogsCalculate(grantsSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   deleteGrantsSubaccounts(grantsSelector: string | number, grantSubaccountsSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getGrantsSubaccounts(grantsSelector: string | number, grantSubaccountsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
@@ -42,6 +45,7 @@ export interface PlatformHttpSugar {
   patchIdentityProviders(identityProviderSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   putIdentityProviders(identityProviderSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getIdentityProvidersLogs(identityProviderSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getIdentityProvidersLogsCalculate(identityProviderSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postIdentityProvidersLogsCalculate(identityProviderSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postLimits(query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   deleteLimits(limitsSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
@@ -49,6 +53,7 @@ export interface PlatformHttpSugar {
   patchLimits(limitsSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   putLimits(limitsSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getLimitsLogs(limitsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getLimitsLogsCalculate(limitsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postLimitsLogsCalculate(limitsSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   deleteOauth(oauthSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getOauth(oauthSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
@@ -62,30 +67,32 @@ export interface PlatformHttpSugar {
   postRealmsIdentityProviders(realmSelector: string | number, realmIdentityProviderSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   putRealmsIdentityProviders(realmSelector: string | number, realmIdentityProviderSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getRealmsLogs(realmSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getRealmsLogsCalculate(realmSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postRealmsLogsCalculate(realmSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postRealmsRoles(realmSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  deleteRealmsRoles(realmSelector: string | number, roleSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  getRealmsRoles(realmSelector: string | number, roleSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  patchRealmsRoles(realmSelector: string | number, roleSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  putRealmsRoles(realmSelector: string | number, roleSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  deleteRealmsRoles(realmSelector: string | number, realmRoleSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getRealmsRoles(realmSelector: string | number, realmRoleSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  patchRealmsRoles(realmSelector: string | number, realmRoleSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  putRealmsRoles(realmSelector: string | number, realmRoleSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postRealmsUsers(realmSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  deleteRealmsUsers(realmSelector: string | number, userSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  getRealmsUsers(realmSelector: string | number, userSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  patchRealmsUsers(realmSelector: string | number, userSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  putRealmsUsers(realmSelector: string | number, userSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  getRealmsUsersConfirmationPassword(realmSelector: string | number, userSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  deleteRealmsUsersIdentityProviders(realmSelector: string | number, userSelector: string | number, userIdentityProviderSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  getRealmsUsersIdentityProviders(realmSelector: string | number, userSelector: string | number, userIdentityProviderSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  getRealmsUsersIdentityProvidersConfirmation(realmSelector: string | number, userSelector: string | number, userIdentityProviderSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  postRealmsUsersLogin(realmSelector: string | number, userSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  postRealmsUsersLogout(realmSelector: string | number, userSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  deleteRealmsUsersPassword(realmSelector: string | number, userSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  deleteRealmsUsers(realmSelector: string | number, realmUserSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getRealmsUsers(realmSelector: string | number, realmUserSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  patchRealmsUsers(realmSelector: string | number, realmUserSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  putRealmsUsers(realmSelector: string | number, realmUserSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getRealmsUsersConfirmationPassword(realmSelector: string | number, realmUserSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  deleteRealmsUsersIdentityProviders(realmSelector: string | number, realmUserSelector: string | number, userIdentityProviderSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getRealmsUsersIdentityProviders(realmSelector: string | number, realmUserSelector: string | number, userIdentityProviderSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getRealmsUsersIdentityProvidersConfirmation(realmSelector: string | number, realmUserSelector: string | number, userIdentityProviderSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  postRealmsUsersLogin(realmSelector: string | number, realmUserSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  postRealmsUsersLogout(realmSelector: string | number, realmUserSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  deleteRealmsUsersPassword(realmSelector: string | number, realmUserSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postSubaccounts(query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   deleteSubaccounts(subaccountsSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getSubaccounts(subaccountsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   patchSubaccounts(subaccountsSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   putSubaccounts(subaccountsSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getSubaccountsLogs(subaccountsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getSubaccountsLogsCalculate(subaccountsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postSubaccountsLogsCalculate(subaccountsSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postTokens(query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   deleteTokens(tokensSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
@@ -93,6 +100,7 @@ export interface PlatformHttpSugar {
   patchTokens(tokensSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   putTokens(tokensSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getTokensLogs(tokensSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getTokensLogsCalculate(tokensSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postTokensLogsCalculate(tokensSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postWebhooks(query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   deleteWebhooks(webhooksSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
@@ -100,6 +108,7 @@ export interface PlatformHttpSugar {
   patchWebhooks(webhooksSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   putWebhooks(webhooksSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getWebhooksLogs(webhooksSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getWebhooksLogsCalculate(webhooksSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postWebhooksLogsCalculate(webhooksSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getWebhooksPackets(webhooksSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
 }
@@ -113,6 +122,7 @@ export interface GwHttpSugar {
   getAssetsIntervals(assetsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postAssetsIntervals(assetsSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getAssetsLogs(assetsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getAssetsLogsCalculate(assetsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postAssetsLogsCalculate(assetsSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postCalcs(query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   deleteCalcs(calcsSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
@@ -127,6 +137,7 @@ export interface GwHttpSugar {
   getCalcsDevices(calcsSelector: string | number, calcDevicesSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   putCalcsDevices(calcsSelector: string | number, calcDevicesSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postCalcsDevicesCalculate(calcsSelector: string | number, calcDevicesSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getCalcsDevicesIntervalsCalculate(calcsSelector: string | number, calcDevicesSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   putCalcsDevicesIntervals(calcsSelector: string | number, calcDevicesSelector: string | number, calcDeviceIntervalsSelectorPut: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getCalcsDevicesIntervals(calcsSelector: string | number, calcDevicesSelector: string | number, calcDeviceIntervalsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postCalcsDevicesRecalculate(calcsSelector: string | number, calcDevicesSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
@@ -140,11 +151,12 @@ export interface GwHttpSugar {
   postCalcsGroups(calcsSelector: string | number, calcGroupsSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   putCalcsGroups(calcsSelector: string | number, calcGroupsSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getCalcsLogs(calcsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getCalcsLogsCalculate(calcsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postCalcsLogsCalculate(calcsSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getChangelogPosts(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getChannelProtocols(channelProtocolsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getChannelProtocolsChangelogPosts(channelProtocolsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getChannelProtocolsDeviceTypes(channelProtocolsSelector: string | number, devtypesSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  postChannelProtocolsDeviceTypesAssistance(channelProtocolsSelector: string | number, devtypesSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  getChannelProtocolsDeviceTypesKnowledge(channelProtocolsSelector: string | number, devtypesSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postChannels(query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   deleteChannels(chSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getChannels(chSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
@@ -156,6 +168,7 @@ export interface GwHttpSugar {
   getChannelsIdentsPackets(chSelector: string | number, chIdentSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getChannelsIdents(chSelector: string | number, channelIdentSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getChannelsLogs(chSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getChannelsLogsCalculate(chSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postChannelsLogsCalculate(chSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   deleteChannelsMessages(chSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getChannelsMessages(chSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
@@ -178,12 +191,15 @@ export interface GwHttpSugar {
   getDevicesGeofences(devSelector: string | number, devGeofencesSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postDevicesGeofences(devSelector: string | number, devGeofencesSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getDevicesLogs(devSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getDevicesLogsCalculate(devSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postDevicesLogsCalculate(devSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   deleteDevicesMedia(devSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getDevicesMedia(devSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  postDevicesMedia(devSelector: string | number, formData_file?: any, formData_data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   putDevicesMedia(devSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getDevicesMessages(devSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postDevicesMessages(devSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getDevicesMessagesCalculate(devSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getDevicesPackets(devSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   deleteDevicesSettings(devSelector: string | number, settSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getDevicesSettings(devSelector: string | number, settSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
@@ -199,6 +215,7 @@ export interface GwHttpSugar {
   putGeofences(geofencesSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getGeofencesHittest(geofencesSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getGeofencesLogs(geofencesSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getGeofencesLogsCalculate(geofencesSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postGeofencesLogsCalculate(geofencesSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postGroups(query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   deleteGroups(groupsSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
@@ -215,6 +232,7 @@ export interface GwHttpSugar {
   getGroupsGeofences(groupsSelector: string | number, groupGeofencesSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postGroupsGeofences(groupsSelector: string | number, groupGeofencesSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getGroupsLogs(groupsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getGroupsLogsCalculate(groupsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postGroupsLogsCalculate(groupsSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getMessageParameters(messageParameterSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postModems(query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
@@ -223,8 +241,10 @@ export interface GwHttpSugar {
   patchModems(modemSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   putModems(modemSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getModemsLogs(modemSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getModemsLogsCalculate(modemSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postModemsLogsCalculate(modemSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getPluginTypes(pluginTypesSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getPluginTypesChangelogPosts(pluginTypesSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postPlugins(query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   deletePlugins(pluginSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getPlugins(pluginSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
@@ -244,9 +264,11 @@ export interface GwHttpSugar {
   postPluginsGroups(pluginSelector: string | number, pluginGroupsSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   putPluginsGroups(pluginSelector: string | number, pluginGroupsSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getPluginsLogs(pluginSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getPluginsLogsCalculate(pluginSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postPluginsLogsCalculate(pluginSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getPluginsPackets(pluginSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getStreamProtocols(streamProtocolsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getStreamProtocolsChangelogPosts(streamProtocolsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postStreams(query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   deleteStreams(streamSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getStreams(streamSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
@@ -267,9 +289,10 @@ export interface GwHttpSugar {
   getStreamsGroups(streamSelector: string | number, streamGroupsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postStreamsGroups(streamSelector: string | number, streamGroupsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getStreamsLogs(streamSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getStreamsLogsCalculate(streamSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postStreamsLogsCalculate(streamSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   deleteStreamsMessages(streamSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  postStreamsMessages(streamSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  postStreamsMessages(streamSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getStreamsPackets(streamSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
 }
 
@@ -279,28 +302,36 @@ export interface StorageHttpSugar {
   getCdns(cdnSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   patchCdns(cdnSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   putCdns(cdnSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  putCdnsCid(cdnSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   deleteCdnsFiles(cdnSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getCdnsFiles(cdnSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postCdnsFiles(cdnSelector: string | number, formData_file?: any, formData_data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getCdnsLogs(cdnSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getCdnsLogsCalculate(cdnSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postCdnsLogsCalculate(cdnSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getChangelogPosts(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postContainers(query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   deleteContainers(containerSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getContainers(containerSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   patchContainers(containerSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   putContainers(containerSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postContainersCalculate(containerSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  putContainersCid(containerSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getContainersLogs(containerSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getContainersLogsCalculate(containerSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postContainersLogsCalculate(containerSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   deleteContainersMessages(containerSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getContainersMessages(containerSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postContainersMessages(containerSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getContainersMessagesCalculate(containerSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getExpressionsFunctions(options?: AxiosRequestConfig): Promise<AxiosResponse>
-  postExpressionsTest(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getExpressionsTest(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
 }
 
 export interface MqttHttpSugar {
+  getChangelogPosts(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getLogs(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getLogsCalculate(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postLogsCalculate(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postMessages(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   deleteMessages(messagesSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
@@ -316,8 +347,10 @@ export interface MqttHttpSugar {
 export interface AuthHttpSugar {
   postAccountConfirm(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postAccountRegister(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  getCallback(options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getCallback(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getCallbackProxy(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  postDialogDecode(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  postDialogSubmit(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postEmailConfirm(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postEmailRevert(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   putEmailUpdate(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
@@ -333,15 +366,42 @@ export interface AuthHttpSugar {
 }
 
 export interface AiHttpSugar {
+  postAgents(query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  deleteAgents(agentsSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getAgents(agentsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  patchAgents(agentsSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  putAgents(agentsSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  postAgentsApprovals(agentsSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  deleteAgentsConnectors(agentsSelector: string | number, agentConnectorsSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getAgentsConnectors(agentsSelector: string | number, agentConnectorsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  postAgentsConnectors(agentsSelector: string | number, agentConnectorsSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  putAgentsConnectors(agentsSelector: string | number, agentConnectorsSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getAgentsLogs(agentsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getAgentsLogsCalculate(agentsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getAgentsMessages(agentsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  postAgentsMessages(agentsSelector: string | number, formData_file?: any, formData_data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  deleteAgentsMessagesPending(agentsSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  postAgentsMessagesRead(agentsSelector: string | number, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getChangelogPosts(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getConnectorTypes(connectorTypesSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  postConnectors(query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  deleteConnectors(connectorsSelector: string | number, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getConnectors(connectorsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  patchConnectors(connectorsSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  putConnectors(connectorsSelector: string | number, query?: Record<string, any>, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getConnectorsLogs(connectorsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getConnectorsLogsCalculate(connectorsSelector: string | number, query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getLogs(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  postLogsCalculate(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getLogsCalculate(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getMcpDevelop(options?: AxiosRequestConfig): Promise<AxiosResponse>
   postMcpDevelop(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   getMcpSupport(options?: AxiosRequestConfig): Promise<AxiosResponse>
   postMcpSupport(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getToolsApiMethodSchema(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  postToolsConsultFlespiAccount(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  postToolsGenerateFlespiExpression(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postToolsGeneratePvmCode(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  postToolsGetApiSchema(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
-  postToolsSearchApiMethods(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
+  getToolsSearchApiMethods(query?: Record<string, any>, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postToolsSearchDeviceDocumentation(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
   postToolsSearchFlespiDocumentation(data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>
 }

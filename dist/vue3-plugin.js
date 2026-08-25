@@ -769,6 +769,16 @@ const CONFIGS = [
       "/billing/payment_portal": {
         get: {}
       },
+      "/changelog-posts": {
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        }
+      },
       "/customer": {
         get: {
           parameters: [
@@ -819,6 +829,10 @@ const CONFIGS = [
         get: {
           parameters: [
             {
+              name: "x-flespi-cid",
+              "in": "header"
+            },
+            {
               name: "data",
               "in": "query"
             }
@@ -827,6 +841,10 @@ const CONFIGS = [
         post: {
           parameters: [
             {
+              name: "x-flespi-cid",
+              "in": "header"
+            },
+            {
               name: "data",
               "in": "body"
             }
@@ -834,6 +852,10 @@ const CONFIGS = [
         },
         put: {
           parameters: [
+            {
+              name: "x-flespi-cid",
+              "in": "header"
+            },
             {
               name: "data",
               "in": "body"
@@ -844,6 +866,10 @@ const CONFIGS = [
       "/customer/chat-file": {
         post: {
           parameters: [
+            {
+              name: "x-flespi-cid",
+              "in": "header"
+            },
             {
               name: "file",
               "in": "formData"
@@ -859,6 +885,10 @@ const CONFIGS = [
         post: {
           parameters: [
             {
+              name: "x-flespi-cid",
+              "in": "header"
+            },
+            {
               name: "data",
               "in": "body"
             }
@@ -869,18 +899,12 @@ const CONFIGS = [
         get: {
           parameters: [
             {
-              name: "data",
-              "in": "query"
-            }
-          ]
-        }
-      },
-      "/customer/generate-pvm-code": {
-        post: {
-          parameters: [
+              name: "x-flespi-cid",
+              "in": "header"
+            },
             {
               name: "data",
-              "in": "body"
+              "in": "query"
             }
           ]
         }
@@ -900,6 +924,18 @@ const CONFIGS = [
         }
       },
       "/customer/logs/calculate": {
+        get: {
+          parameters: [
+            {
+              name: "x-flespi-cid",
+              "in": "header"
+            },
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
         post: {
           parameters: [
             {
@@ -944,6 +980,10 @@ const CONFIGS = [
       "/deleted/{deleted-selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "deleted-selector",
             "in": "path"
           }
@@ -953,12 +993,24 @@ const CONFIGS = [
             {
               name: "fields",
               "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
+              "in": "query"
             }
           ]
         }
       },
       "/deleted/{deleted-selector}/logs": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "deleted-selector",
             "in": "path"
@@ -976,10 +1028,22 @@ const CONFIGS = [
       "/deleted/{deleted-selector}/logs/calculate": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "deleted-selector",
             "in": "path"
           }
         ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
         post: {
           parameters: [
             {
@@ -992,6 +1056,10 @@ const CONFIGS = [
       "/deleted/{deleted-selector}/restore": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "deleted-selector",
             "in": "path"
           }
@@ -1000,6 +1068,10 @@ const CONFIGS = [
       },
       "/grantors/{grants-selector}": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "grants-selector",
             "in": "path"
@@ -1010,6 +1082,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -1036,6 +1116,10 @@ const CONFIGS = [
       "/grants/{grants-selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "grants-selector",
             "in": "path"
           }
@@ -1045,6 +1129,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -1077,6 +1169,10 @@ const CONFIGS = [
       "/grants/{grants-selector}/logs": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "grants-selector",
             "in": "path"
           }
@@ -1093,10 +1189,22 @@ const CONFIGS = [
       "/grants/{grants-selector}/logs/calculate": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "grants-selector",
             "in": "path"
           }
         ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
         post: {
           parameters: [
             {
@@ -1108,6 +1216,10 @@ const CONFIGS = [
       },
       "/grants/{grants-selector}/subaccounts/{grant-subaccounts-selector}": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "grants-selector",
             "in": "path"
@@ -1122,6 +1234,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -1169,6 +1289,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -1227,6 +1355,14 @@ const CONFIGS = [
             "in": "header"
           }
         ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
         post: {
           parameters: [
             {
@@ -1271,6 +1407,14 @@ const CONFIGS = [
             {
               name: "fields",
               "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
+              "in": "query"
             }
           ]
         },
@@ -1302,6 +1446,10 @@ const CONFIGS = [
       "/limits/{limits-selector}/logs": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "limits-selector",
             "in": "path"
           }
@@ -1318,10 +1466,22 @@ const CONFIGS = [
       "/limits/{limits-selector}/logs/calculate": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "limits-selector",
             "in": "path"
           }
         ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
         post: {
           parameters: [
             {
@@ -1347,6 +1507,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -1388,6 +1556,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -1438,6 +1614,14 @@ const CONFIGS = [
             {
               name: "fields",
               "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
+              "in": "query"
             }
           ]
         },
@@ -1469,6 +1653,10 @@ const CONFIGS = [
       "/realms/{realm-selector}/logs": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "realm-selector",
             "in": "path"
           }
@@ -1485,10 +1673,22 @@ const CONFIGS = [
       "/realms/{realm-selector}/logs/calculate": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "realm-selector",
             "in": "path"
           }
         ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
         post: {
           parameters: [
             {
@@ -1522,7 +1722,7 @@ const CONFIGS = [
           ]
         }
       },
-      "/realms/{realm-selector}/roles/{role-selector}": {
+      "/realms/{realm-selector}/roles/{realm-role-selector}": {
         parameters: [
           {
             name: "x-flespi-cid",
@@ -1533,7 +1733,7 @@ const CONFIGS = [
             "in": "path"
           },
           {
-            name: "role-selector",
+            name: "realm-role-selector",
             "in": "path"
           }
         ],
@@ -1542,6 +1742,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -1595,7 +1803,7 @@ const CONFIGS = [
           ]
         }
       },
-      "/realms/{realm-selector}/users/{user-selector}": {
+      "/realms/{realm-selector}/users/{realm-user-selector}": {
         parameters: [
           {
             name: "x-flespi-cid",
@@ -1606,7 +1814,7 @@ const CONFIGS = [
             "in": "path"
           },
           {
-            name: "user-selector",
+            name: "realm-user-selector",
             "in": "path"
           }
         ],
@@ -1615,6 +1823,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -1644,7 +1860,7 @@ const CONFIGS = [
           ]
         }
       },
-      "/realms/{realm-selector}/users/{user-selector}/confirmation/password": {
+      "/realms/{realm-selector}/users/{realm-user-selector}/confirmation/password": {
         parameters: [
           {
             name: "x-flespi-cid",
@@ -1655,7 +1871,7 @@ const CONFIGS = [
             "in": "path"
           },
           {
-            name: "user-selector",
+            name: "realm-user-selector",
             "in": "path"
           }
         ],
@@ -1668,14 +1884,18 @@ const CONFIGS = [
           ]
         }
       },
-      "/realms/{realm-selector}/users/{user-selector}/identity-providers/{user-identity-provider-selector}": {
+      "/realms/{realm-selector}/users/{realm-user-selector}/identity-providers/{user-identity-provider-selector}": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "realm-selector",
             "in": "path"
           },
           {
-            name: "user-selector",
+            name: "realm-user-selector",
             "in": "path"
           },
           {
@@ -1689,18 +1909,30 @@ const CONFIGS = [
             {
               name: "fields",
               "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
+              "in": "query"
             }
           ]
         }
       },
-      "/realms/{realm-selector}/users/{user-selector}/identity-providers/{user-identity-provider-selector}/confirmation": {
+      "/realms/{realm-selector}/users/{realm-user-selector}/identity-providers/{user-identity-provider-selector}/confirmation": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "realm-selector",
             "in": "path"
           },
           {
-            name: "user-selector",
+            name: "realm-user-selector",
             "in": "path"
           },
           {
@@ -1717,27 +1949,35 @@ const CONFIGS = [
           ]
         }
       },
-      "/realms/{realm-selector}/users/{user-selector}/login": {
+      "/realms/{realm-selector}/users/{realm-user-selector}/login": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "realm-selector",
             "in": "path"
           },
           {
-            name: "user-selector",
+            name: "realm-user-selector",
             "in": "path"
           }
         ],
         post: {}
       },
-      "/realms/{realm-selector}/users/{user-selector}/logout": {
+      "/realms/{realm-selector}/users/{realm-user-selector}/logout": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "realm-selector",
             "in": "path"
           },
           {
-            name: "user-selector",
+            name: "realm-user-selector",
             "in": "path"
           }
         ],
@@ -1750,14 +1990,18 @@ const CONFIGS = [
           ]
         }
       },
-      "/realms/{realm-selector}/users/{user-selector}/password": {
+      "/realms/{realm-selector}/users/{realm-user-selector}/password": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "realm-selector",
             "in": "path"
           },
           {
-            name: "user-selector",
+            name: "realm-user-selector",
             "in": "path"
           }
         ],
@@ -1804,6 +2048,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -1860,6 +2112,18 @@ const CONFIGS = [
             "in": "path"
           }
         ],
+        get: {
+          parameters: [
+            {
+              name: "x-flespi-cid",
+              "in": "header"
+            },
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
         post: {
           parameters: [
             {
@@ -1907,6 +2171,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -1965,6 +2237,14 @@ const CONFIGS = [
             "in": "header"
           }
         ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
         post: {
           parameters: [
             {
@@ -1977,6 +2257,10 @@ const CONFIGS = [
       "/webhooks": {
         post: {
           parameters: [
+            {
+              name: "x-flespi-cid",
+              "in": "header"
+            },
             {
               name: "fields",
               "in": "query"
@@ -1991,6 +2275,10 @@ const CONFIGS = [
       "/webhooks/{webhooks-selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "webhooks-selector",
             "in": "path"
           }
@@ -2000,6 +2288,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -2032,6 +2328,10 @@ const CONFIGS = [
       "/webhooks/{webhooks-selector}/logs": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "webhooks-selector",
             "in": "path"
           }
@@ -2048,10 +2348,22 @@ const CONFIGS = [
       "/webhooks/{webhooks-selector}/logs/calculate": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "webhooks-selector",
             "in": "path"
           }
         ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
         post: {
           parameters: [
             {
@@ -2063,6 +2375,10 @@ const CONFIGS = [
       },
       "/webhooks/{webhooks-selector}/packets": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "webhooks-selector",
             "in": "path"
@@ -2101,6 +2417,12 @@ const CONFIGS = [
         }
       },
       "/assets/{assets.selector}": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
         "delete": {
           parameters: [
             {
@@ -2117,6 +2439,14 @@ const CONFIGS = [
             },
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -2157,6 +2487,10 @@ const CONFIGS = [
       "/assets/{assets.selector}/intervals": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "assets.selector",
             "in": "path"
           }
@@ -2179,6 +2513,12 @@ const CONFIGS = [
         }
       },
       "/assets/{assets.selector}/logs": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
         get: {
           parameters: [
             {
@@ -2195,10 +2535,22 @@ const CONFIGS = [
       "/assets/{assets.selector}/logs/calculate": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "assets.selector",
             "in": "path"
           }
         ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
         post: {
           parameters: [
             {
@@ -2229,6 +2581,10 @@ const CONFIGS = [
       "/calcs/{calcs.selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "calcs.selector",
             "in": "path"
           }
@@ -2238,6 +2594,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -2270,6 +2634,10 @@ const CONFIGS = [
       "/calcs/{calcs.selector}/assets/{calc.assets.selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "calcs.selector",
             "in": "path"
           },
@@ -2283,6 +2651,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -2311,6 +2687,10 @@ const CONFIGS = [
       "/calcs/{calcs.selector}/devices/{calc.devices.selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "calcs.selector",
             "in": "path"
           },
@@ -2324,6 +2704,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -2344,6 +2732,10 @@ const CONFIGS = [
       "/calcs/{calcs.selector}/devices/{calc.devices.selector}/calculate": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "calcs.selector",
             "in": "path"
           },
@@ -2361,8 +2753,36 @@ const CONFIGS = [
           ]
         }
       },
+      "/calcs/{calcs.selector}/devices/{calc.devices.selector}/intervals/calculate": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
+            name: "calcs.selector",
+            "in": "path"
+          },
+          {
+            name: "calc.devices.selector",
+            "in": "path"
+          }
+        ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        }
+      },
       "/calcs/{calcs.selector}/devices/{calc.devices.selector}/intervals/{calc.device.intervals.selector.put}": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "calcs.selector",
             "in": "path"
@@ -2388,6 +2808,10 @@ const CONFIGS = [
       "/calcs/{calcs.selector}/devices/{calc.devices.selector}/intervals/{calc.device.intervals.selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "calcs.selector",
             "in": "path"
           },
@@ -2410,6 +2834,12 @@ const CONFIGS = [
         }
       },
       "/calcs/{calcs.selector}/devices/{calc.devices.selector}/recalculate": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
         post: {
           parameters: [
             {
@@ -2429,6 +2859,10 @@ const CONFIGS = [
       },
       "/calcs/{calcs.selector}/devices/{dev-selector}": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "calcs.selector",
             "in": "path"
@@ -2454,6 +2888,10 @@ const CONFIGS = [
       "/calcs/{calcs.selector}/geofences/{calc.geofences.selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "calcs.selector",
             "in": "path"
           },
@@ -2467,6 +2905,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -2495,6 +2941,10 @@ const CONFIGS = [
       "/calcs/{calcs.selector}/groups/{calc.groups.selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "calcs.selector",
             "in": "path"
           },
@@ -2508,6 +2958,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -2540,6 +2998,10 @@ const CONFIGS = [
       "/calcs/{calcs.selector}/logs": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "calcs.selector",
             "in": "path"
           }
@@ -2556,15 +3018,37 @@ const CONFIGS = [
       "/calcs/{calcs.selector}/logs/calculate": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "calcs.selector",
             "in": "path"
           }
         ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
         post: {
           parameters: [
             {
               name: "data",
               "in": "body"
+            }
+          ]
+        }
+      },
+      "/changelog-posts": {
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
             }
           ]
         }
@@ -2580,6 +3064,30 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
+              "in": "query"
+            }
+          ]
+        }
+      },
+      "/channel-protocols/{channel-protocols.selector}/changelog-posts": {
+        parameters: [
+          {
+            name: "channel-protocols.selector",
+            "in": "path"
+          }
+        ],
+        get: {
+          parameters: [
+            {
+              name: "data",
               "in": "query"
             }
           ]
@@ -2601,49 +3109,13 @@ const CONFIGS = [
             {
               name: "fields",
               "in": "query"
-            }
-          ]
-        }
-      },
-      "/channel-protocols/{channel-protocols.selector}/device-types/{devtypes.selector}/assistance": {
-        parameters: [
-          {
-            name: "channel-protocols.selector",
-            "in": "path"
-          },
-          {
-            name: "devtypes.selector",
-            "in": "path"
-          }
-        ],
-        post: {
-          parameters: [
+            },
             {
-              name: "data",
-              "in": "body"
-            }
-          ]
-        }
-      },
-      "/channel-protocols/{channel-protocols.selector}/device-types/{devtypes.selector}/knowledge": {
-        parameters: [
-          {
-            name: "channel-protocols.selector",
-            "in": "path"
-          },
-          {
-            name: "devtypes.selector",
-            "in": "path"
-          }
-        ],
-        get: {
-          parameters: [
-            {
-              name: "fields",
+              name: "limit",
               "in": "query"
             },
             {
-              name: "data",
+              name: "offset",
               "in": "query"
             }
           ]
@@ -2670,6 +3142,10 @@ const CONFIGS = [
       "/channels/{ch-selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "ch-selector",
             "in": "path"
           }
@@ -2679,6 +3155,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -2711,6 +3195,10 @@ const CONFIGS = [
       "/channels/{ch-selector}/cid": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "ch-selector",
             "in": "path"
           }
@@ -2731,6 +3219,10 @@ const CONFIGS = [
       "/channels/{ch-selector}/connections/{conn-selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "ch-selector",
             "in": "path"
           },
@@ -2745,12 +3237,24 @@ const CONFIGS = [
             {
               name: "fields",
               "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
+              "in": "query"
             }
           ]
         }
       },
       "/channels/{ch-selector}/idents/{ch-ident-selector}/packets": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "ch-selector",
             "in": "path"
@@ -2772,6 +3276,10 @@ const CONFIGS = [
       "/channels/{ch-selector}/idents/{channel.ident.selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "ch-selector",
             "in": "path"
           },
@@ -2784,10 +3292,25 @@ const CONFIGS = [
             "in": "query"
           }
         ],
-        get: {}
+        get: {
+          parameters: [
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
+              "in": "query"
+            }
+          ]
+        }
       },
       "/channels/{ch-selector}/logs": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "ch-selector",
             "in": "path"
@@ -2805,10 +3328,22 @@ const CONFIGS = [
       "/channels/{ch-selector}/logs/calculate": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "ch-selector",
             "in": "path"
           }
         ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
         post: {
           parameters: [
             {
@@ -2820,6 +3355,10 @@ const CONFIGS = [
       },
       "/channels/{ch-selector}/messages": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "ch-selector",
             "in": "path"
@@ -2863,6 +3402,10 @@ const CONFIGS = [
       "/devices/{dev-selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "dev-selector",
             "in": "path"
           }
@@ -2872,6 +3415,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -2902,6 +3453,12 @@ const CONFIGS = [
         }
       },
       "/devices/{dev-selector}/calculate": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
         post: {
           parameters: [
             {
@@ -2917,6 +3474,10 @@ const CONFIGS = [
       },
       "/devices/{dev-selector}/cid": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "dev-selector",
             "in": "path"
@@ -2938,6 +3499,10 @@ const CONFIGS = [
       "/devices/{dev-selector}/commands": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "dev-selector",
             "in": "path"
           }
@@ -2958,6 +3523,10 @@ const CONFIGS = [
       "/devices/{dev-selector}/commands-queue": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "dev-selector",
             "in": "path"
           }
@@ -2977,6 +3546,10 @@ const CONFIGS = [
       },
       "/devices/{dev-selector}/commands-queue/{devices.commands-queue.selector}": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "dev-selector",
             "in": "path"
@@ -2999,12 +3572,24 @@ const CONFIGS = [
             {
               name: "fields",
               "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
+              "in": "query"
             }
           ]
         }
       },
       "/devices/{dev-selector}/commands-result": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "dev-selector",
             "in": "path"
@@ -3022,6 +3607,10 @@ const CONFIGS = [
       "/devices/{dev-selector}/commands-result/{command-id-selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "dev-selector",
             "in": "path"
           },
@@ -3034,6 +3623,10 @@ const CONFIGS = [
       },
       "/devices/{dev-selector}/connections/{conn-selector}": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "dev-selector",
             "in": "path"
@@ -3049,12 +3642,24 @@ const CONFIGS = [
             {
               name: "fields",
               "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
+              "in": "query"
             }
           ]
         }
       },
       "/devices/{dev-selector}/geofences/{dev-geofences-selector}": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "dev-selector",
             "in": "path"
@@ -3070,6 +3675,14 @@ const CONFIGS = [
             {
               name: "fields",
               "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
+              "in": "query"
             }
           ]
         },
@@ -3084,6 +3697,10 @@ const CONFIGS = [
       },
       "/devices/{dev-selector}/logs": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "dev-selector",
             "in": "path"
@@ -3101,10 +3718,22 @@ const CONFIGS = [
       "/devices/{dev-selector}/logs/calculate": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "dev-selector",
             "in": "path"
           }
         ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
         post: {
           parameters: [
             {
@@ -3116,6 +3745,10 @@ const CONFIGS = [
       },
       "/devices/{dev-selector}/media": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "dev-selector",
             "in": "path"
@@ -3137,6 +3770,18 @@ const CONFIGS = [
             }
           ]
         },
+        post: {
+          parameters: [
+            {
+              name: "file",
+              "in": "formData"
+            },
+            {
+              name: "data",
+              "in": "formData"
+            }
+          ]
+        },
         put: {
           parameters: [
             {
@@ -3148,6 +3793,10 @@ const CONFIGS = [
       },
       "/devices/{dev-selector}/messages": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "dev-selector",
             "in": "path"
@@ -3170,8 +3819,32 @@ const CONFIGS = [
           ]
         }
       },
+      "/devices/{dev-selector}/messages/calculate": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
+            name: "dev-selector",
+            "in": "path"
+          }
+        ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        }
+      },
       "/devices/{dev-selector}/packets": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "dev-selector",
             "in": "path"
@@ -3188,6 +3861,10 @@ const CONFIGS = [
       },
       "/devices/{dev-selector}/settings/{sett-selector}": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "dev-selector",
             "in": "path"
@@ -3210,6 +3887,14 @@ const CONFIGS = [
             {
               name: "fields",
               "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
+              "in": "query"
             }
           ]
         },
@@ -3228,6 +3913,10 @@ const CONFIGS = [
       },
       "/devices/{dev-selector}/sms": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "dev-selector",
             "in": "path"
@@ -3252,6 +3941,10 @@ const CONFIGS = [
       },
       "/devices/{dev-selector}/telemetry/{telemetry-selector}": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "dev-selector",
             "in": "path"
@@ -3290,6 +3983,12 @@ const CONFIGS = [
         }
       },
       "/geofences/{geofences.selector}": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
         "delete": {
           parameters: [
             {
@@ -3306,6 +4005,14 @@ const CONFIGS = [
             },
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -3344,6 +4051,12 @@ const CONFIGS = [
         }
       },
       "/geofences/{geofences.selector}/hittest": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
         get: {
           parameters: [
             {
@@ -3362,6 +4075,12 @@ const CONFIGS = [
         }
       },
       "/geofences/{geofences.selector}/logs": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
         get: {
           parameters: [
             {
@@ -3378,10 +4097,22 @@ const CONFIGS = [
       "/geofences/{geofences.selector}/logs/calculate": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "geofences.selector",
             "in": "path"
           }
         ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
         post: {
           parameters: [
             {
@@ -3410,6 +4141,12 @@ const CONFIGS = [
         }
       },
       "/groups/{groups.selector}": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
         "delete": {
           parameters: [
             {
@@ -3426,6 +4163,14 @@ const CONFIGS = [
             },
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -3466,6 +4211,10 @@ const CONFIGS = [
       "/groups/{groups.selector}/assets/{group.assets.selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "groups.selector",
             "in": "path"
           },
@@ -3479,6 +4228,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -3495,6 +4252,10 @@ const CONFIGS = [
       "/groups/{groups.selector}/devices/{group.devices.selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "groups.selector",
             "in": "path"
           },
@@ -3508,6 +4269,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -3524,6 +4293,10 @@ const CONFIGS = [
       "/groups/{groups.selector}/geofences/{group.geofences.selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "groups.selector",
             "in": "path"
           },
@@ -3538,6 +4311,14 @@ const CONFIGS = [
             {
               name: "fields",
               "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
+              "in": "query"
             }
           ]
         },
@@ -3551,6 +4332,12 @@ const CONFIGS = [
         }
       },
       "/groups/{groups.selector}/logs": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
         get: {
           parameters: [
             {
@@ -3567,10 +4354,22 @@ const CONFIGS = [
       "/groups/{groups.selector}/logs/calculate": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "groups.selector",
             "in": "path"
           }
         ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
         post: {
           parameters: [
             {
@@ -3591,6 +4390,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -3617,6 +4424,10 @@ const CONFIGS = [
       "/modems/{modem-selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "modem-selector",
             "in": "path"
           }
@@ -3626,6 +4437,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -3658,6 +4477,10 @@ const CONFIGS = [
       "/modems/{modem-selector}/logs": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "modem-selector",
             "in": "path"
           }
@@ -3674,10 +4497,22 @@ const CONFIGS = [
       "/modems/{modem-selector}/logs/calculate": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "modem-selector",
             "in": "path"
           }
         ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
         post: {
           parameters: [
             {
@@ -3698,6 +4533,30 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
+              "in": "query"
+            }
+          ]
+        }
+      },
+      "/plugin-types/{plugin-types.selector}/changelog-posts": {
+        parameters: [
+          {
+            name: "plugin-types.selector",
+            "in": "path"
+          }
+        ],
+        get: {
+          parameters: [
+            {
+              name: "data",
               "in": "query"
             }
           ]
@@ -3722,6 +4581,12 @@ const CONFIGS = [
         }
       },
       "/plugins/{plugin.selector}": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
         "delete": {
           parameters: [
             {
@@ -3738,6 +4603,14 @@ const CONFIGS = [
             },
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -3778,6 +4651,10 @@ const CONFIGS = [
       "/plugins/{plugin.selector}/devices/{plugin.devices.selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "plugin.selector",
             "in": "path"
           },
@@ -3791,6 +4668,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -3835,6 +4720,10 @@ const CONFIGS = [
       "/plugins/{plugin.selector}/geofences/{plugin.geofences.selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "plugin.selector",
             "in": "path"
           },
@@ -3848,6 +4737,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -3876,6 +4773,10 @@ const CONFIGS = [
       "/plugins/{plugin.selector}/groups/{plugin.groups.selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "plugin.selector",
             "in": "path"
           },
@@ -3889,6 +4790,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -3919,6 +4828,12 @@ const CONFIGS = [
         }
       },
       "/plugins/{plugin.selector}/logs": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
         get: {
           parameters: [
             {
@@ -3935,10 +4850,22 @@ const CONFIGS = [
       "/plugins/{plugin.selector}/logs/calculate": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "plugin.selector",
             "in": "path"
           }
         ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
         post: {
           parameters: [
             {
@@ -3950,6 +4877,10 @@ const CONFIGS = [
       },
       "/plugins/{plugin.selector}/packets": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "plugin.selector",
             "in": "path"
@@ -3976,6 +4907,30 @@ const CONFIGS = [
             {
               name: "fields",
               "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
+              "in": "query"
+            }
+          ]
+        }
+      },
+      "/stream-protocols/{stream-protocols.selector}/changelog-posts": {
+        parameters: [
+          {
+            name: "stream-protocols.selector",
+            "in": "path"
+          }
+        ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
             }
           ]
         }
@@ -4001,6 +4956,10 @@ const CONFIGS = [
       "/streams/{stream.selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "stream.selector",
             "in": "path"
           }
@@ -4010,6 +4969,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -4042,6 +5009,10 @@ const CONFIGS = [
       "/streams/{stream.selector}/channels/{stream.channels.selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "stream.selector",
             "in": "path"
           },
@@ -4055,6 +5026,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -4072,6 +5051,10 @@ const CONFIGS = [
       "/streams/{stream.selector}/devices/{stream.devices.selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "stream.selector",
             "in": "path"
           },
@@ -4085,6 +5068,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -4113,6 +5104,10 @@ const CONFIGS = [
       "/streams/{stream.selector}/geofences/{stream.geofences.selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "stream.selector",
             "in": "path"
           },
@@ -4126,6 +5121,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -4154,6 +5157,10 @@ const CONFIGS = [
       "/streams/{stream.selector}/groups/{stream.groups.selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "stream.selector",
             "in": "path"
           },
@@ -4167,6 +5174,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -4182,6 +5197,10 @@ const CONFIGS = [
       },
       "/streams/{stream.selector}/logs": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "stream.selector",
             "in": "path"
@@ -4199,10 +5218,22 @@ const CONFIGS = [
       "/streams/{stream.selector}/logs/calculate": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "stream.selector",
             "in": "path"
           }
         ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
         post: {
           parameters: [
             {
@@ -4215,6 +5246,10 @@ const CONFIGS = [
       "/streams/{stream.selector}/messages": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "stream.selector",
             "in": "path"
           }
@@ -4224,13 +5259,17 @@ const CONFIGS = [
           parameters: [
             {
               name: "data",
-              "in": "query"
+              "in": "body"
             }
           ]
         }
       },
       "/streams/{stream.selector}/packets": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "stream.selector",
             "in": "path"
@@ -4254,6 +5293,10 @@ const CONFIGS = [
         post: {
           parameters: [
             {
+              name: "x-flespi-cid",
+              "in": "header"
+            },
+            {
               name: "fields",
               "in": "query"
             },
@@ -4267,6 +5310,10 @@ const CONFIGS = [
       "/cdns/{cdn-selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "cdn-selector",
             "in": "path"
           }
@@ -4276,6 +5323,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -4305,8 +5360,36 @@ const CONFIGS = [
           ]
         }
       },
+      "/cdns/{cdn-selector}/cid": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
+            name: "cdn-selector",
+            "in": "path"
+          }
+        ],
+        put: {
+          parameters: [
+            {
+              name: "fields",
+              "in": "query"
+            },
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
       "/cdns/{cdn-selector}/files": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "cdn-selector",
             "in": "path"
@@ -4344,6 +5427,10 @@ const CONFIGS = [
       "/cdns/{cdn-selector}/logs": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "cdn-selector",
             "in": "path"
           }
@@ -4360,10 +5447,22 @@ const CONFIGS = [
       "/cdns/{cdn-selector}/logs/calculate": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "cdn-selector",
             "in": "path"
           }
         ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
         post: {
           parameters: [
             {
@@ -4373,9 +5472,23 @@ const CONFIGS = [
           ]
         }
       },
+      "/changelog-posts": {
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        }
+      },
       "/containers": {
         post: {
           parameters: [
+            {
+              name: "x-flespi-cid",
+              "in": "header"
+            },
             {
               name: "fields",
               "in": "query"
@@ -4390,6 +5503,10 @@ const CONFIGS = [
       "/containers/{container-selector}": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "container-selector",
             "in": "path"
           }
@@ -4399,6 +5516,14 @@ const CONFIGS = [
           parameters: [
             {
               name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
               "in": "query"
             }
           ]
@@ -4429,6 +5554,12 @@ const CONFIGS = [
         }
       },
       "/containers/{container-selector}/calculate": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
         post: {
           parameters: [
             {
@@ -4442,8 +5573,36 @@ const CONFIGS = [
           ]
         }
       },
+      "/containers/{container-selector}/cid": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
+            name: "container-selector",
+            "in": "path"
+          }
+        ],
+        put: {
+          parameters: [
+            {
+              name: "fields",
+              "in": "query"
+            },
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
       "/containers/{container-selector}/logs": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "container-selector",
             "in": "path"
@@ -4461,10 +5620,22 @@ const CONFIGS = [
       "/containers/{container-selector}/logs/calculate": {
         parameters: [
           {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
             name: "container-selector",
             "in": "path"
           }
         ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
         post: {
           parameters: [
             {
@@ -4476,6 +5647,10 @@ const CONFIGS = [
       },
       "/containers/{container-selector}/messages": {
         parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
           {
             name: "container-selector",
             "in": "path"
@@ -4506,15 +5681,35 @@ const CONFIGS = [
           ]
         }
       },
+      "/containers/{container-selector}/messages/calculate": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
+            name: "container-selector",
+            "in": "path"
+          }
+        ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        }
+      },
       "/expressions/functions": {
         get: {}
       },
       "/expressions/test": {
-        post: {
+        get: {
           parameters: [
             {
               name: "data",
-              "in": "body"
+              "in": "query"
             }
           ]
         }
@@ -4524,7 +5719,23 @@ const CONFIGS = [
   {
     basePath: "/mqtt",
     paths: {
+      "/changelog-posts": {
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        }
+      },
       "/logs": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
         get: {
           parameters: [
             {
@@ -4535,6 +5746,20 @@ const CONFIGS = [
         }
       },
       "/logs/calculate": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
         post: {
           parameters: [
             {
@@ -4621,6 +5846,14 @@ const CONFIGS = [
             {
               name: "fields",
               "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
+              "in": "query"
             }
           ]
         }
@@ -4670,6 +5903,14 @@ const CONFIGS = [
             {
               name: "fields",
               "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
+              "in": "query"
             }
           ]
         }
@@ -4700,7 +5941,26 @@ const CONFIGS = [
         }
       },
       "/callback": {
-        get: {}
+        get: {
+          parameters: [
+            {
+              name: "state",
+              "in": "query"
+            },
+            {
+              name: "code",
+              "in": "query"
+            },
+            {
+              name: "error",
+              "in": "query"
+            },
+            {
+              name: "error_description",
+              "in": "query"
+            }
+          ]
+        }
       },
       "/callback/proxy": {
         get: {
@@ -4720,6 +5980,26 @@ const CONFIGS = [
             {
               name: "error_description",
               "in": "query"
+            }
+          ]
+        }
+      },
+      "/dialog/decode": {
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
+      "/dialog/submit": {
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
             }
           ]
         }
@@ -4828,7 +6108,430 @@ const CONFIGS = [
   {
     basePath: "/ai",
     paths: {
+      "/agents": {
+        post: {
+          parameters: [
+            {
+              name: "x-flespi-cid",
+              "in": "header"
+            },
+            {
+              name: "fields",
+              "in": "query"
+            },
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
+      "/agents/{agents.selector}": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
+        "delete": {
+          parameters: [
+            {
+              name: "agents.selector",
+              "in": "path"
+            }
+          ]
+        },
+        get: {
+          parameters: [
+            {
+              name: "agents.selector",
+              "in": "path"
+            },
+            {
+              name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
+              "in": "query"
+            }
+          ]
+        },
+        patch: {
+          parameters: [
+            {
+              name: "agents.selector",
+              "in": "path"
+            },
+            {
+              name: "fields",
+              "in": "query"
+            },
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        },
+        put: {
+          parameters: [
+            {
+              name: "agents.selector",
+              "in": "path"
+            },
+            {
+              name: "fields",
+              "in": "query"
+            },
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
+      "/agents/{agents.selector}/approvals": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
+            name: "agents.selector",
+            "in": "path"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
+      "/agents/{agents.selector}/connectors/{agent.connectors.selector}": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
+            name: "agents.selector",
+            "in": "path"
+          },
+          {
+            name: "agent.connectors.selector",
+            "in": "path"
+          }
+        ],
+        "delete": {},
+        get: {
+          parameters: [
+            {
+              name: "fields",
+              "in": "query"
+            }
+          ]
+        },
+        post: {
+          parameters: [
+            {
+              name: "fields",
+              "in": "query"
+            },
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        },
+        put: {
+          parameters: [
+            {
+              name: "fields",
+              "in": "query"
+            },
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
+      "/agents/{agents.selector}/logs": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
+        get: {
+          parameters: [
+            {
+              name: "agents.selector",
+              "in": "path"
+            },
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        }
+      },
+      "/agents/{agents.selector}/logs/calculate": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
+            name: "agents.selector",
+            "in": "path"
+          }
+        ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        }
+      },
+      "/agents/{agents.selector}/messages": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
+            name: "agents.selector",
+            "in": "path"
+          }
+        ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        },
+        post: {
+          parameters: [
+            {
+              name: "file",
+              "in": "formData"
+            },
+            {
+              name: "data",
+              "in": "formData"
+            }
+          ]
+        }
+      },
+      "/agents/{agents.selector}/messages/pending": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
+            name: "agents.selector",
+            "in": "path"
+          }
+        ],
+        "delete": {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
+      "/agents/{agents.selector}/messages/read": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
+            name: "agents.selector",
+            "in": "path"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
+      "/changelog-posts": {
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        }
+      },
+      "/connector-types/{connector-types.selector}": {
+        get: {
+          parameters: [
+            {
+              name: "connector-types.selector",
+              "in": "path"
+            },
+            {
+              name: "fields",
+              "in": "query"
+            }
+          ]
+        }
+      },
+      "/connectors": {
+        post: {
+          parameters: [
+            {
+              name: "x-flespi-cid",
+              "in": "header"
+            },
+            {
+              name: "fields",
+              "in": "query"
+            },
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
+      "/connectors/{connectors.selector}": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
+        "delete": {
+          parameters: [
+            {
+              name: "connectors.selector",
+              "in": "path"
+            }
+          ]
+        },
+        get: {
+          parameters: [
+            {
+              name: "connectors.selector",
+              "in": "path"
+            },
+            {
+              name: "fields",
+              "in": "query"
+            },
+            {
+              name: "limit",
+              "in": "query"
+            },
+            {
+              name: "offset",
+              "in": "query"
+            }
+          ]
+        },
+        patch: {
+          parameters: [
+            {
+              name: "connectors.selector",
+              "in": "path"
+            },
+            {
+              name: "fields",
+              "in": "query"
+            },
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        },
+        put: {
+          parameters: [
+            {
+              name: "connectors.selector",
+              "in": "path"
+            },
+            {
+              name: "fields",
+              "in": "query"
+            },
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
+      "/connectors/{connectors.selector}/logs": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
+        get: {
+          parameters: [
+            {
+              name: "connectors.selector",
+              "in": "path"
+            },
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        }
+      },
+      "/connectors/{connectors.selector}/logs/calculate": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          },
+          {
+            name: "connectors.selector",
+            "in": "path"
+          }
+        ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        }
+      },
       "/logs": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
         get: {
           parameters: [
             {
@@ -4839,16 +6542,28 @@ const CONFIGS = [
         }
       },
       "/logs/calculate": {
-        post: {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
+        get: {
           parameters: [
             {
               name: "data",
-              "in": "body"
+              "in": "query"
             }
           ]
         }
       },
       "/mcp/develop": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
         get: {
           parameters: []
         },
@@ -4862,6 +6577,12 @@ const CONFIGS = [
         }
       },
       "/mcp/support": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
         get: {
           parameters: []
         },
@@ -4874,7 +6595,29 @@ const CONFIGS = [
           ]
         }
       },
-      "/tools/generate-pvm-code": {
+      "/tools/api-method-schema": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
+        get: {
+          parameters: [
+            {
+              name: "data",
+              "in": "query"
+            }
+          ]
+        }
+      },
+      "/tools/consult-flespi-account": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
         post: {
           parameters: [
             {
@@ -4884,7 +6627,29 @@ const CONFIGS = [
           ]
         }
       },
-      "/tools/get-api-schema": {
+      "/tools/generate-flespi-expression": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
+        post: {
+          parameters: [
+            {
+              name: "data",
+              "in": "body"
+            }
+          ]
+        }
+      },
+      "/tools/generate-pvm-code": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
         post: {
           parameters: [
             {
@@ -4895,16 +6660,28 @@ const CONFIGS = [
         }
       },
       "/tools/search-api-methods": {
-        post: {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
+        get: {
           parameters: [
             {
               name: "data",
-              "in": "body"
+              "in": "query"
             }
           ]
         }
       },
       "/tools/search-device-documentation": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
         post: {
           parameters: [
             {
@@ -4915,6 +6692,12 @@ const CONFIGS = [
         }
       },
       "/tools/search-flespi-documentation": {
+        parameters: [
+          {
+            name: "x-flespi-cid",
+            "in": "header"
+          }
+        ],
         post: {
           parameters: [
             {
